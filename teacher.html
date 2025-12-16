@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 프린터 운용기능사 - 핵심 이론 (교사용)</title>
+    <link rel="stylesheet" href="css/teacher.css">
+    <script src="data.js"></script>
+    <script src="js/teacher_data.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h2>목차</h2>
+            <ul id="chapter-list">
+                <!-- Chapters will be loaded here -->
+            </ul>
+            <button onclick="window.print()" class="print-btn">🖨️ 인쇄하기</button>
+            <button onclick="location.href='index.html'" class="back-btn">🏠 메인으로</button>
+        </aside>
+
+        <main class="content">
+            <h1 id="chapter-title">단원을 선택하세요</h1>
+            <div id="slider-area" class="slider-container" style="display: none;">
+                <div class="slide-counter" id="slide-counter">1 / 5</div>
+                <div class="slide-display" id="slide-display">
+                    <!-- Image or Video goes here -->
+                </div>
+                <div class="slide-text" id="slide-text">
+                    <!-- Text goes here -->
+                </div>
+                <button class="nav-btn prev-btn" onclick="prevSlide()">❮</button>
+                <button class="nav-btn next-btn" onclick="nextSlide()">❯</button>
+            </div>
+            <div id="placeholder-area">
+                <p class="placeholder-text">왼쪽 목록에서 단원을 선택하면<br>핵심 요약 슬라이드가 표시됩니다.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentSlides = [];
+        let currentSlideIndex = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const list = document.getElementById('chapter-list');
+
+            if (!appData || !appData.chapters) {
+                alert('데이터를 불러올 수 없습니다.');
+                return;
+            }
+
+            appData.chapters.forEach((chapter, index) => {
+                const li = document.createElement('li');
+                li.textContent = chapter.title;
+                li.onclick = () => loadChapter(index);
+                list.appendChild(li);
+            });
+        });
+
+        function loadChapter(index) {
+            const chapter = appData.chapters[index];
+            document.getElementById('chapter-title').textContent = chapter.title;
+
+            // Highlight active item
+            const items = document.querySelectorAll('#chapter-list li');
+            items.forEach(item => item.classList.remove('active'));
+            items[index].classList.add('active');
+
+            // Load slides from teacherData
+            const chapterId = chapter.id;
+            if (teacherData && teacherData[chapterId]) {
+                currentSlides = teacherData[chapterId];
+                currentSlideIndex = 0;
+                showSlider();
+                renderSlide();
+            } else {
+                document.getElementById('slider-area').style.display = 'none';
+                document.getElementById('placeholder-area').style.display = 'block';
+                document.getElementById('placeholder-area').innerHTML = "<p class='placeholder-text'>이 단원은 아직 슬라이드 자료가 준비되지 않았습니다.</p>";
+            }
+        }
+
+        function showSlider() {
+            document.getElementById('slider-area').style.display = 'flex';
+            document.getElementById('placeholder-area').style.display = 'none';
+        }
+
+        function renderSlide() {
+            if (currentSlides.length === 0) return;
+
+            const slide = currentSlides[currentSlideIndex];
+            const displayEl = document.getElementById('slide-display');
+            const textEl = document.getElementById('slide-text');
+            const counterEl = document.getElementById('slide-counter');
+
+            // Update Counter
+            counterEl.textContent = `${currentSlideIndex + 1} / ${currentSlides.length}`;
+
+            // Update Display
+            displayEl.innerHTML = '';
+
+            if (slide.type === 'image') {
+                const img = document.createElement('img');
+                img.src = slide.src;
+                img.alt = "Slide Image";
+                displayEl.appendChild(img);
+                textEl.textContent = slide.text;
+            } else if (slide.type === 'text') {
+                const textDiv = document.createElement('div');
+                textDiv.style.cssText = 'color: white; font-size: 2.5rem; padding: 40px; text-align: center; white-space: pre-line;';
+                textDiv.textContent = slide.text;
+                displayEl.appendChild(textDiv);
+                textEl.textContent = '';
+            }
+        }
+
+        function nextSlide() {
+            if (currentSlides.length === 0) return;
+            currentSlideIndex = (currentSlideIndex + 1) % currentSlides.length;
+            renderSlide();
+        }
+
+        function prevSlide() {
+            if (currentSlides.length === 0) return;
+            currentSlideIndex = (currentSlideIndex - 1 + currentSlides.length) % currentSlides.length;
+            renderSlide();
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('slider-area').style.display === 'flex') {
+                if (e.key === 'ArrowRight') nextSlide();
+                if (e.key === 'ArrowLeft') prevSlide();
+            }
+        });
+    </script>
+</body>
+
+</html>

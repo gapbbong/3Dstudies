@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 프린터 운용 기능사 학습 프로그램</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f7;
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background-color: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            font-weight: bold;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            max-width: 1400px; /* Wider for split view */
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Login Screen */
+        #login-screen {
+            text-align: center;
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        #login-screen h1 { margin-bottom: 30px; }
+        
+        input[type="text"] {
+            width: 80%;
+            padding: 15px;
+            font-size: 1.2em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background-color: #357abd; }
+
+        /* Dashboard */
+        .chapter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .chapter-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-left: 5px solid #ddd;
+        }
+
+        .chapter-card:hover { transform: translateY(-5px); }
+        .chapter-card.active { border-left-color: var(--primary-color); }
+        .chapter-card.locked { opacity: 0.6; cursor: not-allowed; }
+
+        /* Theory Mode */
+        .split-view {
+            display: flex;
+            gap: 20px;
+            height: 80vh;
+        }
+
+        .theory-panel, .typing-panel {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .theory-content {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 1.1em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            user-select: none; /* Copy protection */
+            background-color: #fafafa;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #eee;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 20px;
+            font-size: 1.1em;
+            line-height: 1.6;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            resize: none;
+            font-family: 'Malgun Gothic', sans-serif;
+        }
+
+        .status-bar {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        /* Quiz Mode */
+        .quiz-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .question-item {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-text { font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
+        
+        .choices { list-style: none; padding: 0; }
+        .choice-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .choice-item:hover { background: #eef2f7; }
+        .choice-item.selected { background: #d1e7dd; border-color: #badbcc; }
+        
+        /* Review Styles */
+        .choice-item.correct { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .choice-item.incorrect { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 5px;
+            color: #856404;
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">3D Printer Study</div>
+        <div class="user-info" id="display-name"></div>
+    </header>
+
+    <main>
+        <!-- 1. Login Screen -->
+        <div id="login-screen" class="screen active">
+            <h1>학습 시작하기</h1>
+            <p>이름(또는 학번)을 입력하세요.</p>
+            <input type="text" id="username-input" placeholder="예: 101 홍길동" autofocus>
+            <button onclick="login()">시작하기</button>
+        </div>
+
+        <!-- 2. Dashboard -->
+        <div id="dashboard-screen" class="screen">
+            <h1>학습 단원 선택</h1>
+            <div class="chapter-grid" id="chapter-grid">
+                <!-- Chapters will be generated here -->
+            </div>
+        </div>
+
+        <!-- 3. Theory Mode -->
+        <div id="theory-screen" class="screen">
+            <div style="margin-bottom: 15px;">
+                <button onclick="showScreen('dashboard-screen')" style="padding: 8px 15px; font-size: 0.9em; background: #7f8c8d;">&lt; 뒤로가기</button>
+                <span style="margin-left: 10px; font-weight: bold; font-size: 1.2em;" id="theory-title"></span>
+            </div>
+            <div class="split-view">
+                <div class="theory-panel">
+                    <h3>핵심 이론 (읽기 전용)</h3>
+                    <div class="theory-content" id="theory-text"></div>
+                </div>
+                <div class="typing-panel">
+                    <h3>따라 쓰기</h3>
+                    <textarea id="typing-input" placeholder="왼쪽의 내용을 정확하게 따라 입력하세요..."></textarea>
+                    <div class="status-bar">
+                        <span id="accuracy-display">정확도: 0%</span>
+                        <button onclick="checkTyping()">제출하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Quiz Mode -->
+        <div id="quiz-screen" class="screen">
+            <div style="margin-bottom: 15px;">
+                <button onclick="showScreen('dashboard-screen')" style="padding: 8px 15px; font-size: 0.9em; background: #7f8c8d;">&lt; 뒤로가기</button>
+                <span style="margin-left: 10px; font-weight: bold; font-size: 1.2em;">실전 문제 풀이</span>
+                <span id="quiz-progress" style="float:right; font-weight:bold;"></span>
+            </div>
+            <div class="quiz-container" id="quiz-content">
+                <!-- Questions -->
+            </div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="submitQuiz()" id="btn-submit-quiz">답안 제출</button>
+                <button onclick="retryQuiz()" id="btn-retry-quiz" style="display:none; background-color: #f39c12;">다시 풀기</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">알림</h2>
+            <p id="modal-message">내용</p>
+            <button onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <script>
+
+        const appData = {
+  "chapters": [
+    {
+      "id": "part0",
+      "title": "Part 0: 제품 스캐닝 (완전 정복)",
+      "theoryContent": "1. 3D 스캐닝의 개념과 원리\n\n가. 3D 스캐닝의 정의\n- 3차원 스캐닝은 측정 대상물로부터 3차원 좌푯값(x, y, z)을 읽어내어 디지털 데이터로 변환하는 과정입니다.\n- 일반 스캐닝이 문자나 2차원 형상을 읽는다면, 3D 스캐닝은 입체적인 형상 정보를 획득하여 3D 모델링 데이터로 재구성하는 기술입니다.\n\n나. 스캐닝 방식의 분류\n(1) 접촉식 스캐닝\n- 원리: 터치 프로브(Touch Probe)가 물체 표면에 직접 닿아 좌표를 측정합니다.\n- 장점: 투명하거나 반사되는 재질(거울 등)도 측정할 수 있습니다. 정밀도가 높습니다.\n- 단점: 측정 속도가 느리고, 물체가 변형되기 쉬운 재질(고무 등)은 측정하기 어렵습니다.\n- 대표 장비: CMM(3차원 측정기)\n\n(2) 비접촉식 스캐닝\n- 원리: 레이저나 빛(패턴)을 쏘아 반사되어 돌아오는 정보를 분석하여 측정합니다.\n- 장점: 측정 속도가 빠르고, 물체의 변형 없이 측정할 수 있습니다.\n- 단점: 투명하거나 검은색, 반사되는 표면은 측정이 어렵습니다(현상액 등을 뿌려야 함).\n- 방식:\n  - TOF(Time of Flight): 레이저가 돌아오는 시간을 측정. 장거리 측정에 유리.\n  - 광삼각법: 레이저 발사각과 수신각을 이용해 거리 계산. 정밀도 우수.\n  - 패턴광(Structured Light): 특정 패턴을 투영하여 굴곡을 분석. 속도가 매우 빠름.\n\n2. 스캐너 결정 시 고려사항\n\n가. 측정 대상물의 특징\n- 크기: 대상물의 크기에 따라 핸드헬드형, 고정형, 광대역 스캐너 등을 선택해야 합니다.\n- 재질: 투명하거나 반짝이는 재질은 접촉식을 쓰거나 전처리(현상액 도포) 후 비접촉식을 사용해야 합니다.\n- 형상 복잡도: 내부 형상이나 복잡한 구조는 CT(컴퓨터 단층촬영) 방식이 유리할 수 있습니다.\n\n나. 정밀도와 해상도\n- 정밀도(Accuracy): 측정값이 실제값과 얼마나 일치하는지 나타냅니다.\n- 해상도(Resolution): 얼마나 세밀하게 점 데이터를 획득할 수 있는지 나타냅니다.\n\n3. 스캐닝 데이터 후처리\n\n가. 점군(Point Cloud) 처리\n- 노이즈 제거: 불필요한 점들을 삭제합니다.\n- 정합(Registration): 여러 각도에서 찍은 데이터를 하나로 합칩니다.\n- 병합(Merge): 중복된 데이터를 정리하여 하나의 덩어리로 만듭니다.\n\n나. 메쉬(Mesh) 생성 및 보정\n- 점 데이터를 삼각형 면(Polygon)으로 변환합니다.\n- 구멍 메우기(Hole Filling): 스캔되지 않은 빈 공간을 채웁니다.\n- 스무딩(Smoothing): 표면을 매끄럽게 다듬습니다.",
+      "questions": [
+        {
+          "number": "01",
+          "question": "다음에서 설명하는 3D프린터 방식은? 열가소성 재료를 가는 실 형태로 만든 것을 필라멘트형이라고 하는데，이것에 열을 가해 녹인 후 노즐을 거쳐 압출되는 재료를 적층 하는 방식",
+          "choices": [
+            "FDM 방식",
+            "SLA 방식",
+            "DLP 방식",
+            "SLS 방식"
+          ],
+          "answer": "①",
+          "explanation": "니 ② SL，방식 : 액상 재료（레진）에 레이저 빛 을 선택적으로 방출하여 얇고 미세한 형상 을 제작하는 방식. 거울이 비치는 레이저 각도를 조절하여 출력물을 만듦 ③ D L P 방식 : 빔프로젝터에서 빛을 비추게 되면 비추는 빛의 모양에 따라 액상 재료 （레진）가 굳게 되는 방식 ④ SLS 방식 : 미세한 플라스틱, 금속 가루 등 이 담겨 있는 수조에 레이저를 쏴서 얇은 층（Layer）을 형성하는 방식 다음에서 설명하는 3D프린터 방식은? 레이저나 강한 자외선을 이용하여 액상 재 료를 순간적으로 경화시켜 형상을 제작하는 방식 ① FDM 방식 ② SLA 방식 ③ MJF 방식 ④ SLS 방식",
+          "image": null
+        },
+        {
+          "number": "16",
+          "question": "PART 이제품스캐닝 다음에서 설명하는 3D프린터 방식은? 빔 프로젝터에서 빛을 비추게 되면 비추는 빛의 모양에 따라 액체（레진）를 굳게 만드는 방식",
+          "choices": [
+            "FDM 방식",
+            "SLA 방식",
+            "DLP 방식",
+            "SLS 방식"
+          ],
+          "answer": "③",
+          "explanation": "DLP 방식은 빔프로젝터에서 빛을 비추게 되 면 비추는 빛의 모양에 따라 액상 재료（레진） 가 굳게 되는 방식이다. ① F DM 방식 : 열가소성 재료를 가는 실 형 태로 만든 것을 필라멘트형이라고 하는데, 이것에 열을 가해 녹인 후 노즐을 거쳐 압 출되는 재료를 적층하는 방식",
+          "image": null
+        },
+        {
+          "number": "04",
+          "question": "SLS 방식 3D프린터의 장점으로 틀린 것은?",
+          "choices": [
+            "지지대（서포터）가 필요하다.",
+            "조형 속도가 다른 재료에 비하여 빠르다.",
+            "금속 재료를 사용할 수 있어 강도가 높다.",
+            "플라스틱，나무，메탈，세라믹 등 재료의 선택 폭이 넓다."
+          ],
+          "answer": "①",
+          "explanation": "SLS : 분말（파우더） 기반 • 재료의 선택 폭이 넓대플라스탁 나무, 메탈, 세라믹 등）. • 금속 재료를 사용할 수 있어 강도가 높다. • 정밀도교 ᅡ 높고 금형제작 등에 응용할 수 있다 • 조형 속도가 다른 재료에 비하여 빠르다. • 지지대（서포터）가 필요 없다. 0： FDM 방식의 3D프린터를 적용하기 힘든 산업 분야는? ① 건설 분야 ② 전자부품 ③식품 분야 ④산업금형 제작",
+          "image": null
+        },
+        {
+          "number": "06",
+          "question": "SLS 방식의 3D프린터를 적용하기 힘든 산 업분야는?",
+          "choices": [
+            "의료 분야",
+            "항공우주",
+            "건설 분야",
+            "산업금형제작"
+          ],
+          "answer": "③",
+          "explanation": "니 건설 분야는 시멘트 적층 등을 이용하여 건축 물 제작 등에 사용되는 FDM 방식이 적당하다. SLS 방식의 적용 분야 • 의료 분야 : 인공뼈，인공관절 등 • 항공우주 : 연료분사장치, 연소기 부품, 무인 정찰기 • 산업금형제작 刀 > 刀 어 01 보 ■ 많 or 출제예상문제 17 Q 3D 스캐닝의 개념과 종류 (1) 스캐닝의 개념 ① 개념 @ 일반 스캐닝 : 측정 대상으로부터 문자，모양，크기，위치 등의 특정 정보를 얻는 것 © 3차원 스캐닝 : 측정 대상으로부터 3차원 좌푯값인 x，y, z를 읽어내는 것 ② 스캐닝 과정 6)준비 단계 : 측정 대상물 준비 © 생성 단계 : 3차원 좌표를 추출하여 점군(point cloud)을 생성 © 최종 단계 : 3차원 모델로 재구성 (2) 스캐닝의 원리 대상물을 직접 접촉해서 좌표를 얻는 접촉식 방식과 거리를 두고 측정하는 비접촉식 방식이 있다. ① 접촉식 3차원 스캐닝 (3 접촉식 센터 인 터치 프로브(Touch prove)를 이용하여 3차원 좌표를 읽어 내는 방식 © 대표적으로 CMM(Coordinate Measuring Machine, 3차원 측정기)이 있음 ＜접촉식 3차원 스캐닝＞ 18 PART 이제품스캐닝 0 장점 : 대상물이 투명하거나 거울과 같이 반사가 일어나는 제품도 즉정 가능하다. © 단점 : 제품이 너무 복잡한 경우에는 측정이 곤란하고，작은 힘에도 쉼게 변형이 되는 제품은 측정할수 없다. ② 비접촉식 3차원 측정기 : 제품과 직접 접촉하지 않고 레이저와 같은 광학 방식으로 제품을 측정 하는 방식 @ TOF(Time Of Flight) 방식 레이저 3차원 스캐너 • 스캐너에서 발사된 레이저가 대상체에 반사되어 돌아오는 시간을 계산하는 방식 ※거리=속도 x 시간 • 장점 : 먼 거리의 대형 구조물을 측정하는 데 용이하다. • 단점 : 정밀측정이나 낮고 작은 제품에는 적합하지 않다. © 레이저 기반 삼각 측량 3차원 스캐너 • T O F 방식처럼 레이저를 이용，레이저를 측정 대상물에 주사하여 레이저발진부，수광부， 측정 대상물로 이루어진 삼각형에서 한 변과 2 개의 각으로부터 나머지 변의 길이를 계산하 는 방식 • 스캐닝의 속도를 높이기 위해 라인 타입의 레이저가 주로 이용됨 刀 > 刀 - r 0 니 건 | 뻐 |>겜 or CHAPTER 02 스캐너 결정 19 ＜레이저 기반 삼각 측량 3차원 스캐너 원리＞ • 장점 : 한 번에 측정할 수 있는 점의 개수가 TOF 방식보다 많다. • 단점 : 전체 형상을 스캔하기 위해 턴테이블을 이용하여 회전시켜야 한다. © 패턴 이미지 기반의 삼각 측량 3차원 스캐너 • 이미 알고 있는 패턴의 광을 이미지 생성 장치( 레이저 인터페로미터) 를 이용하여 측정 대상 물에 조사하고，측정 대상물에 변형된 패턴을 카메라에서 측정하여 모서리 부분들에 대한 삼각 측량법으로 3차원 좌표를 구하는 방식 •장점 -광 패턴을 바꾸면서 초점의 심도 조절이 가능하다. 一한꺼번에 넓은 영 역을 빠르게 측정할 수 있다. -휴대용으로 개발이 용이하다. @ 핸드헬드(Handheld) 스캐너，핸드 스캐너 • 3 D 이미지를 얻기 위해 레이저 기반 삼각법을 주로 이용하는 스캐너로，손으로 움직여서 그림이나 문서，사진 등을 이미지 형태로 읽어 내는 방식 •구성 一점(dot) 또는 선(line) 타입의 레이저를 피사체에 투사하는 레이저 발송자 —반사된 빛을 받는 수신 장치(CCD ； Change Coupled Device, 이미지 센서) -내부 좌표계를 기준 좌표계와 연결하기 위한 시스템 20 PART 이제품스캐닝 ＜핸드헬드 스캐너＞ • 장점 : 가격이 저렴하고 휴대하기가 편리하다. • 단점 : 큰 이미지는 여러 번 스캔해야 하며 숙련도에 따라 정확성이 떨어질 수 있다. @ 백색광(Wtdte light) 방식의 스캐너 • 특정 패턴을 물체에 투영하고 그 패턴의 변형 형태를 파악해 3D 정보를 획득하는 방식으 로，카메라는 패턴에서 라인을 인식하고 그 라인을 구성하는 모든 화소의 깊이 값은 레이저 삼각법을 이용해 구함 • 1차원 패턴 방식 : 하나의 라인 패턴으로 물체를 훑어 내는 방식 • 2차원 패턴 방식 : 그리드(grid) 또는 스트라이프 무늬의 패턴으로 물체를 훑어 내는 방식 • 장점 : 전체 촬영 영역 전반에 걸려 있는 모든 피사체의 3차원 좌표를 한 번에 얻어 낼 수 있어 측정 속도가 빠르다. • 산업체에서 정밀한 스캐닝을 목적으로 사용된다. ® 변조광(Structured light) 빙■식의 3D 스캐너 : 물체 표면에 지속적으로 주파수가 다른 빛을 쏘고 수신광부에서 이 빛을 받을 때 주파수의 차이를 검출하여 거리 값을 구하는 방식. 중거 리 영역인 10~30m 영역을 스캔할 때 주로 사용 ＜변조광(Structured light) 방식의 3D 스캐너＞ -0> 刀 어 01 ±11 # 료 or CHAP1TR02 스캐너 결정 21 • 주파수가 다른 빛의 배제가 가능하여 간섭에 의한 노이즈를 감쇄할 수 있다. • 고속 스캔이 가능하지만 레이저의 세기는 약하다. 必 CT(Computed Tomography, 컴퓨터 단층촬영) : 스캐너를 이용한 컴퓨터 단층촬영법으로， 엑스선이나 초음파를 여러 각도에서 인체에 투영하고 이를 컴퓨터로 재구성하여 인체 내부 단면의 모습을 화상으로 처리하는 것 Q 적용 가능 스캐닝 방식 (1)3D 스캐닝의 종류와 특징 3D 스캐닝의 종류를 고정식과 이동식으로 분류 ① 고정식 3D 스캐너 : 스캔을 하는 도중에 스캐너 혹은 피측정물을 이동할 수 없는 방식으로 저가 형과 고가형 장비로 나눌 수 있다. @ 저가형 3D 스캐너 : 두 개의 레이저 빔을 사용하며 측정 대상물에 투사된 레이저 라인 빔을 CCD 혹은 CMOS 카메라에서 인식해서 삼각 측량법으로 그 좌표를 구한다. 턴테이블이 돌아 가기 때문에 360도의 모든 각도에서 측정이 가능하며 이송이 편리하나，측정 도중에는 음직 일 수 없다. 측정 정밀도는 보통 50, 내외이다. ＜고정식 저가형 3D 스캐너의 원리＞ • 측정이 안 되는 경우 一레이저의 난반사가 일어나는 표면 -거울과 같이 전반사가 일어나는 표면 -유리와 같이 레이저가 투과하는 표면 날카로운 표면과 같이 레이저가 여러 방향으로 난반사가 일어나는 경우 • 해결 방법으로는 보통 피측정물에 특수 코팅을 수행한 다음 레이저 빔이 피측정물 표면에 잘 맺히도록 하는 전처리 작업이 있다. 22 PART 01제품스캐닝 © 고가형 3D 스캐너 : 고가형 고정식 스캐너는 보통 고정밀 라인 레이저를 사용하고 정밀도 를 높일 수 있는 정반(base), 고정밀 이송 장치 등을 구비하고 있으며，1990년대 중후반부 터 역설계(Reverse Engineering) 분야 등 산업용으로 많이 사용된다. 저가형의 레이저 삼 각 측량법을 이용하는 방식과 동일하고 측정 범위가 수 미터에 이르는 것도 있으며，측정 정 밀도도 수 쎈!로 매우 뛰어나다. 정합 및 병합을 위해서 측정물 혹은 고정구(fixture)에 마커 (marker) 를 부착하기도 한다. • 정합 : 하나의 홑어져 있는 데이터를 가지런히 정리하는 것 • 병합 : 둘 이상의 데이터를 합치는 것 • 마커 : 데이터 수집을 위해 위치 점을 정확하게 알 수 있도록 하는 보조 테이프 《 역설계(Reverse Engineering): 이미 제작된 제품에서 스캐너 등을 이용하여 설계 데이터를 획득하고 3차원 모델을 생성하는 기술 겠’，■厂 ＜고가형 고정식 스캐너＞ ＜마커의 사용예＞ ② 이동식 3D 스캐너 : 측정 도중 움직이면서 측정할 수 있는 스캐너로 정밀도는 고정식보다 떨어 진다. @ 사용처 • 스캐너의 광이 못 미치는 먼 거리의 경우 • 스캐너를 설치하기 힘든 경우 • 측정 대상물이 클 경우 • 특정 부위만 측정할 경우 -0> 刀 어 01 경 삐 |>깊 or CHAPTER 02 스캐너 결정 23 스캐닝 데이터 유형 및 스캐너 선택 (1) 스캐닝 데이터의 유형 및 특징 스캔 데이터를 점(Point), 폴리라인(Polyline), 삼각형 메시(Triangulation Mesh)로 구분하여 알 아본다. ① 점군(Point Cloud) : 레이저 빔을 회전하면서 피측정물에 쏴서 좌표를 얻을 때 데이터는 점들의 집합으로 구하게 된다. 6)3D 데이터 파일 생성 과정 • 측정된 점군 데이터는 이웃하는 세 점을 연결해서 삼 각형 메시를 형성하고 이를 통하여 3D프린터의 기본 데이터인 stl 파일을 생성한다. • 여러 번의 측정을 통해서 얻어진 점들을 필터링 (filtering) 및 보정(fairing)한 다음，이러한 점군들 ＜레이저 빔으로 수집된 점군(Point Cloud)＞ 을 서로 정합(registration) 및 병합(merging) 시켜 최종적으로 3D프린터의 기본 데이터인 stl 파일을 생성한다. © 점군을 이용한 3차원 곡면 형성 순서 i . 점군 데이터 ii. 2차원 자유곡선 (B—Spline) iii. 3차원 자유곡면 ＜세 점을 이용한 삼각형 메시＞ ＜점군을 이용한 3차원 곡면 형성＞ ② 폴리라인(Polylhe) : 보통 라인 레이저의 경우에는 점들이 서로 연결된 폴리라인 형태의 데이터 가 저장된다. 하나의 폴리라인은 수십에서 수백 개의 점 데이터로 구성되어 있다. 필터링 및 페 어링을 거친 다음 삼각형 메시를 곧바로 생성하여 3차원 프린팅을 할 수도 있으며，파라메트릭 수식을 이용하여 거의 오차가 없는 자유 곡면을 생성할 수도 있다. 24 PART 이제품스캐닝 ＜드론을 스캔하여 폴리라인으로 자유 곡면 생성＞ ③ 삼각형 메시(Triangulation Mesh) : 점군 혹은 폴리라인을 가장 쉽게 3D화하는 방법은 가까운 세 점을 연결해서 삼각형을 만드는 것이다. 이 데이터를 필터링과 보정 과정을 거쳐 stl 파일로 변 환해서 3D프린팅을 할 수 있다. ＜점군을 이용한 삼각형 메시 형성 과정＞ ⑵ 최적 스캐닝 방식 및 스캐너 선택 측정 대상물의 표면 재질 및 특성，복잡도, 크기에 따라서 접촉식，비접촉식을 선택한다. ① 측정 대상물에 따른 스캐닝 방식과 스캐너 선택 @ 측정 대상물이 투명하거나 유리와 같은 소재이며，그 표면에 코팅을 수행할 수 없을 경우에는 접촉식을 선택한다. © 표면 코팅이 가능할 경우에는 광(레이저)을 기반으로 하는 비접촉식 측정도 가능하다. © 즉정 대상물이 쉽게 변형될 경우에는 비접촉식을 사용한다. @ 측정 대상물의 내부 측정이 필요할 경우에는 CT(Computed Tomography, 컴퓨터 단층촬영) 와 같은 특수 스캐너를 사용한다. © 원거 리의 대상을 측정할 경우에는 TOF(Time-Of-Flight) 방식의 스캐너를 사용한다. @ 측정 대상물이 크지만 일부를 스캔해야 하는 경우 이동식 스캐너를 사용한다. ■U A 刀 一 , 01 건 | 뼈 |>깊 or CHAP7TR 02 스캐너 결정 25 ② 적용 분야 © 산업용 스캐너는 고가이며 정밀도가 우수하여 3차원 측정기를 대신하여 가공품의 검사 용도 로 사용한다. © 프로토타입(시제품)용으로 사용할 경우에는 저가형이 유리하며，최종 제품 개발용으로 사용 할 경우에는 고가형을 선택하도록 한다. © 여러 번 측정해야 하며 측정 시간이 중요할 경우에는 광 패턴 방식의 고속 스캐너를 사용한다. 4 대상물 스캔 (1) 스캐닝 준비 스캐닝을 준비하는 과정에서 고려할 사항 •스캐닝의 방식 • 측정 대상물의 크기 및 표면 • 적용 분야(고정밀 산업용 또는 일반용) ① 측정 대상물의 표면 상태 일반적으로 라인 레이저 방식에서는 레이저가 측정 대상물의 표면에 잘 주사되고 그 초점이 잘 맺혀야 하며，CCD 혹은 CMOS 방식의 카메라에서 측정 대상물의 표면에 맺힌 레이저 스팟 (spot)을 잘 읽을 수 있어。》한다. @ 측정 대상물의 표면이 투명할 경우 : 레이저 빔이 투과를 해서 표면에 레이저 스팟이 생성되 지 않는다. © 측정 대상물이 거울과 같이 전반사가 일어날 경우 : 정확한 레이저 스팟의 측정이 어렵다. © 가시광 레이저를 사용할 경우 : 레이저 스팟이 측정 대상물에 어느 정도 흡수되어 선명하게 보여야 이를 측정 카메라에서 인식하게 된다. @ 전반사 혹은 투명한 표면이 아닌데 난반사가 일어나는 경우 : 레이저 빔，카메라의 사양에 따 라서 주변 밝기를 조절하고 동시에 카메라의 노출 정도를 조절한다. ② 측정물의 표면처리 코팅제 @ 코팅제 : 매우 미세한 백색 파우더가 포함된 액체 재료를 사용한다. © 도포 방법 : 주로 스프레이 방식으로 재료를 피측정물 표면에 뿌린다. © 파우더의 입자가 클 경우에는 측정 오차가 생길 수 있으므로，요구되는 측정 정밀도에 맞게 코팅재를 선택한다. © 측정이 끝난 다음에는 쉽게 제거되어 피측정물의 본래 표면을 그대로 유지할 수 있어야 한다. 26 PART 이제품스캐닝 코팅 스트레이 ＜코팅 스프레이를 이용한 표면 코팅＞ ③ 측정 대상물의 크기에 따른 스캐너 선택 @ 피측정물이 측정 범위를 벗어날 경우 • 측정 방식을 바꾸도록 한다. • 여러 부분으로 측정해서 데이터의 정합 및 병합을 검토한다. • 여러 번의 측정으로 중첩된 표면의 원활한 정합 및 병합으로 원하는 데이터를 구한다. • 표면이 복잡하고 중요할 경우에는 측정이 잘되는 위치에서 측정을 실시해야 한다. © 산업용 고정밀 라인 레이저 측정 • 정합용 마커 (registration marker) 를 많이 사용한다. • 정합용 마커는 치수 정밀도가 매우 우수한 볼 형태로 이를 측정 대상물에 미리 고정시킨다. • 보통 3개 이상의 볼이 필요하다. • 고정된 볼은 측정 대상물과 같이 스캔이 된다. • 모든 측정 방향에서 부착된 볼이 모두 측정되어야 한다. • 서로 다른 측정 데이터에서 동일한 볼의 중심을 일치시킴으로써，각각의 측정 데이터는 회 전 및 병진을 통해서 최종적으로 정합 작업이 완료된다. ■0> 刀 어 01 x i l § l>? H OE CHAPTER 02 스캐너 결정 27 ＜정합용 볼 마커 사용＞ ④ 적용 분야에 따른 스캐너 선택 : 요구되는 측정 데이터의 정밀도에 따라 적용 분야가 다르고 이에 따라 스캐너를 선정해야 하며 크게 산업용과 일반용으로 나눈다. 0 산업용 • 수마이크론(御)의 정밀도를 가져야 한다. • 정밀 측정을 위해 표면 코팅을 수행하여 모든 난반사를 미리 제거해 둔다. ©일반용 • 비교적 낮은 수준의 정밀도가 요구된다. • 일반 측정의 경우에는 특별한 코팅 과정이 필요하지 않을 수도 있다. (2) 스캐닝 설정 스캐닝 설정에는 스캐너 보정，노출 설정，측정 범위，측정 위치 선정，스캐닝 간격 및 속도 설정 등 이 있다. ① 스캐너 보정(calibration) : 스캐너는 스캐닝을 시작하기 이전에 보정을 수행해야 한다. © 주변 조도에 따른 카메라 보정 © 이송 장치의 원점 설정 : 보통의 스캐너는 자동 보정 기능이 있으며 이는 스캐닝 방식마다 다 르기 때문에 매뉴얼을 숙지해야 한다. ② 조도(ilbmination) 설정 : 측정 방식에 따라서 주변 밝기，즉 조도를 조절해야 한다. @ 레이저 방식，광 패턴 방식 : 너무 밝은 빛이 있으면 표면에 투사된 레이저가 카메라에서 잘 측정되지 않으므로 직사광선은 피하도록 한다. © 너무 어두울 경우에는 카메라에 들어오는 빛의 양이 줄어들기 때문에 제대로 된 측정이 이루 어지지 않을 수 있다. ③ 측정 범위 설정 @ 측정 대상물이 클 경우에는 측정 영역을 미리 설정한다. © 측정 대상물에 큰 단차가 존재할 경우에는 카메라의 초점 심도 밖으로 측정 대상물이 위치할 수 있다. 28 PART 이제품 스캐닝 © 측정 경로 설정 방법 • 측정 방향으로 시작과 끝점을 잡는다. • 레이저광의 진행 방향으로 초점 심도를 고려한다. @ 고정형 스캐너 : 주로 360° 턴테이블이 사용되기 때문에 자동으로 전면의 측정이 이루어지고 정합과 병합을 거쳐 최종 데이터를 얻는다. @ 이동형 스캐너 : 별다른 측정 영역이 필요 없으며 원하는 영역을 이동 속도를 고려해서 측정 할수있다. ④ 스캐닝 간격 및 속도 6）스캐닝 간격 • 라인 레이저를 사용하는 스캐너 : 연속된 2개의 레이저 빔 라인에 대한 간격을 설정 • 스캐너가 직선으로 이송하는 경우 : 이송 방향으로 스캔 간격을 미리 설정 • 간단한 형상을 가진 면을 스캔할 경우 : 스캐닝 간격을 넓게 설정 • 턴테이블을 이용하는 방식 : 회전량을 조절함으로써 측정 간격을 조절 • 복잡한 면의 스캐닝 : 스캐닝 간격을 좁게 설정해서 가능한 한 많은 점의 데이터를 확보해 야 원래 형상을 제대로 복원할 수 있음 © 스캐닝 속도 • 스캐닝 속도는 스캐닝 점의 개수를 조절함으로써 속도 조절이 가능함 • 라인 스캐너 : 정지 상태에서 측정이 진행되고，다시 다음 위치로 이송을 하여 측정을 진행 할 수도 있으며，연속적으로 이송을 하면서 측정을 수행할 수도 있음 • 연속적으로 측정을 하는 경우에는 측정 정밀도가 떨어짐 ■□ > 刀 어 01 홍 료 or CHAPT태 02 스캐너 결정",
+          "image": null
+        },
+        {
+          "number": "29",
+          "question": "스캐닝 과정에서 3 차원 좌표를 추출하여 점군(point cloud)을 만드는 단계는?",
+          "choices": [
+            "준비 단계",
+            "생성 단계",
+            "정렬 단계",
+            "최종 단계"
+          ],
+          "answer": "③",
+          "explanation": "H설 I 스캐닝 과정 @ 준비 단계 : 측정 대상물 준비 © 생성 단계 : 3차원 좌표를 추출하여 점군 (point cloud)을 생성 © 최종 단계 : 3차원 모델로 재구성 3D 스캐너의 종류 중 접촉식에 해당하는 것은? ① CMM 측정기 ② TOF(Time Of Flight) 방식 스캐너 ③ 레이저 기반 삼각 측량 3차원 스캐너 ④ 핸드헬드(Handheld) 스캐너",
+          "image": null
+        },
+        {
+          "number": "03",
+          "question": "접촉식 3차원 스캐닝의 설명으로 틀린 것은?",
+          "choices": [
+            "접촉식 센터인 터치 프로브(Touch prove) 를 이용하여 3차원 좌표를 읽어 내는 방 식이다.",
+            "대상물이 투명하거나 거울과 같이 반사 를 일으키는 제품은 측정이 불가능하다.",
+            "대표적으로 CMM 방식 측정기가 있다.",
+            "제품이 너무 복잡한 경우 측정이 곤란하 고，작은 힘에도 쉽게 변형이 되는 제품은 측정할 수 없다."
+          ],
+          "answer": "②",
+          "explanation": "접촉식 3차원 스캐닝의 장단점 • 장점 : 대상물이 투명하거나 거울과 같이 반사를 일으키는 제품도 측정이 가능하다. • 단점 : 제품이 너무 복잡한 경우 측정이 곤 란하고. 작은 힘에도 쉽게 변형이 되는 제 품은 측정할 수 없다.",
+          "image": null
+        },
+        {
+          "number": "04",
+          "question": "다음에서 설명하는 3차원 스캐너의 종류는? 스캐너에서 발사된 레이저가 대상체에 반사 되어 돌아오는 시간을 계산하는 방식이다. 먼 거리의 대형 구조물을 측정하는 데 용 이하다. 정밀측정이나 낮고 작은 제품의 측정에는 적합하지 않다.",
+          "choices": [
+            "TOF(Time Of Flight) 방식 스캐너",
+            "패턴 이미지 기반의 삼각 측량 3차원 스 캐너",
+            "레이저 기반 삼각 측량 3차원 스캐너",
+            "핸드헬드(Handheld) 스캐너"
+          ],
+          "answer": "①",
+          "explanation": "I I ③ 레이저 기반 삼각 측량 3차원 스캐너 : 레 이저를 측정 대상물에 주사하여 레이저발 진부, 수광부, 측정대상물로 이루어진 삼각 형에서 한 변과 2개의 각으로부터 나머지 변의 길이를 계산하는 방식 ④ 핸드헬드(Handheld)스캐너 : 3D 이미지를 얻기 위해 레이저 기반 삼각법을 주로 이 용. 손으로 움직여서 그림이나 문서. 사진 등을 이미지 형태로 읽어 내는 스캐너 0 5 다음에서 설명하는 3차원 스캐너의 종류는? 이미 알고 있는 패턴의 광을 이미지 생성 장 치(레이저 인터페로미터)를 이용하여 측정 대상물에 조사하고 측정 대상물에 변형된 패 턴을 카메라에서 측정하여 모서리 부분들에 대한 삼각 측량법으로 3차원 좌표를 구한다. ① T0F(Time Of Flight) 방식 스캐너 ② 패턴 이미지 기반의 삼각 측량 3차원 스 캐너 ③ 레이저 기반 삼각 측량 3차원 스캐너 ④ 핸드헬드(Handheld) 스캐너",
+          "image": null
+        },
+        {
+          "number": "06",
+          "question": "저가형 3D 스캐너를 사용할 때 측정이 안 되는 경우가 아닌 것은?",
+          "choices": [
+            "레이저의 난반사가 일어나는 표면",
+            "거울과 같이 전반사가 일어나는 표면",
+            "유리와 같이 레이저가 투과하는 표면",
+            "부드러운 곡면이 있는 경우"
+          ],
+          "answer": "④",
+          "explanation": "저가형 3D 스캐너가 측정이 안 되는 경우 • 레이저의 난반사가 일어나는 표면 • 거울과 같이 전반사가 일어나는 표면 • 유리와 같이 레이저가 투과하는 표면 • 날카로운 표면과 같이 레이저가 여러 방향 으로 난반사가 일어나는 경우 TJ> 刀 어 01 >dl 뼈 니 = or 출제예상문제",
+          "image": null
+        },
+        {
+          "number": "31",
+          "question": "07 이동식 3d 스캐너를 사용하는 것과 거리 가 먼 것은?",
+          "choices": [
+            "측정 대상물이 작을 경우",
+            "특정 부위만 측정할 경우",
+            "스캐너를 설치하기 힘든 경우",
+            "스캐너의 광이 못 미치는 먼 거리의 경우"
+          ],
+          "answer": "①",
+          "explanation": "이동식 3D 스캐너의 사용처 • 스캐너의 광이 못 미치는 먼 거리의 경우 • 스캐너를 설치하기 힘든 경우 • 측정 대상물이 클 경우 • 특정 부위만 측정할 경우",
+          "image": null
+        },
+        {
+          "number": "08",
+          "question": "스캐닝을 준비하는 과정에서 고려 사항이 아닌 것은?",
+          "choices": [
+            "스캐닝의 방식",
+            "측정 대상물의 크기 및 표면",
+            "적용 분야（산업용 또는 일반용）",
+            "3D프린터의 크기"
+          ],
+          "answer": "④",
+          "explanation": "스캐닝을 준비하는 과정에서의 고려 사항 • 스캐닝의 방식 • 측정 대상물의 크기 및 표면 • 적용 분야（고정밀 산업용 또는 일반용）",
+          "image": null
+        },
+        {
+          "number": "09",
+          "question": "스캔 측정 대상물의 표면 상태에 따른 설 명으로 틀린 것은?",
+          "choices": [
+            "측정 대상물의 표면이 투명할 경우 레이 저 빔이 투과를 해서 표면에 레이저 스 팟이 생성이 되지 않는다.",
+            "측정 대상물이 거울과 같이 전반사가 일 어날 경우 정확한 레이저 스팟이 생성되 어 스캔의 정확도가 높아진다.",
+            "가시광 레이저를 사용할 경우 레이저 스 팟이 측정 대상물에 어느 정도 흡수되어 선명하게 보여야 이를 측정 카메라에서 인식하게 된다.",
+            "전반사 혹은 투명한 표면이 아닌데 난반 사가 일어나는 경우 레이저 빔，카메라 의 사양에 따라서 주변 밝기를 조절하고 동시에 카메라의 노출 정도를 조절한다."
+          ],
+          "answer": "②",
+          "explanation": "측정 대상물이 거울과 같이 전반사가 일어날 경우 정확한 레이저 스팟의 측정이 어렵다.",
+          "image": null
+        },
+        {
+          "number": "32",
+          "question": "PART 01제품스캐닝 산업용 고정밀 라인 레이저 스캐닝 측정에 대한 설명으로 틀린 것은?",
+          "choices": [
+            "보통 3개 이상의 볼이 필요하다.",
+            "고정된 볼은 스캔이 되지 않고 측정 대상 물만 스캔이 된다.",
+            "정합용 마커는 치수 정밀도가 매우 우수 한 볼 형태로 이를 측정 대상물에 미리 고정을 시킨다.",
+            "서로 다른 측정 데이터에서 동일한 볼의 중심을 일치시킴으로써，각각의 측정 데 이터는 회전 및 병진을 통해서 최종적으 로 정합 작업이 완료된다."
+          ],
+          "answer": "②",
+          "explanation": "4|설 : 고정된 볼은 측정 대상물과 같이 스캔이 된다. X 모든 측정 방향에서 부착된 볼이 모두 측 정되어야 한다. 1 스캐닝 간격 및 속도에 대한 설명으로 틀 린 것은? ① 스캐닝 속도는 스캐닝 점의 개수를 조절 함으로써 조절이 가능하다. ② 턴테이블을 이용하는 방식은 회전량을 조절함으로써 측정 간격을 조절한다. ③ 간단한 형상을 가진 면을 스캔할 경우 스 캐닝 간격을 넓게 설정한다. ④ 라인 스캐너를 연속적으로 측정하는 경 우에는 측정 정밀도가 올라간다.",
+          "image": null
+        },
+        {
+          "number": "39",
+          "question": "31 측정 대상물의 자세에 따른 스캔 방법으로 틀린 것은?",
+          "choices": [
+            "완전한 데이터를 얻기 위해서는 측정 대 상물을 한 번만 측정하면 된다.",
+            "턴테이블 위에서의 측정은 제품의 모양 에 따라 미리 설정된 자세를 돌아가면서 이루어진다.",
+            "직선 이송 방식의 측정에서 측정 대상물 은 정반(base)에 고정이 되고 스캐너가 이송을 하면서 데이터를 측정하게 된다.",
+            "측정 데이터는 잡음 데이터(noise data) 를 포함하고 있으며，이는 추후 데이터 보 정 과정을 통해서 필터링(filtering)된다. 0 2 모든 스캔 소프트웨어 혹은 데이터 처리 소프트웨어에서 사용이 가능한 포맷이 아 닌것은?",
+            "XYZ 데이터",
+            "IGES",
+            "STEP",
+            "DWG"
+          ],
+          "answer": "④",
+          "explanation": "내설 | 표준 포맷 • XYZ : 가장 단순하며 각 점에 대한 좌푯값 인 XYZ값을 포함 • IGES : 최초의 표준 포맷, 그래픽정보의 교 환을 위해 설정된 미국 표준규격 • STEP : 서로 다른 CAD 프로그램, 엔지니어 링 및 제조 시스템 간에 데이터 정보를 교환 • DWG : Auto CAD 도면 저장파일",
+          "image": null
+        },
+        {
+          "number": "40",
+          "question": "PART 이제품스캐닝 다음에서 설명하는 데이터 처리 소프트웨 어로 옳은 것은? 최초의 표준 포맷(그래픽정보의 교환을 위 해 설정된 미국 표준규격, 1980년)이다. 형상 데이터를 나타내는 엔터티(entity)로 이루어져 있다. 점뿐만 아니라 선，원, 자유곡선, 자유곡면, 트림곡면，색상，글자 등이 있다. CAD/CAM 소프트웨어에서 3차원 모델의 거의 모든 정보를 포함한다.",
+          "choices": [
+            "XYZ 데이터",
+            "IGES",
+            "STEP",
+            "DWG"
+          ],
+          "answer": "②",
+          "explanation": "IGES(lnitial Graphics Exchanges Specification) 는 최초의 표준 포맷(그래픽정보의 교환을 위 한미국표준규격. 198◦년)이다. 04 스캔 데이터는 보통 여러 번의 측정에 따 른 점군 데이터를 서로 합친 최종 데이터 이다. 이렇게 개별 스캐닝 작업에서 얻어 진 점 데이터들이 합쳐지는 과정을 무엇이 라 하는가? ① 정합 ② 병합 ③ 보정 ④ 집합 정답 i ① ! | 스캔 데이터는 보통 여러 번의 측정에 따른 점군 데이터를 서로 합친 최종 데이터이다. 이렇게 개별 스캐닝 작업에서 얻어진 점 데이 터들이 합쳐지는 과정을 정합(Registration)이 라 한다. ② 병합(Merging) : 정합을 통해서 중복되는 부분을 서로 합치는 과정",
+          "image": null
+        },
+        {
+          "number": "05",
+          "question": "측정 오류로 주변 점들에 비해서 불규칙적 으로 형성된 점들을 수정하여 매끄럽게 하 는 보정해 주는 것은?",
+          "choices": [
+            "필터링(filtering)",
+            "스무딩 (smoothing)",
+            "블렌딩 (blending)",
+            "리메싱 (remeshing)"
+          ],
+          "answer": "②",
+          "explanation": "스무딩(smoothing)은 측정 오류로 주변 점들 에 비해서 불규칙적으로 형성된 점들을 수정 하여 매끄럽게 하는 것을 말한다. ① 필터링(filtering) : 중첩된 점의 개수를 걸러 내어磨예 데이터 처리를 쉽게 하는 것 ③ 블랜딩(blending) : 이미 정의된 두 곡면을 매끄럽게 연결하는 것 ④ 리메싱(remeshing) : 종방향의 배열이 맞 지 않는 데이터에서 오와 열의 배열이 가 지런한 형태의 곡면 입력 점을 새로이 구 해내는 절차 F > > 刀 어 01 신 一 뺘 |>깊 0£ 출제예상문제",
+          "image": null
+        },
+        {
+          "number": "41",
+          "question": "06 다음에서 설명하는 스캔 데이터 보정 과 정은? 3 D프린팅을 하기 위해 불필요한 점을 제거 하고 다양한 오류를 바로잡아 최종적으로 삼각형 메시(trianglar mesh)를 만들어 주는 과정",
+          "choices": [
+            "필터링(filtering)",
+            "스무딩 (smoothing)",
+            "블렌딩 (blending)",
+            "페어링(fairing)"
+          ],
+          "answer": "④",
+          "explanation": "페어링 작업을 통해서 최종적으로 생성된 삼 각형 메시로 STL 파일을 만들어 바로 3차원 프린팅을 할 수 있다. 페어링 작업 • 형상을 부드럽게 하는 작업 • 삼각형의 크기를 균일하게 하는 작업 • 삼각형의 면의 방향으로 바로잡는 작업 • 큰 삼각형에 노드를 추가해서 작은 삼각형 으로 만드는 작S 42 PART 이제품스캐닝",
+          "image": null
+        }
+      ]
+    }
+  ]
+};
+
+        let currentUser = '';
+        let currentChapterId = null;
+        let currentQuestions = [];
+
+        // --- Utils ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function showModal(title, message, callback) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('message-modal').style.display = 'flex';
+            window.modalCallback = callback;
+        }
+
+        function closeModal() {
+            document.getElementById('message-modal').style.display = 'none';
+            if (window.modalCallback) window.modalCallback();
+        }
+
+        // Levenshtein Distance for sophisticated string comparison
+        function levenshteinDistance(a, b) {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1, // substitution
+                            Math.min(
+                                matrix[i][j - 1] + 1, // insertion
+                                matrix[i - 1][j] + 1  // deletion
+                            )
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        // --- Login ---
+        function login() {
+            const input = document.getElementById('username-input');
+            const name = input.value.trim();
+            if (name) {
+                currentUser = name;
+                document.getElementById('display-name').textContent = `학생: ${currentUser}`;
+                localStorage.setItem('lastUser', currentUser);
+                initDashboard();
+                showScreen('dashboard-screen');
+            } else {
+                alert('이름을 입력해주세요.');
+            }
+        }
+
+        // --- Dashboard ---
+        function initDashboard() {
+            const grid = document.getElementById('chapter-grid');
+            grid.innerHTML = '';
+            
+            appData.chapters.forEach(chapter => {
+                const card = document.createElement('div');
+                card.className = 'chapter-card active';
+                card.innerHTML = `
+                    <h3>${chapter.title}</h3>
+                    <p>이론 학습 + 문제 풀이</p>
+                    <p style="font-size:0.9em; color:#666;">문제 수: ${chapter.questions.length}문제</p>
+                `;
+                card.onclick = () => startTheory(chapter.id);
+                grid.appendChild(card);
+            });
+
+            for(let i=1; i<=9; i++) {
+                if(i===4) continue;
+                const card = document.createElement('div');
+                card.className = 'chapter-card locked';
+                card.innerHTML = `<h3>Part ${i} (준비중)</h3><p>잠김</p>`;
+                grid.appendChild(card);
+            }
+        }
+
+        // --- Theory Mode ---
+        function startTheory(chapterId) {
+            currentChapterId = chapterId;
+            const chapter = appData.chapters.find(c => c.id === chapterId);
+            
+            document.getElementById('theory-title').textContent = chapter.title;
+            document.getElementById('theory-text').textContent = chapter.theoryContent;
+            document.getElementById('typing-input').value = '';
+            document.getElementById('accuracy-display').textContent = '정확도: 0%';
+            
+            showScreen('theory-screen');
+        }
+
+        function checkTyping() {
+            // Normalize: remove all whitespace to compare content only
+            const original = document.getElementById('theory-text').textContent.replace(/\s+/g, '');
+            const typed = document.getElementById('typing-input').value.replace(/\s+/g, '');
+            
+            if (typed.length === 0) {
+                showModal('알림', '내용을 입력해주세요.');
+                return;
+            }
+
+            // Calculate similarity using Levenshtein Distance
+            // Similarity = (MaxLength - Distance) / MaxLength
+            const distance = levenshteinDistance(original, typed);
+            const maxLength = Math.max(original.length, typed.length);
+            const accuracy = Math.floor(((maxLength - distance) / maxLength) * 100);
+
+            document.getElementById('accuracy-display').textContent = `정확도: ${accuracy}%`;
+
+            if (accuracy >= 95) {
+                showModal('성공!', '정확도 95%를 달성했습니다. 문제 풀이로 이동합니다.', () => {
+                    startQuiz();
+                });
+            } else {
+                showModal('실패', `정확도가 ${accuracy}% 입니다. (목표: 95%)\n오타나 빠진 내용이 없는지 확인해주세요.`);
+            }
+        }
+
+        // --- Quiz Mode ---
+        function startQuiz() {
+            const chapter = appData.chapters.find(c => c.id === currentChapterId);
+            
+            currentQuestions = JSON.parse(JSON.stringify(chapter.questions));
+            shuffleArray(currentQuestions);
+            
+            currentQuestions.forEach(q => {
+                const answerText = q.answer || "";
+                let correctIdx = -1;
+                if (answerText.includes("1") || answerText.includes("①")) correctIdx = 0;
+                else if (answerText.includes("2") || answerText.includes("②")) correctIdx = 1;
+                else if (answerText.includes("3") || answerText.includes("③")) correctIdx = 2;
+                else if (answerText.includes("4") || answerText.includes("④")) correctIdx = 3;
+                q.correctOriginalIndex = correctIdx;
+
+                q.shuffledChoices = q.choices.map((c, i) => ({
+                    text: c.replace(/^[①②③④❶❷❸❹❺\(\d+\)\d+\)]\s*/, ''),
+                    originalIndex: i
+                }));
+                shuffleArray(q.shuffledChoices);
+                q.userSelection = null;
+            });
+
+            document.getElementById('quiz-progress').textContent = `총 ${currentQuestions.length}문제`;
+            renderQuizItems();
+            document.getElementById('btn-submit-quiz').style.display = 'inline-block';
+            document.getElementById('btn-retry-quiz').style.display = 'none';
+            showScreen('quiz-screen');
+        }
+
+        function renderQuizItems(isReview = false) {
+            const container = document.getElementById('quiz-content');
+            container.innerHTML = '';
+
+            currentQuestions.forEach((q, idx) => {
+                const item = document.createElement('div');
+                item.className = 'question-item';
+                
+                let choicesHtml = '';
+                const labels = ['①', '②', '③', '④'];
+                
+                q.shuffledChoices.forEach((c, cIdx) => {
+                    let className = 'choice-item';
+                    if (q.userSelection === cIdx) className += ' selected';
+                    
+                    if (isReview) {
+                        if (c.originalIndex === q.correctOriginalIndex) className += ' correct';
+                        else if (q.userSelection === cIdx) className += ' incorrect';
+                    }
+
+                    const onclickAttr = isReview ? '' : `onclick="selectQuizChoice(${idx}, ${cIdx})"`;
+                    choicesHtml += `<li class="${className}" ${onclickAttr}>${labels[cIdx]} ${c.text}</li>`;
+                });
+
+                let explanationHtml = '';
+                if (isReview) {
+                    let correctLabel = labels[q.shuffledChoices.findIndex(c => c.originalIndex === q.correctOriginalIndex)];
+                    explanationHtml = `
+                        <div class="explanation" style="display:block">
+                            <strong>정답:</strong> ${correctLabel}<br>
+                            <strong>해설:</strong> ${q.explanation || '해설 없음'}
+                        </div>
+                    `;
+                }
+
+                item.innerHTML = `
+                    <div class="question-text">${idx + 1}. ${q.question}</div>
+                    <ul class="choices">${choicesHtml}</ul>
+                    ${explanationHtml}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        window.selectQuizChoice = function(qIdx, cIdx) {
+            currentQuestions[qIdx].userSelection = cIdx;
+            renderQuizItems(false);
+        }
+
+        window.submitQuiz = function() {
+            if (currentQuestions.some(q => q.userSelection === null)) {
+                showModal('알림', '모든 문제를 풀어주세요.');
+                return;
+            }
+
+            let correctCount = 0;
+            currentQuestions.forEach(q => {
+                const selected = q.shuffledChoices[q.userSelection];
+                if (selected.originalIndex === q.correctOriginalIndex) correctCount++;
+            });
+
+            const score = Math.floor((correctCount / currentQuestions.length) * 100);
+            
+            renderQuizItems(true);
+            document.getElementById('btn-submit-quiz').style.display = 'none';
+            document.getElementById('btn-retry-quiz').style.display = 'inline-block';
+
+            if (score >= 95) {
+                showModal('축하합니다!', `점수: ${score}점 (통과)\n학습을 완료했습니다!`);
+            } else {
+                showModal('아쉽네요', `점수: ${score}점 (불합격)\n95점 이상이어야 합니다. 다시 풀어보세요.`);
+            }
+        }
+
+        window.retryQuiz = function() {
+            startQuiz();
+        }
+
+        window.onload = () => {
+            const savedUser = localStorage.getItem('lastUser');
+            if (savedUser) {
+                document.getElementById('username-input').value = savedUser;
+            }
+        }
+
+    </script>
+</body>
+</html>

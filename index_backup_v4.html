@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printer Study</title>
+    <link rel="stylesheet" href="css/style.css?v=6">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+
+    <header>
+        <div class="user-info">
+            <span id="display-name"></span>
+            <span id="user-temperature" style="font-weight:bold; margin-left:10px;"></span>
+        </div>
+        <button id="dark-mode-toggle" class="icon-btn" title="다크모드 전환" onclick="toggleDarkMode()"
+            style="position: absolute; top: 20px; left: 20px; pointer-events: auto;">🌙</button>
+    </header>
+
+    <main>
+        <!-- 1. Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div id="quote-container"></div>
+            <input type="text" id="username-input" placeholder="학번+이름 (예: 2701홍길동) - 띄어쓰기 금지" autofocus>
+            <button id="login-btn" onclick="login()">학습 시작하기</button>
+            <h1>3D Printer Study</h1>
+        </div>
+
+        <!-- 2. Dashboard -->
+        <div id="dashboard-screen" class="screen">
+            <div class="dashboard-section">
+                <h2>기초 학습</h2>
+                <div class="chapter-grid" id="basic-chapter-grid"></div>
+            </div>
+
+            <div class="dashboard-section">
+                <h2>심화 학습</h2>
+                <div class="chapter-grid" id="advanced-chapter-grid"></div>
+            </div>
+
+            <div class="dashboard-actions">
+                <button onclick="showAnalysis()" class="icon-btn" title="취약점 분석">📊</button>
+                <button onclick="showLeaderboard()" class="icon-btn" title="전체 순위 보기">🏆</button>
+            </div>
+        </div>
+
+        <!-- 3. Theory Mode -->
+        <div id="theory-screen" class="screen">
+            <div style="margin-bottom: 20px;">
+                <button onclick="showScreen('dashboard-screen')"
+                    style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                    뒤로가기</button>
+                <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);"
+                    id="theory-title"></span>
+            </div>
+            <div class="split-view">
+                <div class="theory-panel">
+                    <h3>핵심 이론</h3>
+                    <div class="theory-content" id="theory-text"></div>
+                </div>
+                <div class="typing-panel">
+                    <h3>따라 쓰기 <span id="attempt-count" style="font-size: 0.8em; color: #7f8c8d;">(시도: 0/2)</span></h3>
+                    <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 10px;">💡 정확도 94% 달성하고 2회 시도 후 스킵 가능</p>
+                    <textarea id="typing-input" placeholder="왼쪽의 내용을 정확하게 따라 입력하세요..." onpaste="return false;"
+                        autocomplete="off"></textarea>
+                    <div class="status-bar">
+                        <span id="accuracy-display">정확도: 0%</span>
+                        <button onclick="checkTyping()">제출하기</button>
+                        <button id="skip-btn" onclick="startQuiz()"
+                            style="background-color: #95a5a6; margin-left: 10px; display: none;">스킵하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Quiz Mode -->
+        <div id="quiz-screen" class="screen">
+            <div style="margin-bottom: 20px;">
+                <button onclick="showScreen('dashboard-screen')"
+                    style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                    뒤로가기</button>
+                <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">실전 문제
+                    풀이</span>
+                <span id="quiz-progress" style="float:right; font-weight:600; color: var(--accent-color);"></span>
+            </div>
+
+            <!-- Control Bar -->
+            <div
+                style="background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 20px; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="timer-toggle" onchange="toggleTimer()"
+                        style="width: 18px; height: 18px;">
+                    <span>⏱️ 타이머</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="auto-next-toggle" onchange="toggleAutoNext()"
+                        style="width: 18px; height: 18px;">
+                    <span>🚀 자동 넘기기</span>
+                </label>
+                <span id="quiz-timer"
+                    style="margin-left: auto; font-weight: 600; color: var(--accent-color); display: none;"></span>
+            </div>
+
+            <div class="quiz-container" id="quiz-content"></div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button onclick="submitQuiz()" id="btn-submit-quiz">답안 제출</button>
+                <button onclick="retryQuiz()" id="btn-retry-quiz"
+                    style="display:none; background-color: var(--accent-color);">다시 풀기</button>
+            </div>
+        </div>
+
+        <!-- 5. Review Mode (Wrong Answers) -->
+        <div id="review-screen" class="screen">
+            <h1 style="text-align: center; font-weight: 300; color: var(--primary-color);">오답 노트 & 이론 복습</h1>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 40px;">틀린 문제의 핵심 이론(해설)을 직접 타이핑하여 복습하세요.</p>
+            <div id="review-content" style="max-width: 800px; margin: auto;"></div>
+            <div style="text-align: center; margin-top: 40px;">
+                <button onclick="finishReview()" id="btn-finish-review" disabled style="background-color: #bdc3c7;">복습
+                    완료</button>
+            </div>
+        </div>
+
+        <!-- 6. Analysis Screen -->
+        <div id="analysis-screen" class="screen">
+            <div style="margin-bottom: 20px;">
+                <button onclick="showScreen('dashboard-screen')"
+                    style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                    뒤로가기</button>
+                <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">나의 취약점
+                    분석</span>
+            </div>
+            <div class="analysis-container" style="max-width: 900px; margin: auto;">
+                <div class="analysis-section">
+                    <h3>📉 취약 단원 (평균 60점 미만)</h3>
+                    <ul id="weak-chapter-list" style="list-style: none; padding: 0;"></ul>
+                </div>
+                <div class="analysis-section">
+                    <h3>❌ 자주 틀리는 문제 (Top 10)</h3>
+                    <ul id="frequent-wrong-list" style="list-style: none; padding: 0;"></ul>
+                    <button id="btn-weak-review" onclick="startWeaknessReview()"
+                        style="display:none; margin-top:15px; width:100%; background-color:#e74c3c;">취약 문제 집중
+                        공략하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Leaderboard Screen -->
+        <div id="leaderboard-screen" class="screen">
+            <div style="margin-bottom: 20px;">
+                <button onclick="showScreen('dashboard-screen')"
+                    style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                    뒤로가기</button>
+                <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">전체 순위
+                    (Top 50)</span>
+            </div>
+            <div
+                style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+                <div id="leaderboard-loading" style="text-align: center; color: #999;">로딩 중...</div>
+                <table id="leaderboard-table" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>순위</th>
+                            <th>이름</th>
+                            <th>온도</th>
+                            <th>점수</th>
+                            <th>날짜</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">알림</h2>
+            <p id="modal-message">내용</p>
+            <button onclick="closeModal()">확인</button>
+        </div>
+    </div>
+
+    <div id="fireworks-container"></div>
+    <script src="data.js?v=6"></script>
+    <script src="js/script.js?v=6"></script>
+</body>
+
+</html>

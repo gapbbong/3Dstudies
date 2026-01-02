@@ -1,0 +1,263 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Printer Study</title>
+    <link rel="stylesheet" href="css/style.css?v=8">
+    <link rel="stylesheet" href="css/multi_tab_prevention.css?v=1">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+
+<body>
+    <!-- (Body content identical to indexRef.html logic, omitting full body for brevity in this tool call if possible, but replace_file_content is block based) -->
+    <!-- Ideally I should just replace the head and the bottom scripts -->
+
+
+    <body>
+
+        <header>
+            <div class="user-info">
+                <span id="display-name"></span>
+                <span id="user-temperature" style="font-weight:bold; margin-left:10px;"></span>
+            </div>
+        </header>
+
+        <main>
+            <!-- 1. Login Screen -->
+            <div id="login-screen" class="screen active">
+                <div id="quote-container"></div>
+                <input type="text" id="username-input" placeholder="학번+이름 (예: 2701홍길동) - 띄어쓰기 금지" autofocus>
+                <button id="login-btn" onclick="login()">학습 시작하기</button>
+                <h1>3D Printer Study</h1>
+                <img src="images/login_circle.png" alt="3D 프린터 내부 출력 과정"
+                    style="width: 300px; height: 300px; object-fit: cover; margin-top: 20px; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            </div>
+
+            <!-- 2. Dashboard -->
+            <div id="dashboard-screen" class="screen">
+                <div class="dashboard-section">
+                    <h2><strong>1단계: 기초 학습 (이론 + 기초 문제)</strong></h2>
+                    <div class="chapter-grid" id="basic-chapter-grid"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2><strong>2단계: 주제별 기출문제</strong></h2>
+                    <div class="chapter-grid" id="practice-chapter-grid"></div>
+                </div>
+
+                <div class="dashboard-section">
+                    <h2><strong>3단계: 연도별 기출문제</strong></h2>
+                    <div class="chapter-grid" id="advanced-chapter-grid"></div>
+                </div>
+            </div>
+
+            <!-- 3. Theory Mode -->
+            <div id="theory-screen" class="screen">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showScreen('dashboard-screen')"
+                        style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                        뒤로가기</button>
+                    <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);"
+                        id="theory-title"></span>
+                </div>
+                <div class="split-view">
+                    <div class="theory-panel">
+                        <h3>핵심 이론</h3>
+                        <div class="theory-content" id="theory-text"></div>
+                    </div>
+                    <div class="typing-panel">
+                        <h3>따라 쓰기 <span id="attempt-count" style="font-size: 0.8em; color: #7f8c8d;">(시도: 0/2)</span>
+                        </h3>
+                        <p style="font-size: 0.9em; color: #7f8c8d; margin-bottom: 10px;">💡 정확도 94% 달성하고 2회 시도 후 스킵 가능
+                        </p>
+                        <textarea id="typing-input" placeholder="왼쪽의 내용을 정확하게 따라 입력하세요..." onpaste="return false;"
+                            autocomplete="off"></textarea>
+                        <div class="status-bar">
+                            <span id="accuracy-display">정확도: 0%</span>
+                            <button onclick="checkTyping()">제출하기</button>
+                            <button id="skip-btn" onclick="startQuiz()"
+                                style="background-color: #95a5a6; margin-left: 10px; display: none;">스킵하기</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Quiz Mode -->
+            <div id="quiz-screen" class="screen">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showScreen('dashboard-screen')"
+                        style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                        뒤로가기</button>
+                    <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">실전
+                        문제
+                        풀이</span>
+                    <span id="quiz-progress" style="float:right; font-weight:600; color: var(--accent-color);"></span>
+                </div>
+
+                <!-- Control Bar -->
+                <div
+                    style="display: none !important; background: var(--card-bg); padding: 15px; border-radius: 10px; margin-bottom: 20px; gap: 20px; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="timer-toggle" onchange="toggleTimer()"
+                            style="width: 18px; height: 18px;">
+                        <span>⏱️ 타이머</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="auto-next-toggle" onchange="toggleAutoNext()"
+                            style="width: 18px; height: 18px;">
+                        <span>🚀 자동 넘기기</span>
+                    </label>
+                    <span id="quiz-timer"
+                        style="margin-left: auto; font-weight: 600; color: var(--accent-color); display: none;"></span>
+                </div>
+
+                <div class="quiz-container" id="quiz-content"></div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <button onclick="submitQuiz()" id="btn-submit-quiz">답안 제출</button>
+                    <button onclick="retryQuiz()" id="btn-retry-quiz"
+                        style="display:none; background-color: var(--accent-color);">다시 풀기</button>
+                </div>
+            </div>
+
+            <!-- 5. Review Mode (Wrong Answers) -->
+            <div id="review-screen" class="screen">
+                <h1 style="text-align: center; font-weight: 300; color: var(--primary-color);">오답 노트 & 이론 복습</h1>
+                <p style="text-align: center; color: #7f8c8d; margin-bottom: 40px;">틀린 문제의 핵심 이론(해설)을 직접 타이핑하여 복습하세요.
+                </p>
+                <div id="review-content" style="max-width: 800px; margin: auto;"></div>
+                <div style="text-align: center; margin-top: 40px;">
+                    <button onclick="finishReview()" id="btn-finish-review" disabled
+                        style="background-color: #bdc3c7;">복습
+                        완료</button>
+                </div>
+            </div>
+
+            <!-- 6. Analysis Screen -->
+            <div id="analysis-screen" class="screen">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showScreen('dashboard-screen')"
+                        style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                        뒤로가기</button>
+                    <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">나의
+                        취약점
+                        분석</span>
+                </div>
+                <div class="analysis-container" style="max-width: 900px; margin: auto;">
+                    <div class="analysis-section">
+                        <h3>📉 취약 단원 (평균 60점 미만)</h3>
+                        <ul id="weak-chapter-list" style="list-style: none; padding: 0;"></ul>
+                    </div>
+                    <div class="analysis-section">
+                        <h3>❌ 자주 틀리는 문제 (Top 10)</h3>
+                        <ul id="frequent-wrong-list" style="list-style: none; padding: 0;"></ul>
+                        <button id="btn-weak-review" onclick="startWeaknessReview()"
+                            style="display:none; margin-top:15px; width:100%; background-color:#e74c3c;">취약 문제 집중
+                            공략하기</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. Leaderboard Screen -->
+            <div id="leaderboard-screen" class="screen">
+                <div style="margin-bottom: 20px;">
+                    <button onclick="showScreen('dashboard-screen')"
+                        style="padding: 10px 20px; background: transparent; color: var(--text-color); border: 1px solid #ddd; box-shadow: none;">&lt;
+                        뒤로가기</button>
+                    <span style="margin-left: 15px; font-weight: 600; font-size: 1.3em; color: var(--primary-color);">전체
+                        순위
+                        (Top 50)</span>
+                </div>
+                <div
+                    style="background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.03);">
+                    <div id="leaderboard-loading" style="text-align: center; color: #999;">로딩 중...</div>
+                    <table id="leaderboard-table" style="display:none;">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>이름</th>
+                                <th>온도</th>
+                                <th>점수</th>
+                                <th>날짜</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Modal -->
+        <div id="message-modal" class="modal">
+            <div class="modal-content">
+                <h2 id="modal-title">알림</h2>
+                <p id="modal-message">내용</p>
+                <button onclick="closeModal()">확인</button>
+            </div>
+        </div>
+
+        <!-- Hint Modal -->
+        <div id="hint-modal" class="modal">
+            <div class="modal-content hint-modal-content">
+                <span class="close-modal-btn" onclick="closeHintModal()">&times;</span>
+                <h2>💡 핵심 이론 힌트</h2>
+                <div id="hint-content" class="hint-content"></div>
+                <button onclick="closeHintModal()" style="margin-top: 10px;">닫기</button>
+            </div>
+        </div>
+
+        <!-- Side Navigation (Visible after login) -->
+        <div id="side-nav" style="display: none;">
+            <button onclick="toggleDarkMode()" class="side-nav-btn" title="다크모드">
+                <span class="btn-icon" id="side-dark-icon">🌙</span>
+                <span class="btn-text">다크모드</span>
+            </button>
+            <button onclick="showAnalysis()" class="side-nav-btn" title="취약점 분석">
+                <span class="btn-icon">📊</span>
+                <span class="btn-text">분석</span>
+            </button>
+            <button onclick="showLeaderboard()" class="side-nav-btn" title="전체 순위">
+                <span class="btn-icon">🏆</span>
+                <span class="btn-text">랭킹</span>
+            </button>
+            <button id="hint-btn" onclick="showHintModal()" class="side-nav-btn" title="힌트" style="display: none;">
+                <span class="btn-icon">💡</span>
+                <span class="btn-text" id="hint-btn-text">힌트</span>
+            </button>
+            <button id="qna-btn" onclick="toggleQnaPanel(event)" class="side-nav-btn" title="질문하기"
+                style="display: none;">
+                <span class="btn-icon">❓</span>
+                <span class="btn-text">질문</span>
+            </button>
+        </div>
+
+        <!-- Q&A Side Panel -->
+        <div id="qna-panel">
+            <div class="qna-header">
+                <span>AI 튜터에게 질문하기</span>
+                <button onclick="closeQnaPanel()" class="qna-close-btn">✖</button>
+            </div>
+            <div class="qna-input-area">
+                <input type="text" id="qna-input" placeholder="질문을 입력하세요..."
+                    onkeydown="if(event.key === 'Enter') askGemini()">
+                <button onclick="askGemini()" id="qna-send-btn">전송</button>
+            </div>
+            <div id="qna-chat-area">
+                <div class="ai-message">안녕하세요! 3D 프린터에 대해 궁금한 점을 물어보세요.</div>
+            </div>
+            <!--<h2><strong>3단계: 연도별 기출문제</strong></h2>
+            <div class="chapter-grid" id="advanced-chapter-grid"></div>-->
+        </div>
+
+
+        <script src="js/multi_tab_prevention.js?v=12"></script>
+        <script src="data_practice.js?v=12"></script>
+        <script src="data_advanced.js?v=12"></script>
+        <script src="data.js?v=12"></script>
+        <script src="js/script.js?v=12"></script>
+
+
+    </body>
+
+</html>

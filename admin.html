@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <title>3D 프린터 학습 관리자 페이지</title>
+  <style>
+    /* 여기에 CSS 스타일링 */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h2>🎓 반별 온도 랭킹 조회</h2>
+  <label for="classIdInput">반 ID (예: 25):</label>
+  <input type="text" id="classIdInput" value="25" />
+  <button onclick="loadClassRanking()">조회</button>
+  
+  <div id="rankingOutput"></div>
+
+  <hr>
+
+  <h2>🏆 전체 리더보드</h2>
+  <div id="leaderboardOutput"></div>
+
+  <script>
+    // 1. 반별 랭킹 로드 함수
+    function loadClassRanking() {
+      const classId = document.getElementById('classIdInput').value;
+      
+      // Code.gs의 getClassTemperatureRanking(classId) 함수 호출
+      google.script.run
+        .withSuccessHandler(displayRanking)
+        .withFailureHandler(handleError)
+        .getClassTemperatureRanking(classId);
+    }
+
+    // 2. 서버에서 받은 데이터를 HTML에 표시하는 함수
+    function displayRanking(data) {
+      const outputDiv = document.getElementById('rankingOutput');
+      let html = '<table><thead><tr><th>이름</th><th>온도</th></tr></thead><tbody>';
+      
+      data.forEach(user => {
+        html += `<tr><td>${user.name}</td><td>${user.temperature}°C</td></tr>`;
+      });
+
+      html += '</tbody></table>';
+      outputDiv.innerHTML = html;
+    }
+
+    // 3. 전체 리더보드 로드 함수
+    function loadLeaderboard() {
+        google.script.run
+        .withSuccessHandler(displayLeaderboard)
+        .withFailureHandler(handleError)
+        .getLeaderboard();
+    }
+    
+    // 4. 리더보드 표시 함수 (displayRanking과 유사)
+    function displayLeaderboard(data) {
+      const outputDiv = document.getElementById('leaderboardOutput');
+      // ... 테이블 생성 로직 ...
+      outputDiv.innerHTML = '총 ' + data.length + '명 데이터 로드 완료.'; // 간단히 표시
+
+    }
+    
+    // 에러 처리
+    function handleError(error) {
+      alert('데이터 로딩 중 오류 발생: ' + error.message);
+    }
+    
+    // 페이지 로드 시 리더보드 자동 로드
+    window.onload = loadLeaderboard;
+  </script>
+</body>
+</html>

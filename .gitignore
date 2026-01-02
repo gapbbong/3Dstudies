@@ -1,0 +1,41 @@
+# 스크린샷 파일
+Screenshot*.JPG
+Screenshot*.jpg
+Screenshot*.png
+
+# Python 관련
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.whl
+
+# 백업 파일
+*.bak
+*_backup_*.html
+*_backup_*.js
+index_backup*.html
+data_backup*.js
+
+# JSON 중간 파일
+part*_questions.json
+part*_datajs.json
+part*_questions_clean.json
+part*_datajs_clean.json
+part*_for_datajs.txt
+
+# 임시 파일
+*.txt
+!netlify.toml
+
+# Node modules (v2_next용)
+v2_next/node_modules/
+v2_next/.next/
+v2_next/.env.local
+
+# Legacy 버전
+legacy_v1/
+
+# 기타
+filelist.txt

@@ -9,7 +9,7 @@ redirects = []
   [functions."*"]
 
 [build]
-publish = "D:\\App\\3D studies"
+publish = "./"
 publishOrigin = "config"
 
   [build.environment]

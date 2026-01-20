@@ -1,5 +1,5 @@
 
-import practiceData from '@/data/data_practice';
+import { deobfuscate } from '@/lib/security';
 
 export interface Question {
     year: string;
@@ -24,31 +24,36 @@ export interface Chapter {
 export const db = {
     chapter: {
         findMany: async (): Promise<Chapter[]> => {
-            if (!practiceData || !practiceData.chapters) {
-                console.error('practiceData is missing or invalid');
+            // Note: This might still be needed for the dashboard list, 
+            // but we want to avoid sending all questions at once.
+            // For now, we fetch a minimal chapter list.
+            try {
+                const response = await fetch('/api/quiz/chapters');
+                return await response.json();
+            } catch (e) {
+                console.error("Failed to fetch chapters:", e);
                 return [];
             }
-
-            // Dynamically map all chapters from practiceData
-            return practiceData.chapters.map((ch: any, index: number) => {
-                // Determine type based on ID or index
-                let type: 'basic' | 'practice' | 'advanced' = 'basic';
-                if (ch.id?.startsWith('part9') || index >= 8) {
-                    type = 'practice';
-                }
-
-                return {
-                    id: ch.id || `ch-${index}`,
-                    title: ch.title || `Chapter ${index + 1}`,
-                    type,
-                    questions: (ch.questions || []) as unknown as Question[],
-                    theoryContent: ch.theoryContent || "이 챕터의 이론 내용이 아직 준비되지 않았습니다."
-                };
-            });
         },
         findUnique: async (id: string): Promise<Chapter | null> => {
-            const all = await db.chapter.findMany();
-            return all.find(ch => ch.id === id) || null;
+            try {
+                const response = await fetch(`/api/quiz/fetch?chapterId=${id}`);
+                const json = await response.json();
+                if (json.payload) {
+                    const chapter = deobfuscate(json.payload);
+                    return {
+                        id: chapter.id,
+                        title: chapter.title,
+                        type: 'practice', // Default for now
+                        questions: chapter.questions as unknown as Question[],
+                        theoryContent: chapter.theoryContent
+                    };
+                }
+                return null;
+            } catch (e) {
+                console.error("Failed to fetch chapter:", e);
+                return null;
+            }
         }
     }
 };

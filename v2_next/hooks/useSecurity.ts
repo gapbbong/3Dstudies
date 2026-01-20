@@ -7,6 +7,7 @@ interface SecurityOptions {
     onSpace?: () => void;
     onEsc?: () => void;
     preventCopy?: boolean;
+    useCaptureProtect?: boolean;
 }
 
 export function useSecurity(options: SecurityOptions = {}) {
@@ -47,6 +48,28 @@ export function useSecurity(options: SecurityOptions = {}) {
         if (options.preventCopy) {
             window.addEventListener('contextmenu', handleContext);
             window.addEventListener('copy', handleCopy);
+            window.addEventListener('dragstart', handleContext as any);
+            window.addEventListener('drop', handleContext as any);
+        }
+
+        // 4. Capture Protection (Focus/Blur)
+        const handleBlur = () => {
+            if (options.useCaptureProtect) {
+                document.getElementById('capture-protect-overlay')?.style.setProperty('display', 'flex');
+                document.getElementById('main-content-area')?.classList.add('capture-blur');
+            }
+        };
+
+        const handleFocus = () => {
+            if (options.useCaptureProtect) {
+                document.getElementById('capture-protect-overlay')?.style.setProperty('display', 'none');
+                document.getElementById('main-content-area')?.classList.remove('capture-blur');
+            }
+        };
+
+        if (options.useCaptureProtect) {
+            window.addEventListener('blur', handleBlur);
+            window.addEventListener('focus', handleFocus);
         }
 
         return () => {
@@ -54,6 +77,10 @@ export function useSecurity(options: SecurityOptions = {}) {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('contextmenu', handleContext);
             window.removeEventListener('copy', handleCopy);
+            window.removeEventListener('dragstart', handleContext as any);
+            window.removeEventListener('drop', handleContext as any);
+            window.removeEventListener('blur', handleBlur);
+            window.removeEventListener('focus', handleFocus);
         };
     }, [options]);
 }

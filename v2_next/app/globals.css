@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+.capture-blur {
+  filter: blur(40px) brightness(0.3) grayscale(1) !important;
+  pointer-events: none !important;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;

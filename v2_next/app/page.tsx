@@ -104,7 +104,7 @@ function LoginContent() {
     setStep(nextStep);
   }, [searchParams]);
 
-  const version = packageInfo.version;
+  const version = '2.1';
 
   const handleNext = () => {
     if (step === 1 && !formData.subject) {
@@ -147,7 +147,7 @@ function LoginContent() {
   return (
     <main className="min-h-screen bg-[#020617] text-slate-200 flex flex-col items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
       <div className="absolute top-4 left-4 text-[10px] text-slate-600 font-mono tracking-widest opacity-40">
-        VERSION {version}
+        VERSION v{version}
       </div>
 
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse" />
@@ -342,6 +342,16 @@ function LoginHistory() {
         {history.slice(0, 3).map((h, i) => (
           <span key={i} className="bg-white/5 px-2 py-0.5 rounded border border-white/5">{h}</span>
         ))}
+        <button
+          onClick={() => {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('login_history');
+            window.location.reload();
+          }}
+          className="ml-2 text-red-500/50 hover:text-red-500 transition-colors uppercase font-black text-[9px] tracking-tighter"
+        >
+          [Logout]
+        </button>
       </div>
     </div>
   );

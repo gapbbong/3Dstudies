@@ -9,6 +9,10 @@ function doGet(e) {
         return getUserData(params.name);
     } else if (type === 'leaderboard') {
         return getLeaderboard();
+    } else if (type === 'get_overwrites') {
+        return getOverwrites();
+    } else if (type === 'get_student_configs') {
+        return getStudentConfigs(params.name);
     }
 
     // Default: Return simple JSON to confirm it's working
@@ -22,6 +26,8 @@ function doPost(e) {
 
         if (data.type === 'update_user_data') {
             return updateUserData(data);
+        } else if (data.type === 'report_error') {
+            return reportError(data);
         } else {
             // Legacy support or simple logging
             return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Legacy post ignored' }))
@@ -185,4 +191,89 @@ function getLeaderboard() {
 
     return ContentService.createTextOutput(JSON.stringify(leaderboard.slice(0, 50)))
         .setMimeType(ContentService.MimeType.JSON);
+}
+function reportError(data) {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName("Reports");
+    if (!sheet) {
+        sheet = ss.insertSheet("Reports");
+        sheet.appendRow(["Timestamp", "User", "ChapterId", "QuestionId", "QuestionText", "Message"]);
+    }
+
+    sheet.appendRow([
+        new Date(),
+        data.user,
+        data.chapterId,
+        data.questionId,
+        data.questionText,
+        data.message || "오류 신고"
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', message: 'Report received' }))
+        .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getOverwrites() {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Overwrites");
+    if (!sheet) {
+        // Create template if missing
+        const newSheet = ss.insertSheet("Overwrites");
+        newSheet.appendRow(["ChapterId", "QuestionId", "Field", "NewValue", "Note"]);
+        return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: [] }))
+            .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const data = sheet.getDataRange().getValues();
+    const overwrites = [];
+
+    // Skip header
+    for (let i = 1; i < data.length; i++) {
+        if (data[i][0] && data[i][1]) {
+            overwrites.push({
+                chapterId: data[i][0],
+                questionId: data[i][1],
+                field: data[i][2],
+                newValue: data[i][3]
+            });
+        }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({ status: 'success', data: overwrites }))
+        .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getStudentConfigs(name) {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName("Configs");
+    if (!sheet) {
+        sheet = ss.insertSheet("Configs");
+        sheet.appendRow(["StudentName", "PassScore", "TheoryAttempts", "Note"]);
+        // Default template row
+        sheet.appendRow(["Default", 0.8, 2, "기본 설정값입니다."]);
+    }
+
+    const data = sheet.getDataRange().getValues();
+    let studentConfig = null;
+    let defaultConfig = { passScore: 0.8, theoryAttempts: 2 };
+
+    for (let i = 1; i < data.length; i++) {
+        const studentName = data[i][0];
+        const config = {
+            passScore: Number(data[i][1]) || 0.8,
+            theoryAttempts: Number(data[i][2]) || 2
+        };
+
+        if (studentName === "Default") {
+            defaultConfig = config;
+        }
+        if (studentName === name) {
+            studentConfig = config;
+        }
+    }
+
+    return ContentService.createTextOutput(JSON.stringify({
+        status: 'success',
+        data: studentConfig || defaultConfig
+    })).setMimeType(ContentService.MimeType.JSON);
 }

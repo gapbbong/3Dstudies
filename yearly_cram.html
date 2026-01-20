@@ -1,0 +1,2082 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D 프린팅 마스터 과정 | 마스터 학습</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --accent-color: #a29bfe;
+            --bg-color: #f8f9fa;
+            --text-color: #2d3436;
+            --primary-gradient: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --accent-soft: rgba(108, 92, 231, 0.1);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Premium Login Landing Page */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-box h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1.1em;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .login-box input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .login-box .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-box .btn-login:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Main Header */
+        #main-header {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 25px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-logo {
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #header-user-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Main Header */
+        #main-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 25px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-logo {
+            font-weight: 900;
+            font-size: 1.30rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        #header-user-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-tier-badge {
+            background: var(--accent-soft);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .temp-header {
+            background: #fff;
+            border: 2px solid #edf2f7;
+            padding: 5px 12px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #d63031;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #2d3436;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .menu-btn:hover {
+            transform: scale(1.1);
+            color: var(--primary-color);
+        }
+
+        /* Side Drawer */
+        #side-drawer {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 11000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+            transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            padding: 30px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #side-drawer.open {
+            right: 0;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            z-index: 10900;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .drawer-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .drawer-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-drawer {
+            font-size: 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #b2bec3;
+        }
+
+        .drawer-menu-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .drawer-menu-item {
+            margin-bottom: 15px;
+        }
+
+        .drawer-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            background: #f8f9fa;
+            border-radius: 18px;
+            text-decoration: none;
+            color: #2d3436;
+            font-weight: 700;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.05rem;
+            text-align: left;
+        }
+
+        .drawer-menu-link:hover {
+            background: var(--accent-soft);
+            color: var(--primary-color);
+            transform: translateX(-5px);
+        }
+
+        .drawer-footer {
+            margin-top: auto;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #b2bec3;
+        }
+
+        .user-name-tag {
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .btn-change-user {
+            font-size: 0.85rem;
+            color: #636e72;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .btn-change-user:hover {
+            background: #f1f2f6;
+            color: var(--primary-color);
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Updated Progress Info Position */
+        .progress-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(45, 52, 54, 0.9);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: 0.95em;
+            font-weight: 600;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--accent-soft);
+            border-top: 5px solid #6c5ce7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Idle Flicker Style (Black & Problem Blink, 1s) */
+        .idle-flicker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 20000;
+            display: none;
+            animation: idleBlink 1s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes idleBlink {
+
+            0%,
+            49% {
+                opacity: 0;
+            }
+
+            50%,
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Security: Capture Protection Overlay */
+        #capture-protect-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        /* Security: Multi-tab Error */
+        #multi-tab-error {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            z-index: 11000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Anti-Google Lens & Watermark */
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            opacity: 0.04;
+            font-size: 8rem;
+            z-index: 5000;
+            pointer-events: none;
+            white-space: nowrap;
+            user-select: none;
+            color: #000;
+            display: none;
+            /* Only show in quiz */
+        }
+
+        .shield-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: auto;
+            background: transparent;
+        }
+
+        /* Canvas Question Rendering */
+        .question-canvas-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        canvas.q-canvas {
+            max-width: 100%;
+            height: auto;
+            cursor: default;
+        }
+
+        /* Custom UI */
+        .cram-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+
+            @media (max-width: 1100px) {
+                .cram-dashboard {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .cram-dashboard {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            grid-template-columns: repeat(3, 1fr);
+            /* 3열 배치 */
+            gap: 30px;
+        }
+
+        .year-group {
+            background: white;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .year-group:hover {
+            box-shadow: 0 15px 40px rgba(108, 92, 231, 0.1);
+            transform: translateY(-5px);
+            border-color: #a29bfe;
+        }
+
+        .year-badge {
+            display: inline-block;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.9em;
+            align-self: flex-start;
+        }
+
+        .parts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* 1개년도 내 1,2부 가로 배치 */
+            gap: 15px;
+        }
+
+        /* 7-Tier Badge Styles */
+        .cram-card {
+            position: relative;
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border: 2px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .cram-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.15);
+        }
+
+        .tier-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        /* 1: Seed */
+        .tier-1 {
+            border-color: #2ecc71;
+            background: linear-gradient(to bottom, #fff, #faffa5);
+        }
+
+        /* 2: Sprout */
+        .tier-2 {
+            border-color: #27ae60;
+            box-shadow: inset 0 0 10px rgba(39, 174, 96, 0.1);
+        }
+
+        /* 3: Leaf */
+        .tier-3 {
+            border-color: #16a085;
+            background: linear-gradient(135deg, #fff, #e0f2f1);
+        }
+
+        /* 4: Flower */
+        .tier-4 {
+            border-color: #e84393;
+            box-shadow: 0 0 15px rgba(232, 67, 147, 0.2);
+        }
+
+        /* 5: Fruit */
+        .tier-5 {
+            border-color: #e67e22;
+            background: linear-gradient(135deg, #fff, #fff3e0);
+        }
+
+        /* 6: Tree */
+        .tier-6 {
+            border-color: #a04000;
+            box-shadow: 0 10px 20px rgba(160, 64, 0, 0.2);
+        }
+
+        /* 7: Forest (Master) */
+        .tier-7 {
+            border-image: linear-gradient(45deg, #2ecc71, #27ae60, #16a085, #e84393, #e67e22) 1;
+            animation: master-glow 3s infinite alternate;
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 15px 40px rgba(39, 174, 96, 0.3);
+        }
+
+        @keyframes master-glow {
+            from {
+                box-shadow: 0 0 10px rgba(39, 174, 96, 0.3);
+            }
+
+            to {
+                box-shadow: 0 0 30px rgba(39, 174, 96, 0.5);
+            }
+        }
+
+        /* Floating Menu (FAB) */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .fab-main {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+            transition: all 0.3s;
+        }
+
+        .fab-main:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .fab-sub {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+            /* Toggle with JS */
+            justify-content: center;
+            align-items: center;
+            color: #2d3436;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .fab-sub:hover {
+            background: var(--accent-soft);
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        .fab-label {
+            position: absolute;
+            right: 70px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .fab-sub:hover .fab-label {
+            opacity: 1;
+        }
+
+        /* Temp & Ranking Overlays */
+        .side-overlay {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 350px;
+            height: 100%;
+            background: white;
+            z-index: 4000;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .side-overlay.active {
+            right: 0;
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+
+        .overlay-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #b2bec3;
+        }
+
+        /* Thermal Map (Temperature) */
+        .temp-container {
+            text-align: center;
+            padding: 20px;
+            background: #fffafa;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .temp-gauge {
+            width: 80px;
+            height: 200px;
+            background: #eee;
+            border-radius: 40px;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+            border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .temp-fill {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            /* Dynamic */
+            background: linear-gradient(to top, #ff7675, #d63031);
+            transition: height 1s ease-out;
+        }
+
+        .temp-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #d63031;
+        }
+
+        .cram-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1em;
+            color: #2d3436;
+        }
+
+        .cram-card .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cram-card .btn {
+            padding: 8px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .btn-study {
+            background: var(--accent-soft);
+            color: #6c5ce7;
+        }
+
+        .btn-study:hover {
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .btn-test {
+            background: #eee;
+            color: #2d3436;
+        }
+
+        .btn-test:hover {
+            background: #2f3542;
+            color: white;
+        }
+
+        /* Quiz Layout Fixes */
+        .quiz-view {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 80px 20px 40px;
+            /* Top padding for the fixed exit button */
+            position: relative;
+        }
+
+        .exit-btn-fixed {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .exit-btn-fixed:hover {
+            background: #fff;
+            transform: translateX(5px);
+            color: #ff4757;
+        }
+
+        .score-result-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .score-card {
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .score-val {
+            font-size: 5em;
+            font-weight: 900;
+            color: #6c5ce7;
+            margin: 10px 0;
+            letter-spacing: -2px;
+        }
+
+        .score-msg {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 20px;
+            white-space: pre-line;
+            line-height: 1.5;
+        }
+
+        .score-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .question-card {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .q-num {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: #6c5ce7;
+            color: white;
+            padding: 5px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .q-text {
+            font-size: 1.3em;
+            font-weight: 500;
+            line-height: 1.6;
+            margin: 20px 0;
+            word-break: keep-all;
+        }
+
+        .c-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 12px;
+        }
+
+        .c-item {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: 2px solid #edeff2;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .c-item:hover {
+            border-color: #6c5ce7;
+            background: white;
+            transform: translateX(5px);
+        }
+
+        .c-item.selected {
+            border-color: #6c5ce7;
+            background: var(--accent-soft);
+            font-weight: 600;
+        }
+
+        .c-item.correct {
+            background: #dff9fb;
+            border-color: #00b894;
+            color: #009432;
+        }
+
+        .c-item.incorrect {
+            background: #ffeaa7;
+            border-color: #fab1a0;
+            color: #d63031;
+        }
+
+        .ans-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f1f2f6;
+            border-radius: 15px;
+            display: none;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ans-visible .ans-box {
+            display: block;
+        }
+
+        .progress-info {
+            position: fixed;
+            top: 25px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            font-weight: 700;
+            color: var(--text-color);
+            z-index: 1001;
+            border: 1px solid rgba(108, 92, 231, 0.1);
+        }
+
+        .shortcut-hint {
+            font-size: 0.7em;
+            opacity: 0.6;
+            background: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+
+        /* Test Mode Score */
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .nav-bar {
+                width: 90%;
+                justify-content: space-between;
+                padding: 10px 20px;
+            }
+
+            .shortcut-hint {
+                display: none;
+            }
+
+            .progress-info {
+                top: 15px;
+                right: 15px;
+                font-size: 0.85em;
+                padding: 8px 15px;
+            }
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+
+    <!-- Security Overlay: Capture/Focus Protection -->
+    <div id="capture-protect-overlay">
+        <h2 style="color: var(--primary-color);">🔒 학습 화면 보호 중</h2>
+        <p>화면 캡처나 검색을 방지하기 위해 내용이 가려졌습니다.</p>
+        <p style="color: #636e72; font-size: 0.9em;">다시 이 창을 클릭하면 학습을 계속할 수 있습니다.</p>
+    </div>
+
+    <!-- Security Overlay: Multi-tab Prevention -->
+    <div id="multi-tab-error">
+        <h1 style="color: #e74c3c; font-size: 3rem; margin-bottom: 20px;">⚠️ 중복 실행 감지</h1>
+        <p style="font-size: 1.2rem; color: #333; margin-bottom: 10px;">다른 창이나 탭에서 이미 학습이 진행 중입니다.</p>
+        <p style="color: #666; margin-bottom: 30px;">데이터 충돌 및 부정행위 방지를 위해 하나의 창만 이용해주세요.</p>
+        <div style="display: flex; gap: 15px;">
+            <button onclick="window.close()"
+                style="padding: 12px 25px; border: none; border-radius: 10px; background: #e74c3c; color: white; cursor: pointer; font-weight: bold;">창
+                닫기</button>
+            <button onclick="location.reload()"
+                style="padding: 12px 25px; border: 1px solid #ddd; border-radius: 10px; background: white; cursor: pointer; font-weight: bold;">이
+                창에서 계속하기</button>
+        </div>
+    </div>
+
+    <div id="idle-flicker" class="idle-flicker-overlay"></div>
+    <div id="main-watermark" class="watermark"></div>
+
+    <!-- (FAB Removed) -->
+
+    <!-- Side Overlays -->
+    <div id="ranking-overlay" class="side-overlay">
+        <div class="overlay-header">
+            <h3>🏆 우리 반 실시간 랭킹</h3>
+            <span class="overlay-close" onclick="toggleOverlay('ranking-overlay', false)">&times;</span>
+        </div>
+        <div id="ranking-list" style="overflow-y: auto; height: calc(100% - 70px);">
+            <p style="text-align: center; color: #636e72; margin-top: 50px;">데이터를 불러오는 중...</p>
+        </div>
+    </div>
+
+    <div id="temp-overlay" class="side-overlay">
+        <div class="overlay-header">
+            <h3>🌡️ 나의 학습 온도</h3>
+            <span class="overlay-close" onclick="toggleOverlay('temp-overlay', false)">&times;</span>
+        </div>
+        <div class="temp-container">
+            <div class="temp-gauge">
+                <div id="temp-fill" class="temp-fill"></div>
+            </div>
+            <div id="temp-val" class="temp-val">36.5°C</div>
+            <p style="margin-top: 10px; color: #636e72; font-size: 0.9em;">진행도가 높아질수록 온도가 올라갑니다!</p>
+        </div>
+        <div id="temp-stats" style="font-size: 0.9em; line-height: 1.8;">
+            <!-- Rendered by JS -->
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+        <div class="loader"></div>
+        <p style="margin-top: 20px; font-weight: 600; color: #6C5CE7;">데이터를 불러오는 중입니다...</p>
+    </div>
+
+    <!-- Login Landing Page -->
+    <div id="login-overlay" style="display: none;">
+        <div class="login-box">
+            <div style="font-size: 3rem; margin-bottom: 20px;">🎓</div>
+            <h1>마스터 학습 시작</h1>
+            <p style="color: #636e72; margin-bottom: 30px;">본인의 학번과 이름을 입력해주세요.<br><span
+                    style="font-size: 0.9em; color: #a29bfe;">(예: 2701홍길동)</span></p>
+            <input type="text" id="username-input" placeholder="학번+이름 (띄어쓰기 없이)" autofocus>
+            <button class="btn-login" onclick="login()">입장하기</button>
+            <div style="margin-top: 25px; font-size: 0.85em; color: #b2bec3;">
+                © 3D Printer Master Course
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <!-- Main Header -->
+    <header id="main-header" style="display: none;">
+        <div class="header-logo" onclick="location.href='index.html'">
+            <span>🎓</span> 연도별 마스터 학습
+        </div>
+        <div class="user-status" id="header-user-status">
+            <span class="user-tier-badge" id="header-tier-badge"></span>
+            <div class="temp-header">
+                <span class="temp-icon">🌡️</span>
+                <span id="header-temp-val" class="temp-val-text">36.5</span>°C
+            </div>
+            <span id="display-name" style="font-weight: 800; color: #2d3436; font-size: 1rem;"></span>
+            <button class="menu-btn" onclick="toggleDrawer(true)">☰</button>
+        </div>
+    </header>
+
+    <!-- Drawer Overlay -->
+    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleDrawer(false)"></div>
+
+    <!-- Side Drawer -->
+    <div id="side-drawer">
+        <div class="drawer-header">
+            <h2>마스터 메뉴</h2>
+            <button class="close-drawer" onclick="toggleDrawer(false)">×</button>
+        </div>
+        <div class="drawer-content">
+            <div class="drawer-menu-list">
+                <div class="drawer-menu-item">
+                    <button class="drawer-menu-link" onclick="handleDrawerAction('ranking')">
+                        <span>🏆</span> 실시간 반별 랭킹
+                    </button>
+                </div>
+                <div class="drawer-menu-item">
+                    <button class="drawer-menu-link" onclick="handleDrawerAction('previous')">
+                        <span>📊</span> 기존 3단계 대시보드
+                    </button>
+                </div>
+                <div class="drawer-menu-item" style="margin-top: 30px;">
+                    <button class="drawer-menu-link" onclick="logout()" style="background: #fff0f0; color: #ff7675;">
+                        <span>🚪</span> 로그아웃 (이름 변경)
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            3D Printer Master Course v2.0
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <main id="dashboard" class="cram-dashboard">
+        <!-- Rendered by JS -->
+    </main>
+
+    <!-- Quiz View (Study/Test) -->
+    <div id="quiz-area" class="quiz-view" style="display: none;">
+        <!-- Fixed Header Area -->
+        <button class="exit-btn-fixed" onclick="quitQuiz()">
+            <span>←</span> 나가기 (ESC)
+        </button>
+        <div class="progress-info" id="progress-info" style="display: none;">준비 중...</div>
+
+        <div id="quiz-list"></div>
+        <div style="height: 100px;"></div>
+    </div>
+
+    <!-- Navigation Bar (Submit Only) -->
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 1000;">
+        <button class="nav-btn-submit" id="submit-btn" onclick="submitTest()"
+            style="display: none; padding: 15px 40px; border-radius: 50px; box-shadow: 0 10px 40px rgba(108, 92, 231, 0.3);">답안
+            제출 (Space)</button>
+    </div>
+
+    <!-- Score Result Overlay -->
+    <div id="score-overlay" class="score-result-overlay">
+        <div class="score-card">
+            <h2 id="result-title">학습 결과</h2>
+            <div class="score-val" id="score-display">0</div>
+            <p style="color: #636e72; font-weight: 600;" id="correct-count">0 / 0 맞춤</p>
+            <div class="score-msg" id="praise-message"></div>
+            <div class="score-btns">
+                <button class="btn btn-study" style="background: #6c5ce7; color: white; padding: 12px 25px;"
+                    onclick="closeScoreOverlay()">해설 보기</button>
+                <button class="btn btn-test" style="padding: 12px 25px;" onclick="location.reload()">메인으로</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="data_practice.js"></script>
+    <script>
+        const CRAM_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEPh0tph43kjJJoejsoWCNOTtYFoLyM83JaarUa-HXx9KjRasTocxj_4BLFqILk8zk/exec';
+        const ENABLE_MULTI_TAB_PREVENTION = false; // Set to true for distribution
+        let currentQuestions = [];
+        let currentMode = 'study'; // 'study' or 'test'
+        let userAnswers = {};
+        let currentUser = null;
+        let sessionStartTime = null;
+        let currentChapterId = null; // e.g. "2023_1부"
+        let currentChapterTitle = ""; // e.g. "2023 1부"
+
+        // --- Performance Stats ---
+        let statTotalCorrect = 0;
+        let statTotalWrong = 0;
+
+        // --- Idle Detection Variables ---
+        let idleTimer = null;
+        let idleCount = 0;
+        let totalIdleDurationMs = 0;
+        let idleStartTime = null;
+        let isIdle = false;
+        const IDLE_THRESHOLD_MS = 60000; // 60 seconds
+
+        // --- Security: Multi-tab & Capture Protection ---
+        const LOCK_KEY = 'cram_tab_lock';
+        const tabId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+
+        // --- Idle Detection Logic ---
+        function resetIdleTimer() {
+            if (isIdle) exitIdleMode();
+            if (idleTimer) clearTimeout(idleTimer);
+            idleTimer = setTimeout(enterIdleMode, IDLE_THRESHOLD_MS);
+        }
+
+        function enterIdleMode() {
+            if (isIdle || currentMode !== 'test' && currentMode !== 'study') return;
+            isIdle = true;
+            idleCount++;
+            idleStartTime = new Date();
+            document.getElementById('idle-flicker').style.display = 'block';
+            console.log("Idle Mode Entered:", idleCount);
+        }
+
+        function exitIdleMode() {
+            if (!isIdle) return;
+            const now = new Date();
+            totalIdleDurationMs += (now - idleStartTime);
+            isIdle = false;
+            document.getElementById('idle-flicker').style.display = 'none';
+            console.log("Idle Mode Exited. Total Idle (ms):", totalIdleDurationMs);
+        }
+
+        let idleListenersAttached = false;
+        function initIdleDetection() {
+            if (idleListenersAttached) {
+                resetIdleTimer();
+                return;
+            }
+            const events = ['mousemove', 'keydown', 'scroll', 'touchstart', 'mousedown'];
+            events.forEach(en => {
+                window.addEventListener(en, resetIdleTimer, true);
+            });
+            idleListenersAttached = true;
+            resetIdleTimer();
+        }
+        function initSecurity() {
+            // 1. Multi-tab prevention
+            if (ENABLE_MULTI_TAB_PREVENTION) {
+                setInterval(() => {
+                    const lock = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
+                    if (lock.id && lock.id !== tabId && (Date.now() - lock.time < 3000)) {
+                        document.getElementById('multi-tab-error').style.display = 'flex';
+                    } else {
+                        localStorage.setItem(LOCK_KEY, JSON.stringify({ id: tabId, time: Date.now() }));
+                    }
+                }, 1000);
+            }
+
+            // 2. Capture/Focus protection
+            window.addEventListener('blur', () => {
+                if (currentQuestions.length > 0) {
+                    document.getElementById('capture-protect-overlay').style.display = 'flex';
+                }
+            });
+            window.addEventListener('focus', () => {
+                document.getElementById('capture-protect-overlay').style.display = 'none';
+            });
+
+            // 3. DevTools Anti-Inspector (Debugger Trap)
+            (function () {
+                const devtools = { open: false };
+                const threshold = 160;
+                setInterval(() => {
+                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                    if (widthThreshold || heightThreshold) {
+                        if (!devtools.open) {
+                            (function () { (function a() { debugger; a(); }()) }());
+                        }
+                    }
+                }, 1000);
+            })();
+        }
+
+        // --- Canvas Text Rendering with Noise (Anti-Lens) ---
+        function renderTextToCanvas(containerId, text) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            // Add a shield layer to prevent right-click search
+            const shield = document.createElement('div');
+            shield.className = 'shield-layer';
+            container.appendChild(shield);
+
+            const canvas = document.createElement('canvas');
+            canvas.className = 'q-canvas';
+            const ctx = canvas.getContext('2d');
+
+            // Setup font
+            const fontSize = 18;
+            ctx.font = `600 ${fontSize}px 'Pretendard'`;
+
+            // Multiline wrapping
+            const maxWidth = container.clientWidth || 600;
+            const words = text.split(' ');
+            let line = '';
+            const lines = [];
+
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > maxWidth && n > 0) {
+                    lines.push(line);
+                    line = words[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            lines.push(line);
+
+            // Set canvas size
+            canvas.width = maxWidth * window.devicePixelRatio;
+            canvas.height = (lines.length * (fontSize * 1.5) + 30) * window.devicePixelRatio;
+            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+            // --- Draw Noise Pattern to confuse OCR ---
+            ctx.fillStyle = '#fdfdfd';
+            ctx.fillRect(0, 0, maxWidth, lines.length * (fontSize * 1.5) + 30);
+
+            for (let i = 0; i < 150; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
+                ctx.beginPath();
+                ctx.arc(Math.random() * maxWidth, Math.random() * canvas.height, Math.random() * 1.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            for (let i = 0; i < 10; i++) {
+                ctx.strokeStyle = `rgba(0,0,0,${Math.random() * 0.03})`;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * maxWidth, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * maxWidth, Math.random() * canvas.height);
+                ctx.stroke();
+            }
+
+            // Render Text
+            ctx.textBaseline = 'top';
+            ctx.fillStyle = '#2d3436';
+            ctx.font = `600 ${fontSize}px 'Pretendard'`;
+            lines.forEach((l, i) => {
+                ctx.fillText(l, 5, i * (fontSize * 1.5) + 15);
+            });
+
+            container.appendChild(canvas);
+        }
+
+        function showLoading(show) {
+            const overlay = document.getElementById('loading-overlay');
+            if (!overlay) return; // Fail-safe
+            if (show) {
+                overlay.style.display = 'flex';
+                overlay.style.opacity = '1';
+            } else {
+                overlay.style.opacity = '0';
+                setTimeout(() => {
+                    if (overlay) overlay.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        // --- Data Processor ---
+        function initApp() {
+            initSecurity();
+            initFAB();
+            currentUser = localStorage.getItem('lastUsername');
+            if (!currentUser) {
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('main-header').style.display = 'none';
+            } else {
+                updateUserUI();
+                syncInitialData();
+                loadDashboard();
+                document.getElementById('main-header').style.display = 'flex';
+            }
+        }
+
+        window.login = function () {
+            const input = document.getElementById('username-input');
+            const name = input.value.trim();
+            if (!name) {
+                alert('학번이름을 입력해주세요!');
+                return;
+            }
+            if (name.includes(' ')) {
+                alert('띄어쓰기 없이 입력해주세요.');
+                return;
+            }
+            localStorage.setItem('lastUsername', name);
+            currentUser = name;
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'grid'; // Changed from 'block' to 'grid' to match CSS
+            document.getElementById('main-header').style.display = 'flex';
+            updateUserUI();
+            syncInitialData(); // Fetch existing stats (temperature, etc.)
+            loadDashboard();
+            fetchRankingData();
+        };
+
+        window.logout = function () {
+            if (confirm('이름을 변경하시겠습니까?\n기존에 저장된 마지막 이름이 삭제됩니다.')) {
+                localStorage.removeItem('lastUsername');
+                location.reload();
+            }
+        };
+
+        function updateUserUI() {
+            document.getElementById('display-name').textContent = currentUser + ' 학생';
+
+            // Update tier badge in header
+            let totalPassCount = 0;
+            if (practiceData && practiceData.chapters) {
+                practiceData.chapters.forEach(ch => {
+                    const stepCount = 30;
+                    for (let i = 0; i < ch.questions.length; i += stepCount) {
+                        const year = ch.questions[i].year || '기타';
+                        const partNum = Math.floor(i / stepCount) + 1;
+                        const cid = `cram_${year}_${partNum}부`;
+                        if (localStorage.getItem(`passed_${cid}`) === "true") totalPassCount++;
+                    }
+                });
+            }
+            const currentTier = getStudentTier(totalPassCount);
+            const tierBadge = document.getElementById('header-tier-badge');
+            if (tierBadge) {
+                tierBadge.innerHTML = `<span>${currentTier.emoji}</span> ${currentTier.label}`;
+            }
+        }
+
+        function loadDashboard() {
+            showLoading(true);
+
+            setTimeout(() => {
+                if (typeof practiceData === 'undefined' || !practiceData.chapters) {
+                    setTimeout(loadDashboard, 100);
+                    return;
+                }
+                const yearGroups = {};
+                practiceData.chapters.forEach(ch => {
+                    ch.questions.forEach(q => {
+                        const year = q.year || '기타';
+                        if (!yearGroups[year]) yearGroups[year] = [];
+                        yearGroups[year].push(q);
+                    });
+                });
+                renderDashboard(yearGroups);
+                showLoading(false);
+            }, 600);
+        }
+
+        function renderDashboard(groups) {
+            const container = document.getElementById('dashboard');
+            container.innerHTML = '';
+
+            let totalPassCount = 0;
+            if (practiceData && practiceData.chapters) {
+                practiceData.chapters.forEach(ch => {
+                    const stepCount = 30;
+                    for (let i = 0; i < ch.questions.length; i += stepCount) {
+                        const year = ch.questions[i].year || '기타';
+                        const partNum = Math.floor(i / stepCount) + 1;
+                        const cid = `cram_${year}_${partNum}부`;
+                        if (localStorage.getItem(`passed_${cid}`) === "true") totalPassCount++;
+                    }
+                });
+            }
+
+            const currentTier = getStudentTier(totalPassCount);
+            const years = Object.keys(groups).sort((a, b) => b.localeCompare(a));
+
+            years.forEach(yr => {
+                const yearGroup = document.createElement('div');
+                yearGroup.className = 'year-group';
+
+                const questions = groups[yr];
+                const splitCount = 30;
+                const chunks = [];
+                for (let i = 0; i < questions.length; i += splitCount) {
+                    chunks.push(questions.slice(i, i + splitCount));
+                }
+
+                let cardsHtml = '';
+                chunks.forEach((chunk, idx) => {
+                    const partName = `${idx + 1}부`;
+                    const cid = `cram_${yr}_${partName}`;
+                    const isPassed = localStorage.getItem(`passed_${cid}`) === "true";
+
+                    // Specific Card Pass Count (Always 1 or 0 for now in this mode)
+                    // But we can show a badge if passed
+                    const passBadge = isPassed ? `<div class="tier-badge">${currentTier.emoji}</div>` : '';
+                    const cardClass = isPassed ? `cram-card ${currentTier.class}` : 'cram-card';
+
+                    const startNum = (idx * splitCount) + 1;
+                    const endNum = startNum + chunk.length - 1;
+                    const range = `${startNum}~${endNum}`;
+                    cardsHtml += `
+                        <div class="${cardClass}">
+                            ${passBadge}
+                            <h4>${idx + 1}부</h4>
+                            <p style="color: #636e72; font-size: 0.8em; margin: 0 0 10px 0;">${chunk.length}문항 (${range}번)</p>
+                            <div class="actions">
+                                <div class="btn btn-study" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'study', '${yr}', '${idx + 1}부')">학습</div>
+                                <div class="btn btn-test" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'test', '${yr}', '${idx + 1}부')">실전</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                yearGroup.innerHTML = `
+                    <div class="year-badge">${yr}학년도</div>
+                    <div class="parts-container">
+                        ${cardsHtml}
+                    </div>
+                `;
+                container.appendChild(yearGroup);
+            });
+        }
+
+        // --- Tier & Rewards Logic ---
+        const TIERS = [
+            { threshold: 25, label: "숲 (Forest)", emoji: "🌳", class: "tier-7" },
+            { threshold: 20, label: "나무 (Tree)", emoji: "🌲", class: "tier-6" },
+            { threshold: 15, label: "열매 (Fruit)", emoji: "🍎", class: "tier-5" },
+            { threshold: 10, label: "꽃 (Flower)", emoji: "🌸", class: "tier-4" },
+            { threshold: 6, label: "잎새 (Leaf)", emoji: "🌿", class: "tier-3" },
+            { threshold: 3, label: "줄기 (Sprout)", emoji: "🌱", class: "tier-2" },
+            { threshold: 1, label: "새싹 (Seed)", emoji: "🌱", class: "tier-1" },
+            { threshold: 0, label: "입문자", emoji: "🐣", class: "tier-0" }
+        ];
+
+        function getStudentTier(passCount) {
+            return TIERS.find(t => passCount >= t.threshold);
+        }
+
+        // --- Navigation & Menu ---
+        function toggleDrawer(open) {
+            const drawer = document.getElementById('side-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+            if (open) {
+                drawer.classList.add('open');
+                overlay.classList.add('show');
+            } else {
+                drawer.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+        }
+
+        function handleDrawerAction(action) {
+            toggleDrawer(false);
+            if (action === 'ranking') {
+                document.getElementById('ranking-overlay').style.display = 'flex';
+                fetchRankingData();
+            } else if (action === 'previous') {
+                if (confirm('기존 3단계 대시보드(전체 단계)로 이동하시겠습니까?')) {
+                    window.location.href = 'study_app.html';
+                }
+            }
+        }
+
+        function initNavigation() {
+            // Placeholder for any navigation setup
+        }
+
+        window.toggleOverlay = function (id, show) {
+            const overlay = document.getElementById(id);
+            if (show) {
+                // Close others
+                document.querySelectorAll('.side-overlay').forEach(ov => ov.classList.remove('active'));
+                overlay.classList.add('active');
+                if (id === 'temp-overlay') updateTemperatureUI();
+                if (id === 'ranking-overlay') fetchRankingData();
+            } else {
+                overlay.classList.remove('active');
+            }
+        };
+
+        // --- Social Data Sync (Ranking & Temperature) ---
+        async function fetchRankingData() {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = '<p style="text-align: center; color: #636e72; padding: 20px;">데이터를 불러오는 중...</p>';
+
+            const displayName = document.getElementById('display-name');
+            const studentClass = currentUser ? currentUser.substring(0, 2) : "";
+            if (!CRAM_SCRIPT_URL || !studentClass) return;
+
+            try {
+                // Fetch from GAS with action=getRanking
+                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getRanking&class=${encodeURIComponent(studentClass)}`);
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    renderRanking(data.rankings);
+                } else {
+                    list.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">실시간 랭킹을 가져올 수 없습니다.</p>';
+                }
+            } catch (e) {
+                console.error("Ranking Sync Error:", e);
+                // Fallback: Mock data for testing
+                renderRanking([
+                    { name: "2701 홍길동", score: 95, passed: 12 },
+                    { name: currentUser, score: 88, passed: 5 },
+                    { name: "2703 김철수", score: 72, passed: 3 }
+                ]);
+            }
+        }
+
+        function renderRanking(rankings) {
+            const list = document.getElementById('ranking-list');
+            list.innerHTML = rankings.map((r, i) => `
+                <div style="display: flex; align-items: center; padding: 15px; border-bottom: 1px solid #f0f0f0; background: ${r.name.includes(currentUser) ? '#f1f2ff' : 'transparent'}">
+                    <div style="width: 30px; font-weight: 900; color: ${i < 3 ? '#6c5ce7' : '#b2bec3'}">${i + 1}</div>
+                    <div style="flex: 1; font-weight: 600;">${r.name}</div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 800; color: #d63031;">${r.score}점</div>
+                        <div style="font-size: 0.75rem; color: #636e72;">합격 ${r.passed}회</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateTemperatureUI() {
+            const fill = document.getElementById('temp-fill');
+            const sideVal = document.getElementById('side-temp-val'); // Renamed in HTML
+            const headerVal = document.getElementById('header-temp-val');
+            const stats = document.getElementById('temp-stats');
+
+            // New logic: 36.5 + (Correct * 2) - (Wrong * 1)
+            const temp = 36.5 + (statTotalCorrect * 2) - (statTotalWrong * 1);
+
+            // For gauge height, we can use a relative target like 100 for visual effect
+            const progress = Math.min(100, (temp / 100) * 100);
+
+            if (fill) fill.style.height = `${progress}%`;
+            if (sideVal) sideVal.textContent = `${temp.toFixed(1)}°C`;
+            if (headerVal) headerVal.textContent = `${temp.toFixed(1)}°C`;
+
+            stats.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span>누적 정답 (+2°C)</span>
+                    <span style="font-weight: 800; color: #00b894;">${statTotalCorrect}개</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span>누적 오답 (-1°C)</span>
+                    <span style="font-weight: 800; color: #d63031;">${statTotalWrong}개</span>
+                </div>
+            `;
+        }
+
+        async function syncInitialData() {
+            if (!CRAM_SCRIPT_URL || !currentUser) return;
+            try {
+                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getStudentData&name=${encodeURIComponent(currentUser)}`);
+                const data = await response.json();
+                if (data.status === 'success') {
+                    if (data.passedChapters) {
+                        data.passedChapters.forEach(cid => {
+                            localStorage.setItem(`passed_${cid}`, "true");
+                        });
+                    }
+                    statTotalCorrect = data.totalCorrect || 0;
+                    statTotalWrong = data.totalWrong || 0;
+
+                    renderDashboard(groupDataByYear()); // Re-render with new data
+                    updateTemperatureUI();
+                }
+            } catch (e) {
+                console.log("Initial Sync Error:", e);
+            }
+        }
+
+        function groupDataByYear() {
+            const yearGroups = {};
+            practiceData.chapters.forEach(ch => {
+                ch.questions.forEach(q => {
+                    const year = q.year || '기타';
+                    if (!yearGroups[year]) yearGroups[year] = [];
+                    yearGroups[year].push(q);
+                });
+            });
+            return yearGroups;
+        }
+        function getPraiseMessage(score, isPassed) {
+            const passMsgs = [
+                "대박! 당신은 정말 마스터 학습의 달인이군요! ⚡",
+                "합격! 이 기세를 몰아 실제 시험도 부숴버립시다! 👊",
+                "축하합니다! 완벽한 실력에 무릎을 탁 치고 갑니다! 👏",
+                "와우! 노력이 뱃지로 증명되었네요! 정말 멋져요! ✨",
+                "미쳤다! 이 점수 실화인가요? 당신은 천재예요! 🧠",
+                "축 합 격! 이제 다음 단계로 진화할 시간입니다! 🚀",
+                "정답 행렬이 예술이네요! 합격을 진심으로 축하해요! 🎨",
+                "훌륭합니다! 끈기가 만들어낸 달콤한 결실이네요! 🍯",
+                "완벽해요! 당신의 집중력은 정말 보물급입니다! 💎",
+                "Bravo! 오늘 하루 최고의 성취감을 만끽하세요! 🎉"
+            ];
+            const failMsgs = [
+                "아쉽네요! 하지만 실수는 성장의 밑거름이 될 거예요. 🌱",
+                "조금만 더! 목표까지 정말 한 끗 차이었어요. 💪",
+                "괜찮아요. 실패는 성공을 위한 리허설일 뿐입니다! 🎬",
+                "포기하지 마세요! 당신의 열정은 아직 식지 않았습니다. 🔥"
+            ];
+
+            if (isPassed) {
+                return passMsgs[Math.floor(Math.random() * passMsgs.length)];
+            } else {
+                return score >= 70 ? "아깝습니다! 조금만 더 세밀하게 복습하면 바로 합격이에요! ✨" : failMsgs[Math.floor(Math.random() * failMsgs.length)];
+            }
+        }
+
+        // --- Utils ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // --- Session Manager ---
+        window.startSession = function (questions, mode, year, part) {
+            showLoading(true);
+            currentMode = mode;
+            userAnswers = {};
+            currentChapterId = `cram_${year}_${part}`;
+            currentChapterTitle = `${year} ${part}`;
+
+            // Reset Idle stats for new session
+            idleCount = 0;
+            totalIdleDurationMs = 0;
+            isIdle = false;
+            if (idleTimer) clearTimeout(idleTimer);
+            document.getElementById('idle-flicker').style.display = 'none';
+
+            // Watermark & Security
+            const watermark = document.getElementById('main-watermark');
+            watermark.textContent = currentUser + " - 3D스터디 마스터 학습";
+            watermark.style.display = 'block';
+
+            initIdleDetection();
+
+            // Deep copy and prepare choices
+            currentQuestions = questions.map(q => {
+                const newQ = JSON.parse(JSON.stringify(q));
+                const answerText = newQ.answer || "";
+                let correctIdx = -1;
+
+                // Determine numeric correct index (0-3)
+                if (answerText.includes("1") || answerText.includes("①")) correctIdx = 0;
+                else if (answerText.includes("2") || answerText.includes("②")) correctIdx = 1;
+                else if (answerText.includes("3") || answerText.includes("③")) correctIdx = 2;
+                else if (answerText.includes("4") || answerText.includes("④")) correctIdx = 3;
+                newQ.correctOriginalIndex = correctIdx;
+
+                // Create shuffled choices objects
+                newQ.shuffledChoices = newQ.choices.map((c, i) => ({
+                    text: c.replace(/^[①②③④❶❷❸❹❺\(\d+\)\d+\)]\s*/, ''),
+                    originalIndex: i
+                }));
+                shuffleArray(newQ.shuffledChoices);
+                return newQ;
+            });
+
+            setTimeout(() => {
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('main-header').style.display = 'none';
+                document.getElementById('quiz-area').style.display = 'block';
+                document.getElementById('progress-info').style.display = 'block'; // Show progress info
+                document.getElementById('submit-btn').style.display = mode === 'test' ? 'inline-block' : 'none';
+
+                renderQuiz();
+                updateProgress(); // Initial progress
+
+                window.scrollTo(0, 0);
+                showLoading(false);
+            }, 600);
+        };
+
+        function updateProgress() {
+            const total = currentQuestions.length;
+            const answered = Object.keys(userAnswers).length;
+            const infoEl = document.getElementById('progress-info');
+
+            if (currentMode === 'study') {
+                infoEl.textContent = `학습 모드 : ${total}문제`;
+            } else {
+                infoEl.innerHTML = `진행도: <span style="color: #6c5ce7; font-size: 1.2em;">${answered}</span> / ${total}`;
+            }
+        }
+
+        function renderQuiz() {
+            const list = document.getElementById('quiz-list');
+            list.innerHTML = '';
+
+            currentQuestions.forEach((q, idx) => {
+                const card = document.createElement('div');
+                card.className = 'question-card' + (currentMode === 'study' ? ' ans-visible' : '');
+                card.id = `q-card-${idx}`;
+
+                // Find where the correct answer ended up after shuffling
+                const correctShuffledIdx = q.shuffledChoices.findIndex(c => c.originalIndex === q.correctOriginalIndex);
+
+                const choicesHtml = q.shuffledChoices.map((c, cIdx) => {
+                    let className = 'c-item';
+                    if (currentMode === 'study' && cIdx === correctShuffledIdx) {
+                        className += ' correct';
+                    }
+                    return `<li class="${className}" id="q-${idx}-c-${cIdx}" onclick="selectChoice(${idx}, ${cIdx})" onmousedown="return false;">
+                        <span style="font-weight: 700;">${cIdx + 1}.</span> ${c.text}
+                    </li>`;
+                }).join('');
+
+                card.innerHTML = `
+                    <div class="q-num">Q. ${idx + 1}</div>
+                    <div class="question-canvas-container" id="q-canvas-${idx}"></div>
+                    <ul class="c-list">${choicesHtml}</ul>
+                    <div class="ans-box" id="ans-box-${idx}">
+                        <div style="color: #00b894; font-weight: 800; margin-bottom: 8px;">정답: ${correctShuffledIdx + 1}번</div>
+                        <div style="font-size: 0.95em; color: #636e72; line-height: 1.6;">${q.explanation || '해설이 없습니다.'}</div>
+                    </div>
+                `;
+                list.appendChild(card);
+
+                // Render question text to canvas for security
+                renderTextToCanvas(`q-canvas-${idx}`, q.question);
+            });
+        }
+
+        window.selectChoice = function (qIdx, cIdx) {
+            if (currentMode === 'study') return;
+
+            const options = document.querySelectorAll(`[id^="q-${qIdx}-c-"]`);
+            options.forEach(opt => opt.classList.remove('selected'));
+
+            document.getElementById(`q-${qIdx}-c-${cIdx}`).classList.add('selected');
+
+            // Remove un-answered highlight if any
+            document.getElementById(`q-card-${qIdx}`).style.border = 'none';
+
+            userAnswers[qIdx] = cIdx + 1;
+            updateProgress(); // Update progress on selection
+        };
+
+        window.submitTest = function () {
+            let unanswered = [];
+            currentQuestions.forEach((_, idx) => {
+                if (!userAnswers[idx]) unanswered.push(idx);
+            });
+
+            if (unanswered.length > 0) {
+                if (!confirm(`아직 풀지 않은 문제가 ${unanswered.length}개 있습니다. 제출할까요?`)) {
+                    // Highlight first unanswered
+                    const firstIdx = unanswered[0];
+                    document.getElementById(`q-card-${firstIdx}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    unanswered.forEach(idx => {
+                        document.getElementById(`q-card-${idx}`).style.border = '2px solid #ff4757';
+                    });
+                    return;
+                }
+            }
+
+            let score = 0;
+            currentQuestions.forEach((q, idx) => {
+                const correctOrigIdx = q.correctOriginalIndex;
+                const selectedShuffledIdx = userAnswers[idx] - 1;
+
+                const card = document.getElementById(`q-card-${idx}`);
+                card.classList.add('ans-visible');
+                card.style.border = 'none'; // Clear any unanswered highlights
+
+                const correctShuffledIdx = q.shuffledChoices.findIndex(c => c.originalIndex === correctOrigIdx);
+                const correctEl = document.getElementById(`q-${idx}-c-${correctShuffledIdx}`);
+
+                if (userAnswers[idx]) {
+                    const selectedEl = document.getElementById(`q-${idx}-c-${selectedShuffledIdx}`);
+                    if (selectedShuffledIdx === correctShuffledIdx) {
+                        score++;
+                        if (selectedEl) selectedEl.classList.add('correct');
+                    } else {
+                        if (selectedEl) selectedEl.classList.add('incorrect');
+                        if (correctEl) correctEl.classList.add('correct');
+                    }
+                } else {
+                    // Not answered: highlight correct answer in yellow-ish
+                    if (correctEl) correctEl.classList.add('correct');
+                }
+            });
+
+            const percent = Math.round((score / currentQuestions.length) * 100);
+
+            // --- Progressive Threshold Logic ---
+            const thresholdKey = `threshold_${currentChapterId}`;
+            let currentThreshold = parseInt(localStorage.getItem(thresholdKey)) || 24; // Default 24 (80%)
+            const isPassed = score >= currentThreshold;
+
+            if (isPassed && currentMode === 'test') {
+                const nextThreshold = Math.min(30, score + 2);
+                localStorage.setItem(thresholdKey, nextThreshold);
+
+                // Mark as passed for Tier system
+                localStorage.setItem(`passed_${currentChapterId}`, "true");
+            }
+
+            document.getElementById('result-title').textContent = isPassed ? "🎉 목표 달성! 합격" : "📉 목표 미달.. 불합격";
+            document.getElementById('score-display').textContent = percent + '점';
+            const unansweredText = unanswered.length > 0 ? ` (미풀이 ${unanswered.length}개)` : '';
+            document.getElementById('correct-count').innerHTML = `
+                맞춘 개수: ${score} / ${currentQuestions.length}${unansweredText}<br>
+                <span style="color: #6c5ce7; font-size: 0.9em; display: block; margin-top: 5px;">
+                    이번 목표: ${currentThreshold}개 문항 정답
+                </span>
+            `;
+
+            const praiseMsg = getPraiseMessage(percent, isPassed);
+            document.getElementById('praise-message').textContent = praiseMsg;
+            document.getElementById('score-overlay').style.display = 'flex';
+
+            document.getElementById('submit-btn').style.display = 'none';
+            window.scrollTo(0, 0);
+
+            // --- Auto Sync to Google Sheet (Detailed Info + Idle Stats) ---
+            const currentWrongList = currentQuestions
+                .map((q, i) => !userAnswers[i] || (q.shuffledChoices[userAnswers[i] - 1].originalIndex !== q.correctOriginalIndex) ? `Q${i + 1}` : null)
+                .filter(v => v !== null);
+
+            const wrongList = currentWrongList.join(', ');
+
+            // Update local stats for immediate temperature feedback
+            const currentWrongCount = currentWrongList.length;
+            const currentCorrectCount = currentQuestions.length - currentWrongCount;
+
+            statTotalCorrect += currentCorrectCount;
+            statTotalWrong += currentWrongCount;
+            updateTemperatureUI(); // Immediate UI feedback
+
+            // Calculate duration (Adjusted for Idle time)
+            let durationMin = 0;
+            let startTimeStr = "N/A";
+            if (sessionStartTime) {
+                const endTime = new Date();
+                let rawDurationMs = endTime - sessionStartTime;
+
+                // If currently idle, add current idle period to total
+                let currentTotalIdle = totalIdleDurationMs;
+                if (isIdle && idleStartTime) {
+                    currentTotalIdle += (endTime - idleStartTime);
+                }
+
+                let actualStudyMs = rawDurationMs - currentTotalIdle;
+                durationMin = Math.max(0, Math.round(actualStudyMs / (1000 * 60)));
+                startTimeStr = sessionStartTime.toLocaleTimeString('ko-KR');
+            }
+
+            if (CRAM_SCRIPT_URL) {
+                fetch(CRAM_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({
+                        name: currentUser,
+                        score: percent,
+                        chapter: currentChapterTitle + " (마스터 학습)",
+                        wrong_questions: wrongList || "없음",
+                        startTime: startTimeStr,
+                        duration: durationMin,
+                        idleCount: idleCount
+                    })
+                }).catch(err => console.error("Sync Error:", err));
+            }
+        };
+
+        function getPraiseMessage(score) {
+            const high = [
+                "와우! 완벽에 가까운 실력이에요! 🎯\n이대로라면 합격은 따놓은 당상이네요!",
+                "대단해요! 거의 모든 문제를 마스터하셨군요! 🌟\n노력이 빛을 발하고 있어요.",
+                "천재 아니신가요? 정말 놀라운 점수입니다! 🔥\n자신감을 가지고 시험장에 가셔도 되겠어요!"
+            ];
+            const mid = [
+                "안정적인 실력이시네요! 조금만 더 하면 완벽합니다. 👍\n틀린 문제 위주로 한 번 더 체크해 보세요!",
+                "합격권 점수입니다! 정말 잘하셨어요. 😊\n꾸준함이 최고의 무기입니다.",
+                "좋은 성적이에요! 역시 집중력이 대단하시네요. ✅\n이 페이스를 유지해 보세요!"
+            ];
+            const low = [
+                "괜찮아요! 지금의 노력이 최고의 밑거름이 될 거예요. 🌱\n해설을 보며 차근차근 복습해 봅시다!",
+                "조금 더 집중해 볼까요? 당신의 잠재력을 믿어요! 💪\n포기하지 않는 마음이 가장 중요합니다.",
+                "실망하지 마세요! 많이 틀려봐야 나중에 안 틀려요. 📖\n다시 한번 도전해 볼까요?"
+            ];
+
+            if (score >= 90) return high[Math.floor(Math.random() * high.length)];
+            if (score >= 60) return mid[Math.floor(Math.random() * mid.length)];
+            return low[Math.floor(Math.random() * low.length)];
+        }
+
+        window.closeScoreOverlay = function () {
+            document.getElementById('score-overlay').style.display = 'none';
+        };
+
+        window.quitQuiz = function () {
+            if (confirm('학습을 종료하고 대시보드로 돌아갈까요?')) {
+                document.getElementById('dashboard').style.display = 'grid';
+                document.getElementById('main-header').style.display = 'flex';
+                document.getElementById('quiz-area').style.display = 'none';
+                document.getElementById('progress-info').style.display = 'none';
+                document.getElementById('submit-btn').style.display = 'none';
+                document.getElementById('main-watermark').style.display = 'none';
+                window.scrollTo(0, 0);
+            }
+        };
+
+        // --- PC Shortcuts ---
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('quiz-area').style.display === 'block') {
+                if (e.key === 'Escape') quitQuiz();
+                if (e.key === ' ' || e.key === 'Enter') {
+                    const submitBtn = document.getElementById('submit-btn');
+                    if (submitBtn.style.display !== 'none') {
+                        e.preventDefault();
+                        submitTest();
+                    }
+                }
+            }
+        });
+
+        // Init
+        window.onload = initApp;
+    </script>
+</body>
+
+</html>

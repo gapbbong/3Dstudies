@@ -32,6 +32,10 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
 }
 
 /* Header - Removed "3D Printer Study" area, minimal height */
@@ -665,8 +669,28 @@ body.dark-mode .option-button.wrong {
 }
 
 * {
-    user-select: none;
-    -webkit-user-select: none;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* Capture Protection Blur */
+.capture-blur {
+    filter: blur(20px) !important;
+    pointer-events: none !important;
+    transition: filter 0.3s ease;
+}
+
+/* Version Badge in Dashboard */
+.version-badge {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Report Modal specific textarea */
+#report-message {
+    font-size: 0.9em;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--secondary-color);
 }
 
 /* 오답노트 입력칸 → 핵심 이론과 동일한 굵기 + 크기 적용 */
@@ -1095,71 +1119,85 @@ body.dark-mode .qna-input-area {
     -moz-user-select: none;
     -ms-user-select: none;
 }
+
 /* 모바일 화면 최적화 */
 @media (max-width: 600px) {
     .side-nav-btn {
-        width: 40px;   /* 절반 */
-        height: 40px;  /* 절반 */
+        width: 40px;
+        /* 절반 */
+        height: 40px;
+        /* 절반 */
         padding: 8px;
     }
 
     .side-nav-btn .btn-icon {
-        font-size: 1em; /* 아이콘도 줄임 */
+        font-size: 1em;
+        /* 아이콘도 줄임 */
     }
 
     .side-nav-btn .btn-text {
-        font-size: 0.6em; /* 텍스트도 줄임 */
+        font-size: 0.6em;
+        /* 텍스트도 줄임 */
     }
 }
+
 @media (max-width: 600px) {
     .user-info {
-        font-size: 0.75em !important;  /* 1/4 크기 */
+        font-size: 0.75em !important;
+        /* 1/4 크기 */
         padding: 3px 10px;
         border-width: 2px;
     }
-	.theory-content {
-    max-height: 25vh;    /* 화면의 절반 높이 */
-    overflow-y: auto;    /* 내용이 넘치면 스크롤 */
-  }
+
+    .theory-content {
+        max-height: 25vh;
+        /* 화면의 절반 높이 */
+        overflow-y: auto;
+        /* 내용이 넘치면 스크롤 */
+    }
 }
 
 /* 모바일 화면(가로 600px 이하) 전용 스타일 */
 @media (max-width: 600px) {
-  
-  /* 제목, 파트번호, 학번·이름 텍스트 축소 */
-  .title,
-  .subtitle,
-  .student-info,
-  .part-number,
-  .temperature-text {
-    font-size: 0.75rem;  /* 기존 대비 약 1/4~1/3 축소 */
-    line-height: 1.2;    /* 줄간격 약간 줄임 (기본 1.4~1.6보다 촘촘) */
-  }
 
-  /* 따라쓰기 본문 텍스트도 조금 축소 */
-  .typing-content,
-  .theory-text,
-  .question-text {
-    font-size: 0.85rem;
-    line-height: 1.25;
-  }
+    /* 제목, 파트번호, 학번·이름 텍스트 축소 */
+    .title,
+    .subtitle,
+    .student-info,
+    .part-number,
+    .temperature-text {
+        font-size: 0.75rem;
+        /* 기존 대비 약 1/4~1/3 축소 */
+        line-height: 1.2;
+        /* 줄간격 약간 줄임 (기본 1.4~1.6보다 촘촘) */
+    }
 
-  /* 오른쪽 사이드버튼 전체 크기 축소 */
-  .side-button {
-    transform: scale(0.5);   /* 버튼 크기 절반 */
-    transform-origin: center right;
-  }
+    /* 따라쓰기 본문 텍스트도 조금 축소 */
+    .typing-content,
+    .theory-text,
+    .question-text {
+        font-size: 0.85rem;
+        line-height: 1.25;
+    }
 
-  /* 필요하면 버튼 사이 간격도 축소 */
-  .side-button + .side-button {
-    margin-top: 4px;
-  }
+    /* 오른쪽 사이드버튼 전체 크기 축소 */
+    .side-button {
+        transform: scale(0.5);
+        /* 버튼 크기 절반 */
+        transform-origin: center right;
+    }
+
+    /* 필요하면 버튼 사이 간격도 축소 */
+    .side-button+.side-button {
+        margin-top: 4px;
+    }
 }
+
 /* 문제/보기 텍스트 복사 방지 */
 .question-text,
 .choices,
 .question-item {
-  user-select: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
 }

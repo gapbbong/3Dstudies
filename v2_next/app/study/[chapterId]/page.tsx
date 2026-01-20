@@ -16,6 +16,7 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
     const { chapterId } = use(params);
     const [phase, setPhase] = useState<'theory' | 'quiz' | 'result'>('theory');
     const [chapter, setChapter] = useState<Chapter | null>(null);
+    const [config, setConfig] = useState({ passScore: 0.8, theoryAttempts: 2 });
     const [theoryAttempts, setTheoryAttempts] = useState(0);
     const [isRecallSelection, setIsRecallSelection] = useState(false);
     const [isRecallMode, setIsRecallMode] = useState(false);
@@ -26,25 +27,36 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
     });
 
     useEffect(() => {
-        const loadChapter = async () => {
+        const loadData = async () => {
             try {
-                const res = await fetch(`/api/quiz/${chapterId}`);
-                if (!res.ok) throw new Error('Failed to load');
-                const data = await res.json();
-                setChapter(data);
+                // 1. Load Chapter
+                const chRes = await fetch(`/api/quiz/${chapterId}`);
+                if (!chRes.ok) throw new Error('Failed to load chapter');
+                const chData = await chRes.json();
+                setChapter(chData);
+
+                // 2. Load Student Config
+                const currentUser = localStorage.getItem('currentUser');
+                if (currentUser) {
+                    const cfgRes = await fetch(`/api/quiz/student-config?name=${encodeURIComponent(currentUser)}`);
+                    if (cfgRes.ok) {
+                        const cfgData = await cfgRes.json();
+                        setConfig(cfgData);
+                    }
+                }
             } catch (error) {
-                console.error('Failed to load chapter:', error);
+                console.error('Failed to load study data:', error);
                 router.push('/dashboard');
             }
         };
-        loadChapter();
+        loadData();
     }, [chapterId, router]);
 
     const handleTheoryComplete = () => {
         const nextCount = theoryAttempts + 1;
         setTheoryAttempts(nextCount);
 
-        if (nextCount >= 2) {
+        if (nextCount >= config.theoryAttempts) {
             setPhase('quiz');
         } else {
             setIsRecallSelection(true);
@@ -60,7 +72,7 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
         if (!chapter) return;
         const finalScore = result.score;
         setScore(finalScore);
-        const passed = finalScore / chapter.questions.length >= 0.8;
+        const passed = finalScore / chapter.questions.length >= config.passScore;
 
         const correctCount = finalScore;
         const wrongCount = chapter.questions.length - correctCount;
@@ -103,7 +115,7 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
                         <h1 className="text-xl font-bold text-white mb-1">{chapter.title}</h1>
                         <div className="flex items-center justify-end gap-2">
                             <p className="text-slate-500 text-sm">
-                                {phase === 'theory' ? `이론 학습 (시도: ${theoryAttempts}/2)` : '실전 퀴즈'}
+                                {phase === 'theory' ? `이론 학습 (시도: ${theoryAttempts}/${config.theoryAttempts})` : '실전 퀴즈'}
                             </p>
                             <span className="text-[10px] text-slate-600 font-mono">v1.0.2</span>
                         </div>

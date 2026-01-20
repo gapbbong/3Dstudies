@@ -121,6 +121,43 @@ function restoreReviewState() {
     return false;
 }
 
+async function applyOverwrites() {
+    try {
+        const response = await fetch(`${GOOGLE_SCRIPT_URL}?type=get_overwrites`);
+        const json = await response.json();
+        if (json.status === 'success' && json.data) {
+            json.data.forEach(ov => {
+                // Find chapter
+                let chapter = appData.chapters.find(c => c.id === ov.chapterId);
+                if (!chapter && typeof practiceData !== 'undefined') chapter = practiceData.chapters.find(c => c.id === ov.chapterId);
+                if (!chapter && typeof advancedData !== 'undefined') chapter = advancedData.chapters.find(c => c.id === ov.chapterId);
+
+                if (chapter && chapter.questions) {
+                    const question = chapter.questions[ov.questionId - 1]; // Assuming 1-indexed for teachers
+                    if (question) {
+                        if (ov.field === 'question') question.question = ov.newValue;
+                        if (ov.field === 'answer') question.answer = ov.newValue;
+                        if (ov.field.startsWith('choice')) {
+                            const idx = parseInt(ov.field.replace('choice', '')) - 1;
+                            if (question.choices && question.choices[idx] !== undefined) {
+                                question.choices[idx] = ov.newValue;
+                            }
+                        }
+                    }
+                }
+            });
+            console.log('Applied overwrites:', json.data.length);
+        }
+    } catch (e) {
+        console.error("Failed to apply overwrites:", e);
+    }
+}
+
+// Initialize on start
+document.addEventListener('DOMContentLoaded', () => {
+    applyOverwrites();
+});
+
 // --- Dashboard Functions ---
 function initDashboard() {
     const basicGrid = document.getElementById('basic-chapter-grid');
@@ -503,10 +540,104 @@ function selectChoice(qIdx, cIdx) {
     }
 }
 
-function showScreen(screenId) {
+// --- Error Reporting Logic ---
+let longPressTimer = null;
+function startLongPress(e, qId) {
+    longPressTimer = setTimeout(() => {
+        openReportModal(qId);
+    }, 2000); // 2 seconds
+}
+
+function clearLongPress() {
+    if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+    }
+}
+
+function openReportModal(qId) {
+    const q = currentQuestions.find(q => q.id === qId || currentQuestions.indexOf(q) === qId);
+    const qIdx = currentQuestions.indexOf(q);
+    const reportModal = document.getElementById('report-modal');
+    const info = document.getElementById('report-q-info');
+    info.textContent = `${currentChapterId.toUpperCase()} - ${qIdx + 1}번 문항`;
+    reportModal.dataset.qId = qId;
+    reportModal.dataset.qIdx = qIdx;
+    reportModal.style.display = 'block';
+}
+
+function closeReportModal() {
+    document.getElementById('report-modal').style.display = 'none';
+    document.getElementById('report-message').value = '';
+}
+
+async function confirmReport() {
+    const modal = document.getElementById('report-modal');
+    const qId = modal.dataset.qId;
+    const qIdx = parseInt(modal.dataset.qIdx);
+    const message = document.getElementById('report-message').value;
+    const q = currentQuestions[qIdx];
+
+    showLoading("신고 전송 중...");
+    try {
+        const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                type: 'report_error',
+                user: currentUser,
+                chapterId: currentChapterId,
+                questionId: qId || (qIdx + 1),
+                questionText: q.question,
+                message: message
+            })
+        });
+        const json = await response.json();
+        hideLoading();
+        if (json.status === 'success') {
+            alert('오류 신고가 접수되었습니다. 감사합니다!');
+            closeReportModal();
+        } else {
+            alert('신고 전송 실패: ' + json.message);
+        }
+    } catch (e) {
+        hideLoading();
+        alert('신고 전송 중 네트워크 오류가 발생했습니다.');
+    }
+}
+
+// --- Logout Logic ---
+function logout() {
+    if (confirm("정말 로그아웃 하시겠습니까?")) {
+        localStorage.removeItem('lastUsername');
+        localStorage.removeItem('pendingReviewState');
+        location.reload();
+    }
+}
+
+// --- History Management for Back Button ---
+window.addEventListener('popstate', function (event) {
+    if (event.state && event.state.screen) {
+        showScreen(event.state.screen, false); // false = don't push state again
+    } else {
+        // If no state (e.g. initial load), default to dashboard or login
+        // But if we are logged in, we probably want dashboard.
+        if (currentUser) {
+            showScreen('dashboard-screen', false);
+        } else {
+            showScreen('login-screen', false);
+        }
+    }
+});
+
+function showScreen(screenId, addHistory = true) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
     window.scrollTo(0, 0);
+
+    // Update History
+    if (addHistory) {
+        history.pushState({ screen: screenId }, null, null);
+    }
 
     // Show/hide hint button based on screen
     const hintBtn = document.getElementById('hint-btn');
@@ -803,12 +934,57 @@ function renderQuestionCanvas(container, text) {
     ctx.font = `bold ${fontSize}px Arial`;
     ctx.fillStyle = '#1e40af';
 
+    // 🔒 OCR 방해 노이즈 추가
+    addCanvasNoise(ctx, canvas.width, canvas.height);
+
     lines.forEach((l, i) => {
         ctx.fillText(l, 20, 35 + i * lineHeight);
     });
 
+    // 🔒 롱프레스 이벤트 연결
+    canvas.onmousedown = (e) => startLongPress(e, text);
+    canvas.onmouseup = clearLongPress;
+    canvas.onmouseleave = clearLongPress;
+    canvas.ontouchstart = (e) => startLongPress(e, text);
+    canvas.ontouchend = clearLongPress;
+
     container.appendChild(canvas);
 }
+
+function addCanvasNoise(ctx, width, height) {
+    // 1. 미세한 점 노이즈
+    for (let i = 0; i < 500; i++) {
+        ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
+        ctx.fillRect(Math.random() * width, Math.random() * height, 1, 1);
+    }
+    // 2. 옅은 워터마크
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "rgba(200, 200, 200, 0.1)";
+    for (let y = 0; y < height; y += 50) {
+        for (let x = 0; x < width; x += 100) {
+            ctx.fillText("3D STUDY", x, y);
+        }
+    }
+}
+
+// 🔒 캡처/이탈 보호 (Focus/Blur)
+window.addEventListener('blur', () => {
+    const overlay = document.getElementById('capture-protect-overlay');
+    const main = document.querySelector('main');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        if (main) main.classList.add('capture-blur');
+    }
+});
+
+window.addEventListener('focus', () => {
+    const overlay = document.getElementById('capture-protect-overlay');
+    const main = document.querySelector('main');
+    if (overlay) {
+        overlay.style.display = 'none';
+        if (main) main.classList.remove('capture-blur');
+    }
+});
 
 // --- Real-time Highlight Logic ---
 function renderTheoryText(text, target) {
@@ -919,7 +1095,9 @@ function login() {
                 const qnaBtn = document.getElementById('qna-btn');
                 if (qnaBtn) qnaBtn.style.display = 'flex';
 
-                showScreen('dashboard-screen');
+                // Initial History State for Dashboard
+                history.replaceState({ screen: 'dashboard-screen' }, null, null);
+                showScreen('dashboard-screen', false);
             }, 500);
             return;
         }
@@ -982,7 +1160,9 @@ function login() {
                     const qnaBtn = document.getElementById('qna-btn');
                     if (qnaBtn) qnaBtn.style.display = 'flex';
 
-                    showScreen('dashboard-screen');
+                    // Initial History State for Dashboard
+                    history.replaceState({ screen: 'dashboard-screen' }, null, null);
+                    showScreen('dashboard-screen', false);
                 } else {
                     hideLoading();
                     alert('데이터 로드 실패: ' + json.message);

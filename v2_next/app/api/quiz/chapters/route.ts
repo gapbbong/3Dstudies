@@ -1,21 +1,14 @@
+
 import { NextResponse } from 'next/server';
-import { db, Chapter } from '@/lib/db';
+import practiceData from '@/data/data_practice';
 
 export async function GET() {
-    try {
-        const chapters = await db.chapter.findMany();
+    // Only return titles and IDs, NO QUESTIONS
+    const chapters = practiceData.chapters.map((ch: any, index: number) => ({
+        id: ch.id || `ch-${index}`,
+        title: ch.title || `Chapter ${index + 1}`,
+        type: (ch.id?.startsWith('part9') || index >= 8) ? 'practice' : 'basic',
+    }));
 
-        // Map to simplified structure for dashboard
-        const dashboardChapters = chapters.map((ch: Chapter) => ({
-            id: ch.id,
-            title: ch.title,
-            type: ch.type || 'basic',
-            questionCount: ch.questions.length
-        }));
-
-        return NextResponse.json(dashboardChapters);
-    } catch (error) {
-        console.error('Failed to fetch chapters:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-    }
+    return NextResponse.json(chapters);
 }

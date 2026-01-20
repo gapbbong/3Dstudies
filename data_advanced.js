@@ -23,7 +23,7 @@ const advancedData = {
         {
           "year": "2018",
           "number": "02",
-          "question": "다음 설명에 해당하는 데이터 포맷은?",
+          "question": "다음 설명에 해당하는 데이터 포맷은?\n\n• 최초의 3D 출력 표준 포맷이다.\n• 형상 데이터를 나타내는 엔티티(Entity)로 이루어져 있다.\n• 점, 선, 원, 자유곡선, 자유곡면 등 3차원 모델의 기하 모든 정보를 포함한다.",
           "choices": [
             "XYZ",
             "IGES",
@@ -120,10 +120,10 @@ const advancedData = {
             "③",
             "④"
           ],
-          "answer": "1",
-          "explanation": "①번 그림이 평행 조건에 해당한다.",
+          "answer": "3",
+          "explanation": "③번 그림이 평행 조건에 해당한다.",
           "full_block": "{\n    \"number\": \"08\",\n    \"question\": \"그림의 구속조건 중 도형의 평행(Parallel) 조건을 부여하는 것은?\",\n    \"choices\": [\n        \"①\",\n        \"②\",\n        \"③\",\n        \"④\"\n    ],\n    \"answer\": 1,\n    \"explanation\": \"①번 그림이 평행 조건에 해당한다.\"\n}",
-          "image": null
+          "image": "images/2018_q08.png"
         },
         {
           "year": "2018",
@@ -143,7 +143,7 @@ const advancedData = {
         {
           "year": "2018",
           "number": "10",
-          "question": "다음 그림 기호에 해당하는 투상도법은?",
+          "question": "다음 그림 기호에 해당하는 투상도법은?\n\n[그림: 원뿔과 원이 나란히 배치된 투상법 기호]",
           "choices": [
             "제1각법",
             "제2각법",
@@ -153,7 +153,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "제1각법은 물체–투상 순서, 제3각법은 투상–물체 순서로 표시한다. 그림은 제3각법에 해당한다.",
           "full_block": "{\n    \"number\": \"10\",\n    \"question\": \"다음 그림 기호에 해당하는 투상도법은?\",\n    \"choices\": [\n        \"제1각법\",\n        \"제2각법\",\n        \"제3각법\",\n        \"제4각법\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"제1각법은 물체–투상 순서, 제3각법은 투상–물체 순서로 표시한다. 그림은 제3각법에 해당한다.\"\n}",
-          "image": null
+          "image": "images/2018_q10.png"
         },
         {
           "year": "2018",
@@ -1967,12 +1967,12 @@ const advancedData = {
           "answer": "3",
           "explanation": "분할 시 서로 맞물려 결합 안정성이 좋은 구조가 적절.",
           "full_block": "{\n    \"number\": \"10\",\n    \"question\": \"3D프린터 출력 시 분할하여 출력하고자 할 때 가장 적절한 방법(분할 선)은?\",\n    \"choices\": [\n        \"① 그림 1\",\n        \"② 그림 2\",\n        \"③ 그림 3\",\n        \"④ 그림 4\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"분할 시 서로 맞물려 결합 안정성이 좋은 구조가 적절.\"\n}",
-          "image": null
+          "image": "images/2020_1_q10.png"
         },
         {
           "year": "2020_1",
           "number": "11",
-          "question": "다음에서 설명하는 3D프린터 소재로 옳은 것은?",
+          "question": "다음에서 설명하는 3D프린터 소재로 옳은 것은?\n\n• 옥수수를 제료로 사용 추출물을 이용하여 만든 소재이다.\n• 중금 간에 오염 기단이 폐기물에 상대적으로 적다.\n• 출력 시 히팅 필요가 없어 설치 시 용이하다.\n• 출력 시 냄새가 거의 없다.",
           "choices": [
             "PLA",
             "ABS",
@@ -2387,7 +2387,7 @@ const advancedData = {
           "answer": "4",
           "explanation": "제시된 그림에서 Island만 다른 구조이다.",
           "full_block": "{\n    \"number\": \"38\",\n    \"question\": \"다음 중 지지대의 형상과 형상이 서로 다른 것은?\",\n    \"choices\": [\n        \"Overhang\",\n        \"Ceiling\",\n        \"Base\",\n        \"Island\"\n    ],\n    \"answer\": 4,\n    \"explanation\": \"제시된 그림에서 Island만 다른 구조이다.\"\n}",
-          "image": null
+          "image": "images/2020_1_q38.png"
         },
         {
           "year": "2020_1",
@@ -2799,12 +2799,12 @@ const advancedData = {
           "answer": "2",
           "explanation": "최소 분할로 지지대(서포터)가 생기지 않도록 해야 한다. 해당 형상은 4분할이 가장 적합하다.",
           "full_block": "{\n    \"number\": \"05\",\n    \"question\": \"다음 형상을 파트 분할하여 출력하는 경우 가장 적합한 분할 방법은?\",\n    \"choices\": [\n        \"2분할\",\n        \"4분할\",\n        \"3분할\",\n        \"2분할(다른 구조)\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"최소 분할로 지지대(서포터)가 생기지 않도록 해야 한다. 해당 형상은 4분할이 가장 적합하다.\"\n}",
-          "image": null
+          "image": "images/2020_2_q05.png"
         },
         {
           "year": "2020_2",
           "number": "06",
-          "question": "다음에서 설명하는 소재는 무엇인가? (열가소성 수지, 열경화성 수지 내용 비교)",
+          "question": "다음에서 설명하는 소재는 무엇인가?\n\n[표: 열가소성 수지와 열경화성 수지 비교]\n- 열가소성 수지: 반복 가열 시 성형 가능, 가열 시 연화, 온도 상승 시 연화 및 용융, 플라스틱 제품 제조에 널리 사용\n- 열경화성 수지: 반복 가열 시 성형 불가, 가열 시 경화, 온도 상승 시 탄화 및 분해, 플라스틱 제품 제조에 일부 사용",
           "choices": [
             "세라믹",
             "알루미늄",
@@ -2864,7 +2864,7 @@ const advancedData = {
         {
           "year": "2020_2",
           "number": "10",
-          "question": "아래에서 설명하는 방식은? (합집합, 교집합, 차집합으로 새로운 개체 생성)",
+          "question": "아래에서 설명하는 방식은?\n\n- 기본 객체들을 이용하여 합집합을 적용하여 새로운 객체를 만드는 방법이다.\n- 집합 연산은 합집합, 교집합, 차집합이 있다.\n- 피연산자의 순서를 바꾸면 합집합과 교집합은 같지만, 차집합은 달라진다.\n- 기본 객체들은 다른 객체와 인접하거나, 차집합을 통해 새로운 객체가 만들어진다.",
           "choices": [
             "폴리곤 방식",
             "CSG 방식",
@@ -2874,7 +2874,7 @@ const advancedData = {
           "answer": "2",
           "explanation": "CSG(Constructive Solid Geometry)는 기본 형상(Primitives)을 합집합·교집합·차집합하여 새로운 형상을 만드는 방식이다.",
           "full_block": "{\n    \"number\": \"10\",\n    \"question\": \"아래에서 설명하는 방식은? (합집합, 교집합, 차집합으로 새로운 개체 생성)\",\n    \"choices\": [\n        \"폴리곤 방식\",\n        \"CSG 방식\",\n        \"로프트 방식\",\n        \"스윕 방식\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"CSG(Constructive Solid Geometry)는 기본 형상(Primitives)을 합집합·교집합·차집합하여 새로운 형상을 만드는 방식이다.\"\n}",
-          "image": null
+          "image": "images/2020_2_q10.png"
         },
         {
           "year": "2020_2",
@@ -3783,7 +3783,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "③번(토러스 형태)은 회전 성형으로 만드는 형상이며 단순 돌출로 생성할 수 없다.",
           "full_block": "{\n    \"number\": \"10\",\n    \"question\": \"스케치에서 돌출로 만들 수 없는 형상은?\",\n    \"choices\": [\n        \"①\",\n        \"②\",\n        \"③\",\n        \"④\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"③번(토러스 형태)은 회전 성형으로 만드는 형상이며 단순 돌출로 생성할 수 없다.\"\n}",
-          "image": null
+          "image": "images/2021_q10.png"
         },
         {
           "year": "2021",
@@ -3903,7 +3903,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "반쪽단면도는 물체의 내부와 외부를 절반씩 나누어 표현하는 방식이다.",
           "full_block": "{\n    \"number\": \"18\",\n    \"question\": \"다음 도면은 물체의 기본 중심선을 기준으로 전체를 2개로 분할하여 그린 투상도이다. 무엇이라 하는가?\",\n    \"choices\": [\n        \"온단면도\",\n        \"부분단면도\",\n        \"반쪽단면도\",\n        \"좌측단면도\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"반쪽단면도는 물체의 내부와 외부를 절반씩 나누어 표현하는 방식이다.\"\n}",
-          "image": null
+          "image": "images/2021_q18.png"
         },
         {
           "year": "2021",
@@ -4038,7 +4038,7 @@ const advancedData = {
           "answer": "1",
           "explanation": "노즐보다 작은 크기(0.1mm)는 정밀도가 부족하여 출력이 불가능하다.",
           "full_block": "{\n    \"number\": \"27\",\n    \"question\": \"노즐 크기가 0.4mm일 때 아래 그리에서 출력 작업에 원활하지 않은 부분은?\",\n    \"choices\": [\n        \"0.1mm\",\n        \"1.2mm\",\n        \"1.8mm\",\n        \"2.5mm\"\n    ],\n    \"answer\": 1,\n    \"explanation\": \"노즐보다 작은 크기(0.1mm)는 정밀도가 부족하여 출력이 불가능하다.\"\n}",
-          "image": null
+          "image": "images/2021_q27.png"
         },
         {
           "year": "2021",
@@ -4158,7 +4158,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "기입 틀의 첫 기호는 적용될 공차 종류로, 그림의 기호는 '직진도'를 의미한다.",
           "full_block": "{\n    \"number\": \"35\",\n    \"question\": \"기하 공차에 기입 틀에서 좌측 맨 앞의 기호가 의미하는 것은?\",\n    \"choices\": [\n        \"진원도\",\n        \"동축도\",\n        \"직진도\",\n        \"위치도\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"기입 틀의 첫 기호는 적용될 공차 종류로, 그림의 기호는 '직진도'를 의미한다.\"\n}",
-          "image": null
+          "image": "images/2021_q35.png"
         },
         {
           "year": "2021",
@@ -4218,7 +4218,7 @@ const advancedData = {
           "answer": "1",
           "explanation": "Chamfer는 모따기를 의미하며 그림 수정에 직접적으로 필요하지 않다.",
           "full_block": "{\n    \"number\": \"39\",\n    \"question\": \"CAD 시스템을 이용하여 그림을 수정할 때 필요 없는 명령어는?\",\n    \"choices\": [\n        \"Chamfer\",\n        \"Arc\",\n        \"Circle\",\n        \"Trim\"\n    ],\n    \"answer\": 1,\n    \"explanation\": \"Chamfer는 모따기를 의미하며 그림 수정에 직접적으로 필요하지 않다.\"\n}",
-          "image": null
+          "image": "images/2021_q39.png"
         },
         {
           "year": "2021",
@@ -4233,7 +4233,7 @@ const advancedData = {
           "answer": "2",
           "explanation": "제시된 회전 방향 기준으로 정면도 아래쪽에 위치하는 도형이 평면도이다.",
           "full_block": "{\n    \"number\": \"40\",\n    \"question\": \"입체도를 3각법으로 나타낼 때 화살표 방향을 정면으로 할 경우 평면도에 해당하는 것은?\",\n    \"choices\": [\n        \"①\",\n        \"②\",\n        \"③\",\n        \"④\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"제시된 회전 방향 기준으로 정면도 아래쪽에 위치하는 도형이 평면도이다.\"\n}",
-          "image": null
+          "image": "images/2021_q40.png"
         },
         {
           "year": "2021",
@@ -4413,7 +4413,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "도면에서 홈 부분은 파단면 등으로 표현하며 제시된 그림의 방식은 잘못된 표현이다.",
           "full_block": "{\n    \"number\": \"52\",\n    \"question\": \"다음 도면에 대한 설명으로 잘못된 것은?\",\n    \"choices\": [\n        \"긴 축은 중간에서 끊김선으로 짧게 그렸고, 치수는 실제 치수를 기입하였다.\",\n        \"평행가공 깊이 부분을 화살표로 나타내었다.\",\n        \"평행가공 홈의 폭 부분을 곡부부상도로 나타내었다.\",\n        \"축의 양끝을 1×45도로 모따기 하도록 지시하였다.\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"도면에서 홈 부분은 파단면 등으로 표현하며 제시된 그림의 방식은 잘못된 표현이다.\"\n}",
-          "image": null
+          "image": "images/2021_q52.png"
         },
         {
           "year": "2021",
@@ -4615,7 +4615,7 @@ const advancedData = {
           "answer": "2",
           "explanation": "그림 속 구조는 여과재가 직접 연결되는 형태로 ‘격리식’ 마스크에 해당한다.",
           "full_block": "{\n    \"number\": \"05\",\n    \"question\": \"보기와 같은 구조의 마스크의 종류는?\",\n    \"choices\": [\n        \"병원식\",\n        \"격리식\",\n        \"직결식\",\n        \"혼합식\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"그림 속 구조는 여과재가 직접 연결되는 형태로 ‘격리식’ 마스크에 해당한다.\"\n}",
-          "image": null
+          "image": "images/2022_q05.png"
         },
         {
           "year": "2022",
@@ -5260,7 +5260,7 @@ const advancedData = {
           "answer": "3",
           "explanation": "주어진 설명은 NURBS(곡면 기반), 제어점(Control Vertex) 등을 언급하므로 넙스 모델링이다.",
           "full_block": "{\n    \"number\": \"48\",\n    \"question\": \"다음에서 설명하는 3D 모델링 방식은?\",\n    \"choices\": [\n        \"폴리곤 모델링\",\n        \"솔리드 모델링\",\n        \"넙스 모델링\",\n        \"섭디비전 모델링\"\n    ],\n    \"answer\": 3,\n    \"explanation\": \"주어진 설명은 NURBS(곡면 기반), 제어점(Control Vertex) 등을 언급하므로 넙스 모델링이다.\"\n}",
-          "image": null
+          "image": "images/2022_q48.png"
         },
         {
           "year": "2022",
@@ -5440,7 +5440,7 @@ const advancedData = {
           "answer": "2",
           "explanation": "오버행 구조가 있어 서포터가 반드시 필요하다. '서포터 없음'은 잘못된 옵션이다.",
           "full_block": "{\n    \"number\": \"60\",\n    \"question\": \"그림과 같은 형태의 도형을 FDM 방식으로 출력할 때 적절하지 않은 옵션은?\",\n    \"choices\": [\n        \"채우기\",\n        \"서포터 없음\",\n        \"브림\",\n        \"부분 서포터\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"오버행 구조가 있어 서포터가 반드시 필요하다. '서포터 없음'은 잘못된 옵션이다.\"\n}",
-          "image": null
+          "image": "images/2022_q60.png"
         }
       ]
     },
@@ -5582,7 +5582,7 @@ const advancedData = {
           "answer": "4",
           "explanation": "두 모서리를 둥글게 만드는 기능은 Fillet이다.",
           "full_block": "{\n    \"number\": \"09\",\n    \"question\": \"CAD 프로그램을 이용하여 변경 전의 도형을 변경 후의 모양으로 바꿀 수 있는 기능은?\",\n    \"choices\": [\n        \"Trim\",\n        \"Chamfer\",\n        \"Offset\",\n        \"Fillet\"\n    ],\n    \"answer\": 4,\n    \"explanation\": \"두 모서리를 둥글게 만드는 기능은 Fillet이다.\"\n}",
-          "image": null
+          "image": "images/2023_q09.png"
         },
         {
           "year": "2023",
@@ -5597,7 +5597,7 @@ const advancedData = {
           "answer": "2",
           "explanation": "분말방식(SLS) 회수 순서 : 보호장구 착용 → 장비 멈춤 확인 → 출력물 회수 → 남아있는 분말 제거",
           "full_block": "{\n    \"number\": \"10\",\n    \"question\": \"분말방식 3D프린터 출력물 회수 순서는?\",\n    \"choices\": [\n        \"보호장구 → 출력물 회수 → 분말 제거 → 장비멈춤 확인\",\n        \"보호장구 → 장비멈춤 확인 → 출력물 회수 → 분말제거\",\n        \"출력물 회수 → 보호장구 → 장비멈춤 확인 → 분말제거\",\n        \"보호장구 → 장비멈춤 확인 → 출력물 및 분말 제거 → 회수\"\n    ],\n    \"answer\": 2,\n    \"explanation\": \"분말방식(SLS) 회수 순서 : 보호장구 착용 → 장비 멈춤 확인 → 출력물 회수 → 남아있는 분말 제거\"\n}",
-          "image": null
+          "image": "images/2023_q10.png"
         },
         {
           "year": "2023",
@@ -5807,7 +5807,7 @@ const advancedData = {
           "answer": "1",
           "explanation": "Array는 배열(원형, 사각)하는 명령어이다. (Copy: 복사, Mirror: 대칭, Move: 이동)",
           "full_block": "{\n    \"number\": \"24\",\n    \"question\": \"그림과 같이 중심을 기준으로 회전하면서 배열하는 명령어는?\",\n    \"choices\": [\n        \"Array\",\n        \"Copy\",\n        \"Mirror\",\n        \"Move\"\n    ],\n    \"answer\": 1,\n    \"explanation\": \"Array는 배열(원형, 사각)하는 명령어이다. (Copy: 복사, Mirror: 대칭, Move: 이동)\"\n}",
-          "image": null
+          "image": "images/2023_q24.png"
         },
         {
           "year": "2023",

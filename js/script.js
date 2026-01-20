@@ -1095,9 +1095,8 @@ function login() {
                 const qnaBtn = document.getElementById('qna-btn');
                 if (qnaBtn) qnaBtn.style.display = 'flex';
 
-                // Initial History State for Dashboard
-                history.replaceState({ screen: 'dashboard-screen' }, null, null);
-                showScreen('dashboard-screen', false);
+                // Redirect to yearly_cram.html instead of showing dashboard
+                location.href = 'yearly_cram.html';
             }, 500);
             return;
         }
@@ -1160,9 +1159,8 @@ function login() {
                     const qnaBtn = document.getElementById('qna-btn');
                     if (qnaBtn) qnaBtn.style.display = 'flex';
 
-                    // Initial History State for Dashboard
-                    history.replaceState({ screen: 'dashboard-screen' }, null, null);
-                    showScreen('dashboard-screen', false);
+                    // Redirect to yearly_cram.html instead of showing dashboard
+                    location.href = 'yearly_cram.html';
                 } else {
                     hideLoading();
                     alert('데이터 로드 실패: ' + json.message);

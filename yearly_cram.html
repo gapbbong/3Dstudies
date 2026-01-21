@@ -178,7 +178,8 @@
             align-items: center;
             gap: 15px;
             flex-shrink: 0;
-            /* Prevent shrinking */
+            pointer-events: auto;
+            /* Ensure clickable */
         }
 
         @media (max-width: 600px) {
@@ -257,9 +258,12 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
+            cursor: pointer;
             color: var(--text-color) !important;
             /* Force visibility */
             padding: 5px;
+            pointer-events: auto !important;
+            /* Force clickable */
             display: flex !important;
             /* Force display */
             align-items: center;
@@ -1143,6 +1147,20 @@
                 font-weight: bold;
                 color: #000;
             }
+        }
+
+        /* Force overrides for layout fixes */
+        .cram-dashboard,
+        #dashboard {
+            height: auto !important;
+            min-height: 100vh;
+            overflow: visible !important;
+        }
+
+        /* Double ensure pointer events */
+        .user-status,
+        .menu-btn {
+            pointer-events: auto !important;
         }
     </style>
 </head>

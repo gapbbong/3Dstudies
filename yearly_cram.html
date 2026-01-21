@@ -5,7 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D 프린팅 마스터 과정 | 마스터 학습</title>
+    <meta property="og:description" content="3D 프린터 운용기능사 필기 기출 완벽 분석 및 학습">
+    <meta property="og:image" content="https://3dstudies.netlify.app/og-image.png">
+
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function (c, l, a, r, i, t, y) {
+            c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
+            t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "v4s86ydjer");
+    </script>
+
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-color: #6c5ce7;
@@ -159,6 +173,34 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-shrink: 0;
+            /* Prevent shrinking */
+        }
+
+        @media (max-width: 600px) {
+            #main-header h1 {
+                font-size: 1.2rem;
+            }
+
+            #header-user-status {
+                gap: 8px;
+            }
+
+            .user-tier-badge span {
+                /* Hide text in badge on small screens if needed, or keep minimal */
+            }
+
+            .temp-header {
+                padding: 4px 8px;
+                font-size: 0.85rem;
+            }
+
+            .menu-btn {
+                font-size: 1.8rem;
+                /* Larger touch target */
+                padding: 10px;
+                margin-left: 5px;
+            }
         }
 
         .user-tier-badge {
@@ -191,10 +233,14 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: #2d3436;
+            color: var(--text-color);
             padding: 5px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            /* Ensure visibility */
+            position: relative;
             transition: transform 0.2s;
         }
 
@@ -1138,7 +1184,8 @@
             <h1>마스터 학습 시작</h1>
             <p style="color: #636e72; margin-bottom: 30px;">본인의 학번과 이름을 입력해주세요.<br><span
                     style="font-size: 0.9em; color: #a29bfe;">(예: 2701홍길동)</span></p>
-            <input type="text" id="username-input" placeholder="학번+이름 (띄어쓰기 없이)" autofocus>
+            <input type="text" id="username-input" placeholder="학번+이름 (띄어쓰기 없이)" autofocus
+                onkeydown="if(event.key==='Enter') login()">
             <button class="btn-login" onclick="login()">입장하기</button>
             <div style="margin-top: 25px; font-size: 0.85em; color: #b2bec3;">
                 © 3D Printer Master Course
@@ -1381,7 +1428,13 @@
             ctx.font = `600 ${fontSize}px 'Pretendard'`;
 
             // Multiline wrapping
-            const maxWidth = container.clientWidth || 600;
+            // Dynamic Max Width Calculation
+            let maxWidth = container.clientWidth;
+            if (maxWidth === 0 || maxWidth < 300) {
+                // Fallback for when container is hidden or not rendered
+                maxWidth = Math.min(600, window.innerWidth - 60); // 60px padding safe zone
+            }
+
             const words = text.split(' ');
             let line = '';
             const lines = [];
@@ -1480,9 +1533,7 @@
                 toggleOverlay('ranking-overlay', true);
                 fetchRankingData();
             } else if (action === 'previous') {
-                if (confirm('기존 3단계 학습 대시보드로 이동하시겠습니까?')) {
-                    location.href = 'study_app.html';
-                }
+                location.href = 'study_app.html';
             }
         };
 

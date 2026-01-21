@@ -1054,6 +1054,24 @@
                 padding: 8px 15px;
             }
         }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            body::before {
+                content: "보안 정책에 따라 인쇄가 제한됩니다.";
+                visibility: visible;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 2rem;
+                font-weight: bold;
+                color: #000;
+            }
+        }
     </style>
 </head>
 
@@ -1321,6 +1339,27 @@
                     }
                 }, 1000);
             })();
+
+            // 4. PrintScreen & Shortcut Prevention
+            window.addEventListener('keyup', (e) => {
+                if (e.key === 'PrintScreen' || e.key === 'F12') {
+                    navigator.clipboard.writeText('캡처가 제한된 콘텐츠입니다.');
+                    alert('보안 정책에 따라 화면 캡처가 제한됩니다.');
+                    document.getElementById('capture-protect-overlay').style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById('capture-protect-overlay').style.display = 'none';
+                    }, 2000);
+                }
+            });
+
+            // 5. Detect mouse leaving window (Aggressive Mode - optional, currently off)
+            /*
+            document.body.addEventListener('mouseleave', () => {
+                if (currentQuestions.length > 0) {
+                   document.getElementById('capture-protect-overlay').style.display = 'flex';
+                }
+            });
+            */
         }
 
         // --- Canvas Text Rendering with Noise (Anti-Lens) ---
@@ -1382,13 +1421,42 @@
                 ctx.stroke();
             }
 
-            // Render Text
+            // Render Text (First Pass)
             ctx.textBaseline = 'top';
             ctx.fillStyle = '#2d3436';
             ctx.font = `600 ${fontSize}px 'Pretendard'`;
             lines.forEach((l, i) => {
                 ctx.fillText(l, 5, i * (fontSize * 1.5) + 15);
             });
+
+            // --- Watermark Pattern (Overlaid) ---
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate(-Math.PI / 4);
+            ctx.font = `800 30px 'Pretendard'`;
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.08)';
+            ctx.textAlign = 'center';
+            for (let i = -2; i <= 2; i++) {
+                ctx.fillText('3D MASTER STUDY', 0, i * 60);
+            }
+            ctx.restore();
+
+            // --- Noise Pattern (Overlaid on Text) ---
+            // Fine noise to confuse OCR edge detection
+            for (let i = 0; i < 300; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.08})`;
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1, 1);
+            }
+
+            // Random distinct thin lines crossing text
+            for (let i = 0; i < 15; i++) {
+                ctx.strokeStyle = `rgba(100,100,100,${Math.random() * 0.05 + 0.02})`;
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.stroke();
+            }
 
             container.appendChild(canvas);
         }

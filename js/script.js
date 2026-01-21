@@ -1263,10 +1263,10 @@ function login() {
                 if (sideNav) sideNav.style.display = 'flex';
 
                 const qnaBtn = document.getElementById('qna-btn');
-                if (qnaBtn) qnaBtn.style.display = 'flex';
+                if (qnaBtn) qnaBtn.style.display = 'none'; // 대시보드에서는 숨김
 
-                // Redirect to yearly_cram.html instead of showing dashboard
-                location.href = 'yearly_cram.html';
+                // Show dashboard
+                showScreen('dashboard-screen');
             }, 500);
             return;
         }
@@ -1327,10 +1327,10 @@ function login() {
                     if (sideNav) sideNav.style.display = 'flex';
 
                     const qnaBtn = document.getElementById('qna-btn');
-                    if (qnaBtn) qnaBtn.style.display = 'flex';
+                    if (qnaBtn) qnaBtn.style.display = 'none'; // 대시보드에서는 숨김
 
-                    // Redirect to yearly_cram.html instead of showing dashboard
-                    location.href = 'yearly_cram.html';
+                    // Show dashboard
+                    showScreen('dashboard-screen');
                 } else {
                     hideLoading();
                     alert('데이터 로드 실패: ' + json.message);

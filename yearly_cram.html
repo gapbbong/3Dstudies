@@ -199,7 +199,27 @@
                 font-size: 1.8rem;
                 /* Larger touch target */
                 padding: 10px;
-                margin-left: 5px;
+                /* Force absolute positioning on mobile to guarantee visibility */
+                position: absolute !important;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                background: rgba(255, 255, 255, 0.8);
+                /* readable bg */
+                margin: 0;
+            }
+
+            /* Adjust header padding to not overlap with absolute button */
+            #main-header {
+                padding-right: 50px !important;
+                position: sticky;
+                top: 0;
+                width: 100%;
+                box-sizing: border-box;
+                overflow: hidden;
             }
         }
 
@@ -233,13 +253,15 @@
             border: none;
             font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-color);
+            color: var(--text-color) !important;
+            /* Force visibility */
             padding: 5px;
-            display: flex;
+            display: flex !important;
+            /* Force display */
             align-items: center;
             justify-content: center;
-            z-index: 2000;
-            /* Ensure visibility */
+            z-index: 9999;
+            /* Max visibility */
             position: relative;
             transition: transform 0.2s;
         }
@@ -1196,8 +1218,9 @@
     <!-- Header -->
     <!-- Main Header -->
     <header id="main-header" style="display: none;">
-        <div class="header-logo" onclick="location.href='index.html'">
-            <span>🎓</span> 연도별 마스터 학습
+        <div class="header-logo" onclick="location.reload()">
+            <span>3D STUDY</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.0</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1652,7 +1675,7 @@
         };
 
         function updateUserUI() {
-            document.getElementById('display-name').textContent = currentUser + ' 학생';
+            document.getElementById('display-name').textContent = currentUser;
 
             // Update tier badge in header
             let totalPassCount = 0;

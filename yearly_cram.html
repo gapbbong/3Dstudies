@@ -1233,18 +1233,18 @@
                 <span id="header-temp-val" class="temp-val-text">36.5</span>°C
             </div>
             <span id="display-name" style="font-weight: 800; color: #2d3436; font-size: 1rem;"></span>
-            <button class="menu-btn" onclick="toggleDrawer(true)">☰</button>
+            <button class="menu-btn" onclick="toggleSideDrawer(true)">☰</button>
         </div>
     </header>
 
     <!-- Drawer Overlay -->
-    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleDrawer(false)"></div>
+    <div id="drawer-overlay" class="drawer-overlay" onclick="toggleSideDrawer(false)"></div>
 
     <!-- Side Drawer -->
     <div id="side-drawer">
         <div class="drawer-header">
             <h2>마스터 메뉴</h2>
-            <button class="close-drawer" onclick="toggleDrawer(false)">×</button>
+            <button class="close-drawer" onclick="toggleSideDrawer(false)">×</button>
         </div>
         <div class="drawer-content">
             <div class="drawer-menu-list">
@@ -1807,11 +1807,13 @@
         }
 
         // --- Navigation & Menu ---
-        function toggleDrawer(open) {
+        function toggleSideDrawer(open) {
             const drawer = document.getElementById('side-drawer');
             const overlay = document.getElementById('drawer-overlay');
             if (open) {
+                drawer.classList.remove('active'); // legacy safety
                 drawer.classList.add('open');
+                overlay.classList.remove('active'); // legacy safety
                 overlay.classList.add('show');
             } else {
                 drawer.classList.remove('open');
@@ -1820,7 +1822,7 @@
         }
 
         function handleDrawerAction(action) {
-            toggleDrawer(false);
+            toggleSideDrawer(false);
             if (action === 'ranking') {
                 document.getElementById('ranking-overlay').style.display = 'flex';
                 fetchRankingData();

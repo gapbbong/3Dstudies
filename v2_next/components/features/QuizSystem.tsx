@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, HelpCircle, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 import Image from 'next/image';
 import QuestionCanvas from './QuestionCanvas';
+import ChoiceCanvas from './ChoiceCanvas';
 import { GOOGLE_SCRIPT_URL } from '@/lib/security';
 import { useSecurity } from '@/hooks/useSecurity';
 
@@ -149,25 +152,23 @@ export default function QuizSystem({ questions, onFinish }: QuizSystemProps) {
                     {/* Choices */}
                     <div className="grid grid-cols-1 gap-3">
                         {currentQ.choices.map((choice, i) => (
-                            <button
+                            <div
                                 key={i}
-                                onClick={() => handleSelect(i)}
-                                disabled={showResult}
                                 className={`
-                  text-left p-5 rounded-2xl border transition-all flex items-start gap-4
+                  p-5 rounded-2xl border transition-all
                   ${selectedAnswers[currentQ.number] === i
-                                        ? 'bg-blue-600/20 border-blue-500 text-white'
-                                        : 'bg-slate-900/50 border-slate-700 text-slate-400 hover:border-slate-500'}
+                                        ? 'bg-blue-600/20 border-blue-500'
+                                        : 'bg-slate-900/50 border-slate-700 hover:border-slate-500'}
                 `}
                             >
-                                <div className={`
-                  w-6 h-6 rounded-full border-2 flex items-center justify-center text-xs font-bold
-                  ${selectedAnswers[currentQ.number] === i ? 'bg-blue-500 border-blue-500 text-white' : 'border-slate-600'}
-                `}>
-                                    {i + 1}
-                                </div>
-                                <span>{choice}</span>
-                            </button>
+                                <ChoiceCanvas
+                                    text={choice}
+                                    index={i}
+                                    isSelected={selectedAnswers[currentQ.number] === i}
+                                    isDisabled={showResult}
+                                    onClick={() => handleSelect(i)}
+                                />
+                            </div>
                         ))}
                     </div>
 
@@ -208,49 +209,51 @@ export default function QuizSystem({ questions, onFinish }: QuizSystemProps) {
                         )}
                     </div>
                 </motion.div>
-                {/* Report Modal */}
-                <AnimatePresence>
-                    {reportModal?.isOpen && (
+            </AnimatePresence>
+
+            {/* Report Modal */}
+            <AnimatePresence>
+                {reportModal?.isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+                    >
                         <motion.div
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-6"
+                            initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                            className="bg-slate-900 border border-slate-700 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl"
                         >
-                            <motion.div
-                                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-                                className="bg-slate-900 border border-slate-700 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl"
-                            >
-                                <div className="flex items-center gap-3 mb-4 text-amber-400">
-                                    <AlertTriangle size={24} />
-                                    <h3 className="text-xl font-black">문항 오류 신고</h3>
-                                </div>
-                                <p className="text-slate-400 text-sm mb-6">
-                                    <span className="text-blue-400 font-bold">#{reportModal.qId}</span> 문항의 오류를 신고하시겠습니까?
-                                </p>
-                                <textarea
-                                    value={reportMsg}
-                                    onChange={(e) => setReportMsg(e.target.value)}
-                                    placeholder="오류 내용을 간단히 입력해 주세요 (선택)"
-                                    className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none mb-6 min-h-[100px]"
-                                />
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={confirmReport}
-                                        disabled={isReporting}
-                                        className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition-all disabled:opacity-50"
-                                    >
-                                        {isReporting ? '전송 중...' : '신고하기'}
-                                    </button>
-                                    <button
-                                        onClick={() => setReportModal(null)}
-                                        className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold transition-all"
-                                    >
-                                        취소
-                                    </button>
-                                </div>
-                            </motion.div>
+                            <div className="flex items-center gap-3 mb-4 text-amber-400">
+                                <AlertTriangle size={24} />
+                                <h3 className="text-xl font-black">문항 오류 신고</h3>
+                            </div>
+                            <p className="text-slate-400 text-sm mb-6">
+                                <span className="text-blue-400 font-bold">#{reportModal.qId}</span> 문항의 오류를 신고하시겠습니까?
+                            </p>
+                            <textarea
+                                value={reportMsg}
+                                onChange={(e) => setReportMsg(e.target.value)}
+                                placeholder="오류 내용을 간단히 입력해 주세요 (선택)"
+                                className="w-full bg-slate-800 border border-slate-700 rounded-2xl p-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none mb-6 min-h-[100px]"
+                            />
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={confirmReport}
+                                    disabled={isReporting}
+                                    className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold transition-all disabled:opacity-50"
+                                >
+                                    {isReporting ? '전송 중...' : '신고하기'}
+                                </button>
+                                <button
+                                    onClick={() => setReportModal(null)}
+                                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold transition-all"
+                                >
+                                    취소
+                                </button>
+                            </div>
                         </motion.div>
-                    )}
-                </AnimatePresence>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

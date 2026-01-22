@@ -1112,6 +1112,72 @@
             box-shadow: 0 15px 35px rgba(108, 92, 231, 0.3);
         }
 
+        /* Confetti Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Transparent Protection Layer for Google Lens */
+        .anti-capture-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        /* Pass Badge */
+        .pass-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+            animation: badge-pulse 2s infinite;
+        }
+
+        @keyframes badge-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
         @media (max-width: 600px) {
             .nav-bar {
                 width: 90%;
@@ -1166,6 +1232,9 @@
 </head>
 
 <body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+
+    <!-- Confetti Container -->
+    <div id="confetti-container" class="confetti-container"></div>
 
     <div id="idle-flicker" class="idle-flicker-overlay"></div>
     <div id="main-watermark" class="watermark"></div>
@@ -1240,7 +1309,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.1</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.2</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1282,7 +1351,8 @@
             </div>
         </div>
         <div class="drawer-footer">
-            3D Printer Master Course v2.1
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 2.2</div>
+            <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
 
@@ -2232,16 +2302,39 @@
             document.getElementById('result-title').textContent = isPassed ? "🎉 목표 달성! 합격" : "📉 목표 미달.. 불합격";
             document.getElementById('score-display').textContent = percent + '점';
             const unansweredText = unanswered.length > 0 ? ` (미풀이 ${unanswered.length}개)` : '';
+
+            // Show next threshold info if passed
+            let thresholdInfo = '';
+            if (isPassed && currentMode === 'test') {
+                const nextThreshold = Math.min(30, score + 2);
+                if (nextThreshold < 30) {
+                    thresholdInfo = `<div style="color: #00b894; font-size: 0.85em; margin-top: 10px; padding: 10px; background: rgba(0, 184, 148, 0.1); border-radius: 8px;">
+                        ✨ 다음 도전 시 합격선이 <strong>${nextThreshold}개</strong>로 상승합니다!<br>
+                        계속 실력을 키워나가세요!
+                    </div>`;
+                } else {
+                    thresholdInfo = `<div style="color: #f39c12; font-size: 0.85em; margin-top: 10px; padding: 10px; background: rgba(243, 156, 18, 0.1); border-radius: 8px;">
+                        🏆 최고 난이도 달성! 완벽한 마스터입니다!
+                    </div>`;
+                }
+            }
+
             document.getElementById('correct-count').innerHTML = `
                 맞춘 개수: ${score} / ${currentQuestions.length}${unansweredText}<br>
                 <span style="color: #6c5ce7; font-size: 0.9em; display: block; margin-top: 5px;">
                     이번 목표: ${currentThreshold}개 문항 정답
                 </span>
+                ${thresholdInfo}
             `;
 
             const praiseMsg = getPraiseMessage(percent, isPassed);
             document.getElementById('praise-message').textContent = praiseMsg;
             document.getElementById('score-overlay').style.display = 'flex';
+
+            // Launch confetti if passed
+            if (isPassed) {
+                launchConfetti();
+            }
 
             document.getElementById('submit-btn').style.display = 'none';
             window.scrollTo(0, 0);
@@ -2296,26 +2389,62 @@
             }
         };
 
-        function getPraiseMessage(score) {
-            const high = [
-                "와우! 완벽에 가까운 실력이에요! 🎯\n이대로라면 합격은 따놓은 당상이네요!",
-                "대단해요! 거의 모든 문제를 마스터하셨군요! 🌟\n노력이 빛을 발하고 있어요.",
-                "천재 아니신가요? 정말 놀라운 점수입니다! 🔥\n자신감을 가지고 시험장에 가셔도 되겠어요!"
-            ];
-            const mid = [
-                "안정적인 실력이시네요! 조금만 더 하면 완벽합니다. 👍\n틀린 문제 위주로 한 번 더 체크해 보세요!",
-                "합격권 점수입니다! 정말 잘하셨어요. 😊\n꾸준함이 최고의 무기입니다.",
-                "좋은 성적이에요! 역시 집중력이 대단하시네요. ✅\n이 페이스를 유지해 보세요!"
-            ];
-            const low = [
-                "괜찮아요! 지금의 노력이 최고의 밑거름이 될 거예요. 🌱\n해설을 보며 차근차근 복습해 봅시다!",
-                "조금 더 집중해 볼까요? 당신의 잠재력을 믿어요! 💪\n포기하지 않는 마음이 가장 중요합니다.",
-                "실망하지 마세요! 많이 틀려봐야 나중에 안 틀려요. 📖\n다시 한번 도전해 볼까요?"
+        // Confetti Effect Function
+        function launchConfetti() {
+            const container = document.getElementById('confetti-container');
+            container.innerHTML = ''; // Clear previous confetti
+
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe', '#fd79a8', '#fdcb6e'];
+            const confettiCount = 150;
+
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(confetti);
+            }
+
+            // Clear confetti after animation
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function getPraiseMessage(score, isPassed) {
+            const passMessages = [
+                "🎉 축하합니다! 완벽한 실력이에요!\n이 기세로 실전 시험도 정복하세요!",
+                "🌟 대단해요! 노력이 빛을 발하고 있어요!\n합격을 향해 한 걸음 더 나아갔습니다!",
+                "🔥 와우! 정말 놀라운 점수입니다!\n자신감을 가지고 계속 전진하세요!",
+                "💪 훌륭합니다! 꾸준한 노력의 결실이네요!\n이 페이스를 유지하면 합격은 따놓은 당상!",
+                "✨ 완벽해요! 집중력이 정말 대단하시네요!\n실전에서도 이 실력을 발휘하세요!",
+                "🎯 정확도가 정말 높아요! 최고예요!\n이대로라면 고득점 합격 가능합니다!",
+                "🚀 엄청난 실력이에요! 계속 이렇게!\n당신은 이미 합격권에 들어섰어요!",
+                "👏 박수를 보냅니다! 정말 잘하셨어요!\n노력하는 모습이 아름답습니다!",
+                "💎 보석 같은 실력이네요! 빛나요!\n이 실력이면 실전도 문제없어요!",
+                "🏆 챔피언의 기운이 느껴져요!\n합격을 향한 여정이 순조롭습니다!"
             ];
 
-            if (score >= 90) return high[Math.floor(Math.random() * high.length)];
-            if (score >= 60) return mid[Math.floor(Math.random() * mid.length)];
-            return low[Math.floor(Math.random() * low.length)];
+            const failMessages = [
+                "💪 괜찮아요! 실패는 성공의 어머니!\n해설을 보며 차근차근 복습해 봅시다!",
+                "🌱 지금의 노력이 최고의 밑거름이에요!\n조금만 더 힘내면 분명 해낼 수 있어요!",
+                "📚 포기하지 마세요! 당신의 잠재력을 믿어요!\n틀린 문제를 집중 공략해 보세요!",
+                "🎯 조금만 더 집중하면 돼요!\n다시 한번 도전해 볼까요?",
+                "🔥 실망하지 마세요! 많이 틀려봐야 나중에 안 틀려요!\n해설을 꼼꼼히 읽어보세요!",
+                "💡 이번 경험이 다음엔 큰 도움이 될 거예요!\n틀린 문제를 반드시 복습하세요!",
+                "🌟 노력하는 모습이 아름다워요!\n조금씩 실력이 늘고 있어요!",
+                "📖 학습은 마라톤이에요! 천천히 꾸준히!\n오늘보다 내일 더 나아질 거예요!",
+                "✨ 당신은 할 수 있어요! 믿음을 가지세요!\n다시 도전하면 분명 성공할 거예요!",
+                "🎈 작은 실패는 큰 성공의 발판!\n포기하지 말고 계속 전진하세요!"
+            ];
+
+            if (isPassed) {
+                return passMessages[Math.floor(Math.random() * passMessages.length)];
+            } else {
+                return failMessages[Math.floor(Math.random() * failMessages.length)];
+            }
         }
 
         window.closeScoreOverlay = function () {

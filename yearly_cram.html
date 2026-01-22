@@ -1174,10 +1174,8 @@
     <div id="multi-tab-error"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 20000; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center;">
         <h1 style="font-size: 3rem;">⚠️ 중복 접속 감지</h1>
-        <p style="font-size: 1.5rem; margin-top: 20px;">다른 탭에서 학습 창이 이미 열려 있습니다.<br>하나의 창에서만 학습이 가능합니다.</p>
-        <button onclick="location.reload()"
-            style="margin-top: 30px; padding: 15px 30px; border-radius: 10px; border: none; background: #6c5ce7; color: white; font-weight: bold; cursor: pointer;">현재
-            창에서 계속하기</button>
+        <p style="font-size: 1.5rem; margin-top: 20px;">여러 개의 탭 또는 창이 열려 있습니다.<br>모든 창을 닫고 하나의 창에서만 학습을 시작하세요.</p>
+        <p style="font-size: 1.2rem; margin-top: 30px; color: #ff6b6b;">⛔ 부정행위 방지를 위해 모든 탭이 차단되었습니다.</p>
     </div>
 
     <div id="capture-protect-overlay"
@@ -1395,16 +1393,52 @@
             resetIdleTimer();
         }
         function initSecurity() {
-            // 1. Multi-tab prevention
+            // 1. Multi-tab prevention - Block ALL tabs if multiple detected
             if (ENABLE_MULTI_TAB_PREVENTION) {
+                // Check if there's already an active tab
+                const existingLock = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
+                const now = Date.now();
+
+                // If another tab is active (within 3 seconds), block this tab immediately
+                if (existingLock.id && existingLock.id !== tabId && (now - existingLock.time < 3000)) {
+                    // Mark that multi-tab was detected
+                    localStorage.setItem('multi_tab_detected', 'true');
+                    document.getElementById('multi-tab-error').style.display = 'flex';
+                    return; // Stop initialization
+                }
+
+                // Set this tab as active
+                localStorage.setItem(LOCK_KEY, JSON.stringify({ id: tabId, time: now }));
+
+                // Continuously monitor for other tabs
                 setInterval(() => {
+                    // Check if multi-tab was detected
+                    if (localStorage.getItem('multi_tab_detected') === 'true') {
+                        document.getElementById('multi-tab-error').style.display = 'flex';
+                        return;
+                    }
+
                     const lock = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
-                    if (lock.id && lock.id !== tabId && (Date.now() - lock.time < 3000)) {
+                    const currentTime = Date.now();
+
+                    // If another tab is detected, block ALL tabs
+                    if (lock.id && lock.id !== tabId && (currentTime - lock.time < 3000)) {
+                        localStorage.setItem('multi_tab_detected', 'true');
                         document.getElementById('multi-tab-error').style.display = 'flex';
                     } else {
-                        localStorage.setItem(LOCK_KEY, JSON.stringify({ id: tabId, time: Date.now() }));
+                        // Update this tab's timestamp
+                        localStorage.setItem(LOCK_KEY, JSON.stringify({ id: tabId, time: currentTime }));
                     }
                 }, 1000);
+
+                // Clear multi-tab detection when tab is closed
+                window.addEventListener('beforeunload', () => {
+                    const lock = JSON.parse(localStorage.getItem(LOCK_KEY) || '{}');
+                    if (lock.id === tabId) {
+                        localStorage.removeItem(LOCK_KEY);
+                        localStorage.removeItem('multi_tab_detected');
+                    }
+                });
             }
 
             // 2. Capture/Focus protection

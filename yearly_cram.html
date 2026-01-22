@@ -1637,8 +1637,8 @@
             canvas.className = 'q-canvas';
             const ctx = canvas.getContext('2d', { alpha: false }); // Optimization
 
-            const fontSize = 19; // Slightly larger for clarity
-            ctx.font = `700 ${fontSize}px 'Pretendard'`;
+            const fontSize = 18; // Restored to original size
+            ctx.font = `600 ${fontSize}px 'Pretendard'`;
 
             let maxWidth = container.clientWidth || 600;
             if (maxWidth < 300) maxWidth = Math.min(600, window.innerWidth - 60);

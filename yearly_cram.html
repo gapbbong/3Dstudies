@@ -1461,22 +1461,7 @@
         </div>
     </div>
 
-    <!-- Exit Confirmation Modal (Custom) -->
-    <div id="exit-confirm-overlay" class="loading-overlay"
-        style="display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);">
-        <div class="score-card"
-            style="max-width: 400px; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-            <div style="font-size: 3rem; margin-bottom: 15px;">🤔</div>
-            <h2 style="font-size: 1.5rem; margin-bottom: 10px; color: #2d3436;">학습을 종료할까요?</h2>
-            <p style="color: #636e72; margin-bottom: 25px;">진행 중인 내용은 저장되지 않습니다.<br>정말 나가시겠습니까?</p>
-            <div class="score-btns">
-                <button class="btn btn-study" onclick="cancelExit()"
-                    style="background: #dfe6e9; color: #636e72;">취소</button>
-                <button class="btn btn-test" onclick="confirmExit()"
-                    style="background: #ff7675; color: white;">나가기</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Score Result Overlay -->
     <div id="score-overlay" class="score-result-overlay">
@@ -2634,6 +2619,43 @@
 
         window.closeScoreOverlay = function () {
             document.getElementById('score-overlay').style.display = 'none';
+        };
+
+        window.confirmExit = function () {
+            const overlay = document.getElementById('exit-confirm-overlay');
+            if (overlay) overlay.style.display = 'none';
+
+            // Same exit logic as study mode
+            document.getElementById('quiz-list').innerHTML = '';
+            document.getElementById('quiz-area').style.display = 'none';
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('progress-info').style.display = 'none';
+
+            // Show Dashboard & Header explicitly
+            const dashboard = document.getElementById('dashboard');
+            const header = document.getElementById('main-header');
+            const watermark = document.getElementById('main-watermark');
+
+            if (dashboard) dashboard.style.display = 'grid';
+            if (header) header.style.display = 'flex';
+            if (watermark) watermark.style.display = 'none';
+
+            // Reload dashboard data
+            if (typeof loadDashboard === 'function') {
+                loadDashboard();
+            } else {
+                location.reload();
+            }
+
+            // Clear data
+            currentQuestions = [];
+            userAnswers = {};
+            window.scrollTo(0, 0);
+        };
+
+        window.cancelExit = function () {
+            const overlay = document.getElementById('exit-confirm-overlay');
+            if (overlay) overlay.style.display = 'none';
         };
 
         window.quitQuiz = function () {

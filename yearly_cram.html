@@ -1328,7 +1328,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.8</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.9</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1370,7 +1370,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 2.8</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 2.9</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1654,81 +1654,93 @@
             });
             ctx.restore();
 
-            // Render Real Text with Extreme Security v2.8
-            ctx.textBaseline = 'middle'; // Center for rotation accuracy
-            ctx.font = `600 ${fontSize}px 'Pretendard'`;
+            // Render Real Text with Final Defense v2.9
+            ctx.textBaseline = 'middle';
 
             lines.forEach((l, i) => {
                 let currentX = 5;
-                const lineY = i * (fontSize * 1.5) + 15 + (fontSize / 2); // adjusted for middle baseline
+                const lineY = i * (fontSize * 1.5) + 15 + (fontSize / 2);
+
+                // Track previous point for stitching
+                let prevX = -1;
+                let prevY = -1;
 
                 for (let char of l) {
                     ctx.save();
 
-                    // 1. Random Character Rotation (Very effective against standard OCR)
-                    const charRotation = (Math.random() - 0.5) * 0.06; // +/- 1.7 degrees
+                    // 1. Variable Font-Weight and Size
+                    const vSize = fontSize * (0.95 + Math.random() * 0.1);
+                    const vWeight = Math.random() > 0.5 ? '800' : '600';
+                    ctx.font = `${vWeight} ${vSize}px 'Pretendard'`;
 
-                    // 2. Sine Wave Vertical Displacement (Breaks line consistency)
-                    const waveY = Math.sin(currentX * 0.05) * 1.5;
+                    // 2. Stronger Rotation & Wave
+                    const charRotation = (Math.random() - 0.5) * 0.08;
+                    const waveY = Math.sin(currentX * 0.06) * 1.8;
+                    const kerning = (Math.random() * 1.6);
 
-                    // 3. Random Kerning
-                    const kerning = (Math.random() * 1.5);
-
-                    // Apply coordinate transformation
                     ctx.translate(currentX + ctx.measureText(char).width / 2, lineY + waveY);
                     ctx.rotate(charRotation);
 
-                    // 4. Color Channel Blur (Faint red/blue shadows to mess with binarization)
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.06)';
-                    ctx.fillText(char, -ctx.measureText(char).width / 2 + 0.5, 0.5);
-                    ctx.fillStyle = 'rgba(0, 0, 255, 0.06)';
-                    ctx.fillText(char, -ctx.measureText(char).width / 2 - 0.5, -0.5);
+                    // 3. Multi-layer Ghosting (Red/Blue/Green shifts)
+                    const colors = ['rgba(255,0,0,0.07)', 'rgba(0,0,255,0.07)', 'rgba(0,255,0,0.05)'];
+                    colors.forEach((c, idx) => {
+                        ctx.fillStyle = c;
+                        ctx.fillText(char, -ctx.measureText(char).width / 2 + (idx - 1) * 0.5, (idx - 1) * 0.5);
+                    });
 
                     // Main Character
-                    ctx.fillStyle = '#000000';
+                    ctx.fillStyle = '#111111';
                     ctx.fillText(char, -ctx.measureText(char).width / 2, 0);
 
                     ctx.restore();
 
-                    // 5. Per-Character Micro-Masking (Small white dots on the character itself)
-                    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-                    for (let p = 0; p < 4; p++) {
-                        ctx.fillRect(currentX + Math.random() * fontSize * 0.6, lineY + waveY - fontSize / 2 + Math.random() * fontSize, 1, 1);
+                    // 4. THE STITCH: Connect current char to previous char with a tiny line
+                    // This creates a "blob" effect for OCR algorithms
+                    if (prevX !== -1 && char !== ' ') {
+                        ctx.strokeStyle = '#000000';
+                        ctx.lineWidth = 0.4;
+                        ctx.globalAlpha = 0.6;
+                        ctx.beginPath();
+                        ctx.moveTo(prevX, prevY + (Math.random() - 0.5) * 10);
+                        ctx.lineTo(currentX, lineY + waveY + (Math.random() - 0.5) * 10);
+                        ctx.stroke();
+                        ctx.globalAlpha = 1.0;
                     }
 
+                    prevX = currentX + ctx.measureText(char).width;
+                    prevY = lineY + waveY;
                     currentX += ctx.measureText(char).width + kerning;
                 }
 
-                // 6. Broken Slice (Non-continuous white line)
-                ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                // 5. THE TRIPLE SLICE: 3 thin white lines at different heights
+                ctx.strokeStyle = 'rgba(255,255,255,0.85)';
                 ctx.lineWidth = 0.6;
-                ctx.setLineDash([5, 15]); // Dash pattern to confuse line detection
-                ctx.beginPath();
-                ctx.moveTo(0, lineY);
-                ctx.lineTo(canvas.width, lineY);
-                ctx.stroke();
-                ctx.setLineDash([]); // Reset
+                const sliceOffsets = [-fontSize / 3, 0, fontSize / 3];
+                sliceOffsets.forEach(offset => {
+                    ctx.beginPath();
+                    ctx.moveTo(0, lineY + offset);
+                    ctx.lineTo(canvas.width, lineY + offset);
+                    ctx.stroke();
+                });
             });
 
-            // --- 7. Grid Mesh Overlay (The most radical part) ---
-            // A fine grid that humans ignore but sensor/AI sees as broken segments
-            ctx.strokeStyle = 'rgba(0,0,0,0.04)';
-            ctx.lineWidth = 0.2;
-            for (let gx = 0; gx < canvas.width; gx += 4) {
-                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke();
+            // --- 6. Mosaic/Zebra Background Pattern ---
+            ctx.save();
+            ctx.globalCompositeOperation = 'destination-over';
+            for (let x = 0; x < canvas.width; x += 6) {
+                ctx.fillStyle = x % 12 === 0 ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0)';
+                ctx.fillRect(x, 0, 2, canvas.height);
             }
-            for (let gy = 0; gy < canvas.height; gy += 4) {
-                ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(canvas.width, gy); ctx.stroke();
-            }
+            ctx.restore();
 
-            // --- Standard Watermark ---
+            // --- Strategic Watermark ---
             ctx.save();
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate(-Math.PI / 4);
-            ctx.font = `800 35px 'Pretendard'`;
+            ctx.font = `900 38px 'Pretendard'`;
             ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
             ctx.textAlign = 'center';
-            ctx.fillText('3D MASTER STUDY', 0, 0);
+            ctx.fillText('3D MASTER COURSE', 0, 0);
             ctx.restore();
 
             // --- Strategic Background Noise ---

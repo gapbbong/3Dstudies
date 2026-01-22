@@ -218,9 +218,7 @@
                 gap: 8px;
             }
 
-            .user-tier-badge span {
-                /* Hide text in badge on small screens if needed, or keep minimal */
-            }
+
 
             .temp-header {
                 padding: 4px 8px;
@@ -359,6 +357,7 @@
             font-weight: 900;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -2638,17 +2637,30 @@
         };
 
         window.quitQuiz = function () {
+            console.log("quitQuiz called. Mode:", currentMode);
+
             if (currentMode === 'study') {
-                // Study Mode: Exit immediately without confirmation
+                // Study Mode: Exit immediately
                 document.getElementById('quiz-list').innerHTML = '';
                 document.getElementById('quiz-area').style.display = 'none';
                 document.getElementById('submit-btn').style.display = 'none';
-                toggleHeader(true);
-                toggleDashboard(true);
                 document.getElementById('progress-info').style.display = 'none';
 
-                // Re-render dashboard
-                renderDashboard(groupDataByYear(practiceData.chapters));
+                // Show Dashboard & Header explicitly
+                const dashboard = document.getElementById('dashboard');
+                const header = document.getElementById('main-header');
+                const watermark = document.getElementById('main-watermark');
+
+                if (dashboard) dashboard.style.display = 'grid'; // Restore grid layout
+                if (header) header.style.display = 'flex';
+                if (watermark) watermark.style.display = 'none';
+
+                // Reload dashboard data safely
+                if (typeof loadDashboard === 'function') {
+                    loadDashboard();
+                } else {
+                    location.reload(); // Fallback if everything fails
+                }
 
                 // Clear data
                 currentQuestions = [];
@@ -2657,7 +2669,16 @@
             } else {
                 // Test Mode: Show custom exit confirmation modal
                 const overlay = document.getElementById('exit-confirm-overlay');
-                if (overlay) overlay.style.display = 'flex';
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                    overlay.style.zIndex = '99999'; // Ensure it's on top
+                    overlay.style.opacity = '1';
+                } else {
+                    console.error("Exit modal not found");
+                    if (confirm("정말 종료하시겠습니까?")) {
+                        confirmExit();
+                    }
+                }
             }
         };
 

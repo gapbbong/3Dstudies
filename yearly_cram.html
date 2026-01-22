@@ -172,8 +172,8 @@
 
         /* Side Overlay Z-Index Fix */
         .side-overlay {
-            z-index: 3500 !important;
-            /* Higher than drawer */
+            z-index: 25000 !important;
+            /* Higher than drawer and anything else */
         }
 
         /* Main Header */
@@ -1373,7 +1373,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.9.1</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.9.3</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1415,7 +1415,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.9.1</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.9.3</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1614,40 +1614,41 @@
             */
         }
 
-        // --- Canvas Text Rendering with Noise (Anti-Lens) ---
+        // --- Advanced Anti-Lens Canvas Rendering (v3.9.3) ---
         function renderTextToCanvas(containerId, text) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
 
-            // Add a shield layer to prevent right-click search
+            // 1. Honey Gibberish Injection (Invisible DOM noise for OCR scanning tools)
+            const noiseBox = document.createElement('div');
+            noiseBox.style.position = 'absolute';
+            noiseBox.style.opacity = '0.001';
+            noiseBox.style.pointerEvents = 'none';
+            noiseBox.style.fontSize = '1px';
+            noiseBox.textContent = Array.from({ length: 20 }, () => Math.random().toString(36).substring(7)).join(' ');
+            container.appendChild(noiseBox);
+
+            // 2. Shield layer
             const shield = document.createElement('div');
             shield.className = 'shield-layer';
             container.appendChild(shield);
 
             const canvas = document.createElement('canvas');
             canvas.className = 'q-canvas';
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext('2d', { alpha: false }); // Optimization
 
-            // Setup font
-            const fontSize = 18;
-            ctx.font = `600 ${fontSize}px 'Pretendard'`;
+            const fontSize = 19; // Slightly larger for clarity
+            ctx.font = `700 ${fontSize}px 'Pretendard'`;
 
-            // Multiline wrapping
-            // Dynamic Max Width Calculation
-            let maxWidth = container.clientWidth;
-            if (maxWidth === 0 || maxWidth < 300) {
-                // Fallback for when container is hidden or not rendered
-                maxWidth = Math.min(600, window.innerWidth - 60); // 60px padding safe zone
-            }
+            let maxWidth = container.clientWidth || 600;
+            if (maxWidth < 300) maxWidth = Math.min(600, window.innerWidth - 60);
 
             const words = text.split(' ');
             let line = '';
             const lines = [];
-
             for (let n = 0; n < words.length; n++) {
                 let testLine = line + words[n] + ' ';
-                let metrics = ctx.measureText(testLine);
-                if (metrics.width > maxWidth && n > 0) {
+                if (ctx.measureText(testLine).width > maxWidth - 20 && n > 0) {
                     lines.push(line);
                     line = words[n] + ' ';
                 } else {
@@ -1656,144 +1657,76 @@
             }
             lines.push(line);
 
-            // Set canvas size
+            const padding = 20;
+            const lineHeight = fontSize * 1.6;
             canvas.width = maxWidth * window.devicePixelRatio;
-            canvas.height = (lines.length * (fontSize * 1.5) + 30) * window.devicePixelRatio;
+            canvas.height = (lines.length * lineHeight + padding * 2) * window.devicePixelRatio;
             ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
-            // --- Draw Noise Pattern to confuse OCR ---
-            ctx.fillStyle = '#fdfdfd';
-            ctx.fillRect(0, 0, maxWidth, lines.length * (fontSize * 1.5) + 30);
+            // Refined background
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, maxWidth, canvas.height);
 
-            for (let i = 0; i < 500; i++) {
-                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.15})`;
-                ctx.beginPath();
-                ctx.arc(Math.random() * maxWidth, Math.random() * canvas.height, Math.random() * 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            for (let i = 0; i < 30; i++) {
-                ctx.strokeStyle = `rgba(0,0,0,${Math.random() * 0.1})`;
-                ctx.lineWidth = Math.random() * 1.5;
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * maxWidth, Math.random() * canvas.height);
-                ctx.lineTo(Math.random() * maxWidth, Math.random() * canvas.height);
-                ctx.stroke();
-            }
-
-            // Render Text with Optimized Stencil (v3.6)
-            // Improved readability for humans while maintaining machine confusion.
-
-            ctx.textBaseline = 'top';
-            ctx.font = `600 ${fontSize}px 'Pretendard'`;
+            // 3. Subtle Warp Filter (Digital Noise)
+            ctx.filter = 'contrast(1.1) brightness(1.02)';
 
             lines.forEach((l, i) => {
-                const lineY = i * (fontSize * 1.5) + 15;
+                const lineY = i * lineHeight + padding;
+                let currentX = 10;
 
-                // 1. Draw a chaotic background block for the text line
-                ctx.save();
-
-                // Optimized Noise Pattern for better readability
-                // Darker, denser dots to make letters look more solid to humans
-                const noiseCanvas = document.createElement('canvas');
-                noiseCanvas.width = 4; noiseCanvas.height = 4; // Smaller pattern for density
-                const nCtx = noiseCanvas.getContext('2d');
-
-                // Fill with dark grey first
-                nCtx.fillStyle = '#2d3436';
-                nCtx.fillRect(0, 0, 4, 4);
-
-                // Add tiny holes (micro-dots)
-                nCtx.fillStyle = '#b2bec3';
-                nCtx.fillRect(Math.random() * 4, Math.random() * 4, 1, 1);
-
-                const noisePattern = ctx.createPattern(noiseCanvas, 'repeat');
-
-                let currentX = 5;
                 for (let char of l) {
-                    ctx.save();
-                    // Reduced rotation for clarity
-                    const rot = (Math.random() - 0.5) * 0.05;
-                    ctx.translate(currentX, lineY);
-                    ctx.rotate(rot);
+                    const charWidth = ctx.measureText(char).width;
 
-                    // Draw Char with dense noise pattern
-                    ctx.fillStyle = noisePattern;
+                    ctx.save();
+                    ctx.translate(currentX, lineY);
+
+                    // --- Anti-Lens: Character Fragmenting ---
+                    // Draw base character with subtle jitter
+                    ctx.fillStyle = '#2d3436';
+                    ctx.globalAlpha = 0.95;
                     ctx.fillText(char, 0, 0);
 
-                    // Removed large "Cuts" that broke characters.
-                    // Added very subtle internal erosion instead.
-                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                    for (let p = 0; p < 2; p++) {
-                        ctx.fillRect(Math.random() * fontSize * 0.8, Math.random() * fontSize, 0.8, 0.8);
+                    // Draw a "ghost" shadow 0.4px offset to blur machine-calculated stroke edges
+                    ctx.globalAlpha = 0.15;
+                    ctx.fillText(char, 0.4, 0.2);
+
+                    // --- Anti-Lens: Color Inversion Micro-Noise ---
+                    // Inject tiny contrasting dots inside/on the stroke to break edge-detection
+                    ctx.globalAlpha = 0.3;
+                    ctx.fillStyle = '#ff7675'; // Subtle red noise
+                    for (let d = 0; d < 3; d++) {
+                        ctx.fillRect(Math.random() * charWidth, Math.random() * fontSize, 0.6, 0.6);
                     }
 
                     ctx.restore();
-                    currentX += ctx.measureText(char).width;
+                    currentX += charWidth;
                 }
-                ctx.restore();
             });
 
-            // --- Strategic Digital Interference ---
-            // Horizontal white scanlines (erases parts of text)
-            ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-            ctx.lineWidth = 1;
-            for (let y = 0; y < canvas.height; y += 3) {
-                if (Math.random() > 0.6) { // Random scanlines
+            // 4. Global Scramble Mask
+            // Thin white lines that match the background but cut through character connectivity
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 0.5;
+            for (let y = 0; y < canvas.height; y += 4) {
+                if (Math.random() > 0.5) {
                     ctx.beginPath();
                     ctx.moveTo(0, y);
-                    ctx.lineTo(canvas.width, y);
+                    ctx.lineTo(maxWidth, y);
                     ctx.stroke();
                 }
             }
 
-            // --- Strategic Watermark ---
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate(-Math.PI / 4.1); // Slightly off-angle
-            ctx.font = `900 34px 'Pretendard'`;
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.02)';
-            ctx.textAlign = 'center';
-            ctx.fillText('3D MASTER COURSE', 0, 0);
-            ctx.restore();
-
-            // --- Strategic Background Noise ---
-            for (let i = 0; i < 150; i++) {
-                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
-                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 0.7, 0.7);
-            }
-
-            // Crossing lines (thin but distracting)
-            for (let i = 0; i < 12; i++) {
-                ctx.strokeStyle = `rgba(0,0,0,0.03)`;
-                ctx.lineWidth = 0.4;
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * canvas.width, 0);
-                ctx.lineTo(Math.random() * canvas.width, canvas.height);
-                ctx.stroke();
-            }
-
             container.appendChild(canvas);
 
-            // Prevent all interactions with canvas
-            canvas.oncontextmenu = () => false;
-            canvas.ondragstart = () => false;
-            canvas.onselectstart = () => false;
-            canvas.style.userSelect = 'none';
-            canvas.style.webkitUserSelect = 'none';
+            // Protective attributes
             canvas.style.pointerEvents = 'none';
+            canvas.style.userSelect = 'none';
 
-            // Add anti-capture protection layer
             const protectionLayer = document.createElement('div');
             protectionLayer.className = 'anti-capture-layer';
-            protectionLayer.style.position = 'absolute';
-            protectionLayer.style.top = '0';
-            protectionLayer.style.left = '0';
-            protectionLayer.style.width = '100%';
-            protectionLayer.style.height = '100%';
-            protectionLayer.oncontextmenu = () => false;
-            protectionLayer.ondragstart = () => false;
-            protectionLayer.onselectstart = () => false;
+            protectionLayer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:101;cursor:default;';
             container.appendChild(protectionLayer);
+        }
         }
 
         // --- UI Control ---
@@ -2096,13 +2029,19 @@
             toggleSideDrawer(false); // Close drawer first
 
             if (action === 'ranking') {
-                // Small delay to ensure drawer closing trigger doesn't conflict
+                // Ensure sidebar doesn't block ranking
+                const drawer = document.getElementById('side-drawer');
+                drawer.style.pointerEvents = 'none'; // Disable pointer events immediately
+
                 setTimeout(() => {
                     const overlay = document.getElementById('ranking-overlay');
-                    if (overlay) overlay.style.zIndex = '25000'; // Force z-index
-                    toggleOverlay('ranking-overlay', true);
+                    if (overlay) {
+                        overlay.style.zIndex = '30000'; // Final insurance
+                        overlay.classList.add('active'); // Directly trigger showing overlay
+                    }
                     fetchRankingData();
-                }, 50);
+                    drawer.style.pointerEvents = 'auto'; // Restore after a while
+                }, 100);
             } else if (action === 'previous') {
                 if (confirm('기존 3단계 대시보드(전체 단계)로 이동하시겠습니까?')) {
                     window.location.href = 'study_app.html';

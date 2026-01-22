@@ -143,10 +143,37 @@
             gap: 10px;
         }
 
-        #header-user-status {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        /* Global Reset & Drag Protection */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            user-select: none !important;
+            -webkit-user-drag: none !important;
+            -webkit-user-select: none !important;
+        }
+
+        /* Allow Input Interaction */
+        input,
+        textarea {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', sans-serif;
+            background: #f8f9fa;
+            color: var(--text-color);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Side Overlay Z-Index Fix */
+        .side-overlay {
+            z-index: 3500 !important;
+            /* Higher than drawer */
         }
 
         /* Main Header */
@@ -1344,7 +1371,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.4</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.5</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1386,7 +1413,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.4</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.5</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1681,71 +1708,65 @@
                 ctx.stroke();
             }
 
-            // Render Real Text with 3D Perspective & Chroma Defense v3.3
+            // Render Text with Stencil (Negative Space) Technique v3.5
+            // Instead of drawing black text, we draw a noisy background and "cut out" the text.
+
             ctx.textBaseline = 'top';
             ctx.font = `600 ${fontSize}px 'Pretendard'`;
 
-            // --- 1. Chroma Noise Pattern (Mess with Binarization) ---
-            const chromaCanvas = document.createElement('canvas');
-            chromaCanvas.width = 4;
-            chromaCanvas.height = 4;
-            const cCtx = chromaCanvas.getContext('2d');
-            const colors = ['#000000', '#1a1a1a', '#000033', '#330000']; // Subtle color shifts
-            for (let cx = 0; cx < 4; cx++) {
-                for (let cy = 0; cy < 4; cy++) {
-                    cCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-                    cCtx.fillRect(cx, cy, 1, 1);
-                }
-            }
-            const chromaPattern = ctx.createPattern(chromaCanvas, 'repeat');
-
-            // --- 2. 3D Perspective Tilt (The Killer Feature) ---
-            // Tilt the entire canvas slightly back for a 3D effect
-            ctx.save();
-            ctx.transform(1, 0, 0.05, 1, 0, 0); // Horizontal shear for 3D feel
-
             lines.forEach((l, i) => {
-                let currentX = 5;
                 const lineY = i * (fontSize * 1.5) + 15;
 
-                // --- Invisible Background Noise Text (Confuses Context Engines) ---
-                ctx.fillStyle = 'rgba(0,0,0,0.015)';
-                ctx.fillText(l.split('').reverse().join(''), 5.5, lineY + 0.5);
+                // 1. Draw a chaotic background block for the text line
+                ctx.save();
 
+                // Create a noise pattern for the "ink"
+                const noiseCanvas = document.createElement('canvas'); // Small pattern
+                noiseCanvas.width = 10; noiseCanvas.height = 10;
+                const nCtx = noiseCanvas.getContext('2d');
+                for (let k = 0; k < 25; k++) {
+                    nCtx.fillStyle = `rgba(0,0,0,${0.5 + Math.random() * 0.5})`; // Varying darkness
+                    nCtx.fillRect(Math.random() * 10, Math.random() * 10, 2, 2);
+                }
+                const noisePattern = ctx.createPattern(noiseCanvas, 'repeat');
+
+                let currentX = 5;
                 for (let char of l) {
                     ctx.save();
+                    // Random rotation for each char
+                    const rot = (Math.random() - 0.5) * 0.15; // +/- 4 degrees
+                    ctx.translate(currentX, lineY);
+                    ctx.rotate(rot);
 
-                    // Random Stretch & Squish (Breaks font pattern recognition)
-                    const scaleX = 0.95 + Math.random() * 0.1;
-                    const scaleY = 0.98 + Math.random() * 0.04;
-                    const jitterY = (Math.random() - 0.5) * 0.6;
-
-                    ctx.translate(currentX, lineY + jitterY);
-                    ctx.scale(scaleX, scaleY);
-
-                    // Apply Chroma Pattern
-                    ctx.fillStyle = chromaPattern;
+                    // Draw Char with noise pattern (Text itself is made of noise)
+                    ctx.fillStyle = noisePattern;
                     ctx.fillText(char, 0, 0);
 
-                    // --- 3. Internal Pixel Eroding (Micro-dots) ---
-                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                    for (let p = 0; p < 4; p++) {
-                        ctx.fillRect(Math.random() * fontSize * 0.6, Math.random() * fontSize, 0.9, 0.9);
-                    }
+                    // Draw " Cuts" (White lines slicing the text)
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1.2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, Math.random() * fontSize);
+                    ctx.lineTo(fontSize, Math.random() * fontSize);
+                    ctx.stroke();
 
                     ctx.restore();
-                    currentX += (ctx.measureText(char).width * scaleX) + (Math.random() * 0.8);
+                    currentX += ctx.measureText(char).width - 0.5; // Tighter kerning
                 }
+                ctx.restore();
             });
-            ctx.restore();
 
-            // --- 4. High-Freq Digital Interference (Micro Mesh) ---
-            ctx.strokeStyle = 'rgba(0,0,0,0.03)';
-            ctx.lineWidth = 0.4;
-            for (let i = 0; i < canvas.width; i += 5) {
-                ctx.beginPath();
-                ctx.moveTo(i, 0); ctx.lineTo(i + 20, canvas.height); // Tilted lines
-                ctx.stroke();
+            // --- Strategic Digital Interference ---
+            // Horizontal white scanlines (erases parts of text)
+            ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+            ctx.lineWidth = 1;
+            for (let y = 0; y < canvas.height; y += 3) {
+                if (Math.random() > 0.6) { // Random scanlines
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(canvas.width, y);
+                    ctx.stroke();
+                }
             }
 
             // --- Strategic Watermark ---

@@ -1139,16 +1139,35 @@
             }
         }
 
-        /* Transparent Protection Layer for Google Lens */
+        /* Enhanced Anti-Capture Protection */
         .anti-capture-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 255, 255, 0.01) 10px,
+                    rgba(255, 255, 255, 0.01) 20px);
             z-index: 100;
             pointer-events: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        .anti-capture-layer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="50" font-size="12" fill="rgba(0,0,0,0.02)" transform="rotate(-45 50 50)">3D STUDY</text></svg>') repeat;
+            opacity: 0.5;
         }
 
         /* Pass Badge */
@@ -1309,7 +1328,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.2</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v2.3</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1351,7 +1370,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 2.2</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 2.3</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1661,6 +1680,16 @@
             }
 
             container.appendChild(canvas);
+
+            // Add anti-capture protection layer
+            const protectionLayer = document.createElement('div');
+            protectionLayer.className = 'anti-capture-layer';
+            protectionLayer.style.position = 'absolute';
+            protectionLayer.style.top = '0';
+            protectionLayer.style.left = '0';
+            protectionLayer.style.width = '100%';
+            protectionLayer.style.height = '100%';
+            container.appendChild(protectionLayer);
         }
 
         // --- UI Control ---

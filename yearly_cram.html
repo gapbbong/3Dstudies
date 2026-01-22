@@ -1374,7 +1374,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.7</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.8</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1416,7 +1416,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.7</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.8</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -2124,11 +2124,16 @@
         }
 
         function handleDrawerAction(action) {
-            toggleSideDrawer(false);
+            toggleSideDrawer(false); // Close drawer first
+
             if (action === 'ranking') {
-                // Use toggleOverlay to show ranking as side overlay
-                toggleOverlay('ranking-overlay', true);
-                fetchRankingData();
+                // Small delay to ensure drawer closing trigger doesn't conflict
+                setTimeout(() => {
+                    const overlay = document.getElementById('ranking-overlay');
+                    if (overlay) overlay.style.zIndex = '25000'; // Force z-index
+                    toggleOverlay('ranking-overlay', true);
+                    fetchRankingData();
+                }, 50);
             } else if (action === 'previous') {
                 if (confirm('기존 3단계 대시보드(전체 단계)로 이동하시겠습니까?')) {
                     window.location.href = 'study_app.html';
@@ -2633,14 +2638,26 @@
         };
 
         window.quitQuiz = function () {
-            if (confirm('학습을 종료하고 대시보드로 돌아갈까요?')) {
-                document.getElementById('dashboard').style.display = 'grid';
-                document.getElementById('main-header').style.display = 'flex';
+            if (currentMode === 'study') {
+                // Study Mode: Exit immediately without confirmation
+                document.getElementById('quiz-list').innerHTML = '';
                 document.getElementById('quiz-area').style.display = 'none';
-                document.getElementById('progress-info').style.display = 'none';
                 document.getElementById('submit-btn').style.display = 'none';
-                document.getElementById('main-watermark').style.display = 'none';
+                toggleHeader(true);
+                toggleDashboard(true);
+                document.getElementById('progress-info').style.display = 'none';
+
+                // Re-render dashboard
+                renderDashboard(groupDataByYear(practiceData.chapters));
+
+                // Clear data
+                currentQuestions = [];
+                userAnswers = {};
                 window.scrollTo(0, 0);
+            } else {
+                // Test Mode: Show custom exit confirmation modal
+                const overlay = document.getElementById('exit-confirm-overlay');
+                if (overlay) overlay.style.display = 'flex';
             }
         };
 

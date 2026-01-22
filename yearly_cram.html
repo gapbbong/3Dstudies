@@ -1328,7 +1328,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.1</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.2</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1370,7 +1370,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.1</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.2</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1642,47 +1642,65 @@
             });
             ctx.restore();
 
-            // Render Real Text with Human-Friendly Security v3.0
+            // Render Real Text with Sensor Interference v3.2
             ctx.textBaseline = 'top';
             ctx.font = `600 ${fontSize}px 'Pretendard'`;
+
+            // --- 1. Create a checkerboard pattern for text filling ---
+            // This is nearly invisible to humans but breaks binarization for OCR
+            const patternCanvas = document.createElement('canvas');
+            patternCanvas.width = 2;
+            patternCanvas.height = 2;
+            const pCtx = patternCanvas.getContext('2d');
+            pCtx.fillStyle = '#2d3436';
+            pCtx.fillRect(0, 0, 1, 1);
+            pCtx.fillRect(1, 1, 1, 1);
+            const textPattern = ctx.createPattern(patternCanvas, 'repeat');
 
             lines.forEach((l, i) => {
                 let currentX = 5;
                 const lineY = i * (fontSize * 1.5) + 15;
 
-                // --- Subtle Ghosting (Double Edge for OCR) ---
-                ctx.fillStyle = 'rgba(0,0,0,0.03)';
-                ctx.fillText(l, 5.3, lineY + 0.3);
+                // --- Subtle Ghosting (Anti-Edge) ---
+                ctx.fillStyle = 'rgba(0,0,0,0.02)';
+                ctx.fillText(l, 5.4, lineY + 0.4);
 
-                // --- Main Text with Micro-Jitter ---
-                ctx.fillStyle = '#2d3436';
+                // --- Main Text with Pattern Fill ---
                 for (let char of l) {
-                    // Slight irregular spacing (Kerning)
-                    const kerning = (Math.random() * 0.8);
-                    // Very subtle vertical jitter
-                    const jitterY = (Math.random() - 0.5) * 0.3;
+                    const kerning = (Math.random() * 0.7);
+                    const jitterY = (i % 2 === 0 ? 0.4 : -0.4); // Oscillating baseline
 
+                    ctx.fillStyle = textPattern;
                     ctx.fillText(char, currentX, lineY + jitterY);
 
-                    // --- Micro Dot Matrix (Only around characters) ---
-                    // This looks like paper texture/grain to humans
-                    ctx.fillStyle = 'rgba(0,0,0,0.1)';
-                    for (let p = 0; p < 8; p++) {
-                        ctx.fillRect(currentX + Math.random() * fontSize * 0.6, lineY + Math.random() * fontSize, 0.7, 0.7);
+                    // --- Internal Erosion (Random white micro-pixels inside characters) ---
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    for (let p = 0; p < 6; p++) {
+                        ctx.fillRect(currentX + Math.random() * fontSize * 0.5, lineY + Math.random() * fontSize, 0.8, 0.8);
                     }
-                    ctx.fillStyle = '#2d3436'; // Reset for next char
 
                     currentX += ctx.measureText(char).width + kerning;
                 }
             });
 
-            // --- Fine Sand Noise (Background) ---
-            for (let i = 0; i < 600; i++) {
-                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.04})`;
-                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 0.5, 0.5);
+            // --- 2. High-Frequency Scanlines (Digital Interference) ---
+            // Breaks the continuity of vertically aligned sensor pixels
+            ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+            ctx.lineWidth = 0.5;
+            for (let y = 0; y < canvas.height; y += 2) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
             }
 
-            // --- Very Faint Watermark ---
+            // --- 3. Micro Grain Noise ---
+            for (let i = 0; i < 400; i++) {
+                ctx.fillStyle = `rgba(0,0,0,${Math.random() * 0.05})`;
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 0.6, 0.6);
+            }
+
+            // --- Strategic Watermark ---
             ctx.save();
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate(-Math.PI / 4);

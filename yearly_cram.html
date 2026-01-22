@@ -1373,7 +1373,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.9.3</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.9.4</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1415,7 +1415,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.9.3</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.9.4</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -2585,19 +2585,18 @@
             console.log("quitQuiz called. Mode:", currentMode);
 
             if (currentMode === 'study') {
-                // Study Mode: Exit immediately
-                window.confirmExit(); // Reuse the same logic
+                // Study Mode: Exit immediately without ANY confirmation or delay
+                window.confirmExit();
             } else {
                 // Test Mode: Show custom exit confirmation modal
-                const overlay = document.getElementById('final-exit-modal');
-                if (overlay) {
-                    overlay.style.display = 'flex';
-                    overlay.style.zIndex = '99999'; // Ensure it's on top
-                    overlay.style.opacity = '1';
+                const modal = document.getElementById('final-exit-modal');
+                if (modal) {
+                    modal.style.display = 'flex';
+                    modal.style.zIndex = '100000';
+                    modal.style.opacity = '1';
                 } else {
-                    console.error("Exit modal not found! Creating fallback.");
                     if (confirm("정말 종료하시겠습니까?")) {
-                        confirmExit();
+                        window.confirmExit();
                     }
                 }
             }

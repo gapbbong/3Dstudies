@@ -1371,7 +1371,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.5</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.6</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1413,7 +1413,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.5</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.6</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1708,8 +1708,8 @@
                 ctx.stroke();
             }
 
-            // Render Text with Stencil (Negative Space) Technique v3.5
-            // Instead of drawing black text, we draw a noisy background and "cut out" the text.
+            // Render Text with Optimized Stencil (v3.6)
+            // Improved readability for humans while maintaining machine confusion.
 
             ctx.textBaseline = 'top';
             ctx.font = `600 ${fontSize}px 'Pretendard'`;
@@ -1720,38 +1720,43 @@
                 // 1. Draw a chaotic background block for the text line
                 ctx.save();
 
-                // Create a noise pattern for the "ink"
-                const noiseCanvas = document.createElement('canvas'); // Small pattern
-                noiseCanvas.width = 10; noiseCanvas.height = 10;
+                // Optimized Noise Pattern for better readability
+                // Darker, denser dots to make letters look more solid to humans
+                const noiseCanvas = document.createElement('canvas');
+                noiseCanvas.width = 4; noiseCanvas.height = 4; // Smaller pattern for density
                 const nCtx = noiseCanvas.getContext('2d');
-                for (let k = 0; k < 25; k++) {
-                    nCtx.fillStyle = `rgba(0,0,0,${0.5 + Math.random() * 0.5})`; // Varying darkness
-                    nCtx.fillRect(Math.random() * 10, Math.random() * 10, 2, 2);
-                }
+
+                // Fill with dark grey first
+                nCtx.fillStyle = '#2d3436';
+                nCtx.fillRect(0, 0, 4, 4);
+
+                // Add tiny holes (micro-dots)
+                nCtx.fillStyle = '#b2bec3';
+                nCtx.fillRect(Math.random() * 4, Math.random() * 4, 1, 1);
+
                 const noisePattern = ctx.createPattern(noiseCanvas, 'repeat');
 
                 let currentX = 5;
                 for (let char of l) {
                     ctx.save();
-                    // Random rotation for each char
-                    const rot = (Math.random() - 0.5) * 0.15; // +/- 4 degrees
+                    // Reduced rotation for clarity
+                    const rot = (Math.random() - 0.5) * 0.05;
                     ctx.translate(currentX, lineY);
                     ctx.rotate(rot);
 
-                    // Draw Char with noise pattern (Text itself is made of noise)
+                    // Draw Char with dense noise pattern
                     ctx.fillStyle = noisePattern;
                     ctx.fillText(char, 0, 0);
 
-                    // Draw " Cuts" (White lines slicing the text)
-                    ctx.strokeStyle = '#fff';
-                    ctx.lineWidth = 1.2;
-                    ctx.beginPath();
-                    ctx.moveTo(0, Math.random() * fontSize);
-                    ctx.lineTo(fontSize, Math.random() * fontSize);
-                    ctx.stroke();
+                    // Removed large "Cuts" that broke characters.
+                    // Added very subtle internal erosion instead.
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    for (let p = 0; p < 2; p++) {
+                        ctx.fillRect(Math.random() * fontSize * 0.8, Math.random() * fontSize, 0.8, 0.8);
+                    }
 
                     ctx.restore();
-                    currentX += ctx.measureText(char).width - 0.5; // Tighter kerning
+                    currentX += ctx.measureText(char).width;
                 }
                 ctx.restore();
             });

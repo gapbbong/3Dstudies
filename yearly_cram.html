@@ -1881,17 +1881,33 @@
                     const cid = `cram_${yr}_${partName}`;
                     const isPassed = localStorage.getItem(`passed_${cid}`) === "true";
 
-                    // Specific Card Pass Count (Always 1 or 0 for now in this mode)
-                    // But we can show a badge if passed
-                    const passBadge = isPassed ? `<div class="tier-badge">${currentTier.emoji}</div>` : '';
-                    const cardClass = isPassed ? `cram-card ${currentTier.class}` : 'cram-card';
+                    // Get tier for THIS specific card based on pass count
+                    let cardPassCount = 0;
+                    if (practiceData && practiceData.chapters) {
+                        practiceData.chapters.forEach(ch => {
+                            const stepCount = 30;
+                            for (let i = 0; i < ch.questions.length; i += stepCount) {
+                                const year = ch.questions[i].year || '기타';
+                                const partNum = Math.floor(i / stepCount) + 1;
+                                const checkCid = `cram_${year}_${partNum}부`;
+                                if (localStorage.getItem(`passed_${checkCid}`) === "true") cardPassCount++;
+                            }
+                        });
+                    }
+
+                    const cardTier = getStudentTier(cardPassCount);
+                    const passBadge = isPassed ? `<div class="pass-badge">✓ 합격</div>` : '';
+                    const tierBadge = isPassed ? `<div class="tier-badge">${cardTier.emoji}</div>` : '';
+                    const cardClass = isPassed ? `cram-card ${cardTier.class}` : 'cram-card';
 
                     const startNum = (idx * splitCount) + 1;
                     const endNum = startNum + chunk.length - 1;
                     const range = `${startNum}~${endNum}`;
                     cardsHtml += `
-                        <div class="${cardClass}">
+                        <div class="${cardClass}" style="position: relative;">
+                            <div class="anti-capture-layer"></div>
                             ${passBadge}
+                            ${tierBadge}
                             <h4>${idx + 1}부</h4>
                             <p style="color: #636e72; font-size: 0.8em; margin: 0 0 10px 0;">${chunk.length}문항 (${range}번)</p>
                             <div class="actions">
@@ -1946,7 +1962,8 @@
         function handleDrawerAction(action) {
             toggleSideDrawer(false);
             if (action === 'ranking') {
-                document.getElementById('ranking-overlay').style.display = 'flex';
+                // Use toggleOverlay to show ranking as side overlay
+                toggleOverlay('ranking-overlay', true);
                 fetchRankingData();
             } else if (action === 'previous') {
                 if (confirm('기존 3단계 대시보드(전체 단계)로 이동하시겠습니까?')) {

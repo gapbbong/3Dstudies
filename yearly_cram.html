@@ -573,9 +573,11 @@
         .question-canvas-container {
             position: relative;
             width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 6px;
             overflow: hidden;
-            border-radius: 10px;
+            border-radius: 12px;
+            min-height: 100px;
+            background: #fff;
         }
 
         canvas.q-canvas {
@@ -630,11 +632,14 @@
             display: inline-block;
             background: var(--primary-gradient);
             color: white;
-            padding: 5px 15px;
+            padding: 12px 28px;
             border-radius: 50px;
-            font-weight: 800;
-            font-size: 0.9em;
+            font-weight: 900;
+            font-size: 1.4em;
+            letter-spacing: -0.5px;
             align-self: flex-start;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .parts-container {
@@ -1043,11 +1048,12 @@
         }
 
         .q-text {
-            font-size: 1.3em;
+            font-size: 1.4rem;
             font-weight: 500;
             line-height: 1.6;
             margin: 20px 0;
             word-break: keep-all;
+            color: #2d3436;
         }
 
         .c-list {
@@ -1058,7 +1064,7 @@
         }
 
         .c-item {
-            padding: 15px 20px;
+            padding: 18px 25px;
             background: #f8f9fa;
             border: 2px solid #edeff2;
             border-radius: 15px;
@@ -1066,7 +1072,10 @@
             transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #2d3436;
         }
 
         .c-item:hover {
@@ -1373,7 +1382,7 @@
     <header id="main-header" style="display: none;">
         <div class="header-logo" onclick="location.reload()">
             <span>3D STUDY</span>
-            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v3.9.4</span>
+            <span style="font-size: 0.6em; color: #b2bec3; margin-left: 5px; font-weight: 400;">v4.2.1</span>
         </div>
         <div class="user-status" id="header-user-status">
             <span class="user-tier-badge" id="header-tier-badge"></span>
@@ -1415,7 +1424,7 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 3.9.4</div>
+            <div style="font-size: 0.75rem; color: #b2bec3; margin-bottom: 5px;">Version 4.2.1</div>
             <div style="font-size: 0.85rem;">3D Printer Master Course</div>
         </div>
     </div>
@@ -1614,21 +1623,12 @@
             */
         }
 
-        // --- Advanced Anti-Lens Canvas Rendering (v3.9.3) ---
+        // --- Advanced Anti-Lens Canvas Rendering (v4.0.4) ---
         function renderTextToCanvas(containerId, text) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
 
-            // 1. Honey Gibberish Injection (Invisible DOM noise for OCR scanning tools)
-            const noiseBox = document.createElement('div');
-            noiseBox.style.position = 'absolute';
-            noiseBox.style.opacity = '0.001';
-            noiseBox.style.pointerEvents = 'none';
-            noiseBox.style.fontSize = '1px';
-            noiseBox.textContent = Array.from({ length: 20 }, () => Math.random().toString(36).substring(7)).join(' ');
-            container.appendChild(noiseBox);
-
-            // 2. Shield layer
+            // 1. Shield layer (Honey Gibberish removed for readability v4.0.4)
             const shield = document.createElement('div');
             shield.className = 'shield-layer';
             container.appendChild(shield);
@@ -1636,19 +1636,28 @@
             const canvas = document.createElement('canvas');
             canvas.className = 'q-canvas';
             const ctx = canvas.getContext('2d', { alpha: false }); // Optimization
+            const fontSize = 24; // v4.0.7 Compact & Clean
 
-            const fontSize = 18; // Restored to original size
-            ctx.font = `600 ${fontSize}px 'Pretendard'`;
-
-            let maxWidth = container.clientWidth || 600;
-            if (maxWidth < 300) maxWidth = Math.min(600, window.innerWidth - 60);
+            // Robust Width: Ensure we don't calculate based on a 0-width unrendered container
+            let containerWidth = container.clientWidth;
+            if (!containerWidth || containerWidth < 500) {
+                const quizView = document.querySelector('.quiz-view');
+                containerWidth = (quizView ? quizView.clientWidth - 40 : 0) || 850;
+            }
+            const maxWidth = Math.max(containerWidth, 850);
 
             const words = text.split(' ');
             let line = '';
             const lines = [];
+
+            // Measure context
+            const mCanvas = document.createElement('canvas');
+            const mCtx = mCanvas.getContext('2d');
+            mCtx.font = `800 ${fontSize}px 'Pretendard'`;
+
             for (let n = 0; n < words.length; n++) {
                 let testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > maxWidth - 20 && n > 0) {
+                if (mCtx.measureText(testLine).width > maxWidth - 100 && n > 0) {
                     lines.push(line);
                     line = words[n] + ' ';
                 } else {
@@ -1657,64 +1666,88 @@
             }
             lines.push(line);
 
-            const padding = 20;
-            const lineHeight = fontSize * 1.6;
-            canvas.width = maxWidth * window.devicePixelRatio;
-            canvas.height = (lines.length * lineHeight + padding * 2) * window.devicePixelRatio;
-            ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            const padding = 25;
+            const lineHeight = fontSize * 1.5;
+            const dpr = window.devicePixelRatio || 1;
 
-            // Refined background
+            canvas.width = maxWidth * dpr;
+            canvas.height = (lines.length * lineHeight + padding * 2) * dpr;
+            canvas.style.width = '100%';
+            canvas.style.maxWidth = maxWidth + 'px';
+            canvas.style.height = 'auto';
+
+            ctx.scale(dpr, dpr);
+
+            // --- Anti-Lens Noise Generation Start ---
+            // 1. Fill background explicitly (White)
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, maxWidth, canvas.height);
+            ctx.fillRect(0, 0, maxWidth, (lines.length * lineHeight + padding * 2));
 
-            // 3. Subtle Warp Filter (Digital Noise)
-            ctx.filter = 'contrast(1.1) brightness(1.02)';
+            // 2. Add Random Noise (Micro-dots) - Confuses OCR thresholding
+            const noiseCount = (maxWidth * lines.length * 10); // Density based on size
+            for (let i = 0; i < 3000; i++) {
+                const x = Math.random() * maxWidth;
+                const y = Math.random() * (lines.length * lineHeight + padding * 2);
+                const size = Math.random() * 1.5; // Tiny dots
+                ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.08})`; // Very subtle grey
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 3. Add Faint Interference Lines - Breaks character continuity for bots
+            for (let i = 0; i < 20; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * maxWidth, Math.random() * (lines.length * lineHeight + padding * 2));
+                ctx.lineTo(Math.random() * maxWidth, Math.random() * (lines.length * lineHeight + padding * 2));
+                ctx.strokeStyle = `rgba(0, 0, 0, ${Math.random() * 0.04})`; // Extremely faint
+                ctx.lineWidth = Math.random() * 2;
+                ctx.stroke();
+            }
+            // --- Anti-Lens Noise Generation End ---
+
+            ctx.font = `800 ${fontSize}px 'Pretendard'`;
+            ctx.textBaseline = 'top';
+
+
+            ctx.filter = 'contrast(1.02) brightness(1.02)';
+
+            // --- Stippled Text (Dot Matrix) Logic ---
+            // Create a noise pattern to use as the text fill
+            const patternCanvas = document.createElement('canvas');
+            patternCanvas.width = 4;
+            patternCanvas.height = 4;
+            const pCtx = patternCanvas.getContext('2d');
+
+            // Fill pattern with random dots (High density for readability)
+            for (let i = 0; i < 12; i++) { // ~75% coverage
+                pCtx.fillStyle = `rgba(30, 39, 46, ${0.8 + Math.random() * 0.2})`; // Dark grey variance
+                pCtx.fillRect(Math.floor(Math.random() * 4), Math.floor(Math.random() * 4), 1, 1);
+                ctx.fillRect(Math.floor(Math.random() * 4), Math.floor(Math.random() * 4), 1, 1);
+            }
+            const textPattern = ctx.createPattern(patternCanvas, 'repeat');
+
+            ctx.fillStyle = textPattern; // Apply stippled pattern
+
+            // --- Anti-Lens V4.2.0: Clean Texture (Final Stable) ---
+            // "The Arms Race Ends Here." - Prioritizing Typography & UX.
+
+            // Just simple, high-quality text rendering.
+            // The "Background Noise" (Paper Texture) generated above remains as a subtle defense.
 
             lines.forEach((l, i) => {
                 const lineY = i * lineHeight + padding;
-                let currentX = 10;
+                let currentX = 40;
 
                 for (let char of l) {
+                    ctx.fillStyle = '#1e272e'; // Solid, Dark, Crisp
+                    ctx.fillText(char, currentX, lineY);
+
                     const charWidth = ctx.measureText(char).width;
-
-                    ctx.save();
-                    ctx.translate(currentX, lineY);
-
-                    // --- Anti-Lens: Character Fragmenting ---
-                    // Draw base character with subtle jitter
-                    ctx.fillStyle = '#2d3436';
-                    ctx.globalAlpha = 0.95;
-                    ctx.fillText(char, 0, 0);
-
-                    // Draw a "ghost" shadow 0.4px offset to blur machine-calculated stroke edges
-                    ctx.globalAlpha = 0.15;
-                    ctx.fillText(char, 0.4, 0.2);
-
-                    // --- Anti-Lens: Color Inversion Micro-Noise ---
-                    // Inject tiny contrasting dots inside/on the stroke to break edge-detection
-                    ctx.globalAlpha = 0.3;
-                    ctx.fillStyle = '#ff7675'; // Subtle red noise
-                    for (let d = 0; d < 3; d++) {
-                        ctx.fillRect(Math.random() * charWidth, Math.random() * fontSize, 0.6, 0.6);
-                    }
-
-                    ctx.restore();
                     currentX += charWidth;
                 }
             });
-
-            // 4. Global Scramble Mask
-            // Thin white lines that match the background but cut through character connectivity
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 0.5;
-            for (let y = 0; y < canvas.height; y += 4) {
-                if (Math.random() > 0.5) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(maxWidth, y);
-                    ctx.stroke();
-                }
-            }
+            // ----------------------------------------
 
             container.appendChild(canvas);
 
@@ -1933,6 +1966,22 @@
                 const yearGroup = document.createElement('div');
                 yearGroup.className = 'year-group';
 
+                // Dynamic Color Mapping for Years (v4.0.1 Expanded)
+                const yearColors = {
+                    '2026': '#ff7675', // Coral
+                    '2025': '#00b894', // Mint
+                    '2024': '#0984e3', // Blue
+                    '2023': '#fdb827', // Yellow
+                    '2022': '#e84393', // Pink
+                    '2021': '#00cec9', // Teal
+                    '2020_2': '#6c5ce7', // Purple
+                    '2020_1': '#a29bfe', // Light Purple
+                    '2019': '#fd9644', // Orange
+                    '2018': '#20bf6b', // Green
+                    '기타': '#636e72'   // Grey
+                };
+                const badgeColor = yearColors[yr] || '#6c5ce7'; // Default Purple
+
                 const questions = groups[yr];
                 const splitCount = 30;
                 const chunks = [];
@@ -1984,7 +2033,7 @@
                 });
 
                 yearGroup.innerHTML = `
-                    <div class="year-badge">${yr}학년도</div>
+                    <div class="year-badge" style="background: ${badgeColor}; box-shadow: 0 4px 15px ${badgeColor}4D;">${yr}학년도</div>
                     <div class="parts-container">
                         ${cardsHtml}
                     </div>
@@ -2140,8 +2189,19 @@
         async function syncInitialData() {
             if (!CRAM_SCRIPT_URL || !currentUser) return;
             try {
-                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getStudentData&name=${encodeURIComponent(currentUser)}`);
-                const data = await response.json();
+                // Try with action=getStudentData (legacy) or type=get_user_data (v2.0)
+                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getStudentData&type=get_user_data&name=${encodeURIComponent(currentUser)}`);
+                const text = await response.text();
+
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (parseEx) {
+                    console.warn("API returned non-JSON response:", text);
+                    showLoading(false);
+                    return;
+                }
+
                 if (data.status === 'success') {
                     if (data.passedChapters) {
                         data.passedChapters.forEach(cid => {
@@ -2151,11 +2211,13 @@
                     statTotalCorrect = data.totalCorrect || 0;
                     statTotalWrong = data.totalWrong || 0;
 
-                    renderDashboard(groupDataByYear()); // Re-render with new data
+                    renderDashboard(groupDataByYear());
                     updateTemperatureUI();
                 }
+                showLoading(false); // Success case
             } catch (e) {
                 console.log("Initial Sync Error:", e);
+                showLoading(false); // Fail-safe: Hide spinner on network error
             }
         }
 
@@ -2332,20 +2394,31 @@
             updateProgress(); // Update progress on selection
         };
 
-        window.submitTest = function () {
+        window.submitTest = function (force = false) {
             let unanswered = [];
             currentQuestions.forEach((_, idx) => {
                 if (!userAnswers[idx]) unanswered.push(idx);
             });
 
-            if (unanswered.length > 0) {
-                if (!confirm(`아직 풀지 않은 문제가 ${unanswered.length}개 있습니다. 제출할까요?`)) {
-                    // Highlight first unanswered
-                    const firstIdx = unanswered[0];
-                    document.getElementById(`q-card-${firstIdx}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    unanswered.forEach(idx => {
-                        document.getElementById(`q-card-${idx}`).style.border = '2px solid #ff4757';
-                    });
+            if (unanswered.length > 0 && !force) {
+                // Use custom modal instead of native confirm
+                const modal = document.getElementById('final-exit-modal');
+                if (modal) {
+                    const title = modal.querySelector('h2');
+                    const desc = modal.querySelector('p');
+                    const btn = modal.querySelector('.btn-test');
+
+                    if (title) title.textContent = "답안을 제출할까요?";
+                    if (desc) desc.innerHTML = `아직 풀지 않은 문제가 <strong style="color:#e74c3c;">${unanswered.length}개</strong> 있습니다.<br>정말 제출하시겠습니까?`;
+                    if (btn) {
+                        btn.textContent = "제출하기";
+                        btn.onclick = () => {
+                            modal.style.display = 'none';
+                            window.submitTest(true);
+                        };
+                    }
+                    modal.style.display = 'flex';
+                    modal.style.zIndex = '100000';
                     return;
                 }
             }
@@ -2582,23 +2655,27 @@
         };
 
         window.quitQuiz = function () {
-            console.log("quitQuiz called. Mode:", currentMode);
-
             if (currentMode === 'study') {
-                // Study Mode: Exit immediately without ANY confirmation or delay
                 window.confirmExit();
-            } else {
-                // Test Mode: Show custom exit confirmation modal
-                const modal = document.getElementById('final-exit-modal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                    modal.style.zIndex = '100000';
-                    modal.style.opacity = '1';
-                } else {
-                    if (confirm("정말 종료하시겠습니까?")) {
-                        window.confirmExit();
-                    }
+                return;
+            }
+
+            // Test Mode: Show custom exit confirmation modal
+            const modal = document.getElementById('final-exit-modal');
+            if (modal) {
+                const title = modal.querySelector('h2');
+                const desc = modal.querySelector('p');
+                const btn = modal.querySelector('.btn-test');
+
+                if (title) title.textContent = "학습을 종료할까요?";
+                if (desc) desc.innerHTML = "진행 중인 내용은 저장되지 않습니다.<br>정말 나가시겠습니까?";
+                if (btn) {
+                    btn.textContent = "나가기";
+                    btn.onclick = () => window.confirmExit();
                 }
+
+                modal.style.display = 'flex';
+                modal.style.zIndex = '100000';
             }
         };
 

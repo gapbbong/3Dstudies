@@ -14,8 +14,10 @@
                 <p style="font-size:1.2rem; margin-bottom:0.5rem; color:#666;">이미 다른 창에서 앱이 실행 중입니다.</p>
                 <p style="font-size:1rem; color:#999; margin-bottom:2rem;">데이터 충돌 방지를 위해 하나의 창만 사용해주세요.</p>
                 <div style="display:flex; gap:10px;">
+                    <button onclick="localStorage.removeItem('app_tab_lock'); window.location.reload();" style="padding:10px 20px; font-size:1rem; cursor:pointer; background-color:#3498db; color:white; border:none; border-radius:5px;">
+                        🔄 세션 초기화 및 재접속 (오류 해결)
+                    </button>
                     <button onclick="window.close()" style="padding:10px 20px; font-size:1rem; cursor:pointer; background-color:#e74c3c; color:white; border:none; border-radius:5px;">창 닫기</button>
-                    <button onclick="window.location.reload()" style="padding:10px 20px; font-size:1rem; cursor:pointer; background-color:#3498db; color:white; border:none; border-radius:5px;">사용할 수 있도록 갱신 (강제 실행)</button>
                 </div>
             </div>
         `;

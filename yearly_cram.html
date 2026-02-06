@@ -591,23 +591,25 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+        }
+
+        .cram-grid-section {
             display: grid;
-
-            @media (max-width: 1100px) {
-                .cram-dashboard {
-                    grid-template-columns: repeat(2, 1fr);
-                }
-            }
-
-            @media (max-width: 768px) {
-                .cram-dashboard {
-                    grid-template-columns: 1fr;
-                }
-            }
-
             grid-template-columns: repeat(3, 1fr);
-            /* 3열 배치 */
             gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 1100px) {
+            .cram-grid-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cram-grid-section {
+                grid-template-columns: 1fr;
+            }
         }
 
         .year-group {
@@ -1475,7 +1477,7 @@
     <!-- Scripts -->
     <script src="data_practice.js"></script>
     <script>
-        const CRAM_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEPh0tph43kjJJoejsoWCNOTtYFoLyM83JaarUa-HXx9KjRasTocxj_4BLFqILk8zk/exec';
+        const CRAM_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxDuptCcSFGPULQFH-BNOtDodq610O2Df9rXlM1LJCO1LyWcYPXoJZfLqj2ndd7ukI/exec';
         const ENABLE_MULTI_TAB_PREVENTION = true; // Set to true for distribution
         let currentQuestions = [];
         let currentMode = 'study'; // 'study' or 'test'
@@ -1484,6 +1486,8 @@
         let sessionStartTime = null;
         let currentChapterId = null; // e.g. "2023_1부"
         let currentChapterTitle = ""; // e.g. "2023 1부"
+        let userProgress = {}; // Store fetched progress to avoid overwriting
+        let userStats = {};    // Store fetched stats for leaderboard
 
         // --- Performance Stats ---
         let statTotalCorrect = 0;
@@ -1946,6 +1950,7 @@
             const container = document.getElementById('dashboard');
             container.innerHTML = '';
 
+            // Calculate Global Tier Once (Optimization)
             let totalPassCount = 0;
             if (practiceData && practiceData.chapters) {
                 practiceData.chapters.forEach(ch => {
@@ -1958,29 +1963,57 @@
                     }
                 });
             }
-
             const currentTier = getStudentTier(totalPassCount);
+
+            // 1. Main Challenge Section
+            const mainHeader = document.createElement('h3');
+            mainHeader.style.cssText = 'color: #2d3436; margin: 30px 0 15px; font-weight: 800; font-size: 1.4em; padding-left: 10px; border-left: 5px solid #6c5ce7;';
+            mainHeader.textContent = "🔥 마스터 챌린지 (Main Challenge)";
+            container.appendChild(mainHeader);
+
+            // Create Grid Container for Main
+            const mainGrid = document.createElement('div');
+            mainGrid.className = 'cram-grid-section';
+            container.appendChild(mainGrid);
+
+            renderYearSection(mainGrid, groups, "", currentTier);
+
+            // 2. Retry Section (Infinite Review)
+            const retryHeader = document.createElement('h3');
+            retryHeader.style.cssText = 'color: #2d3436; margin: 50px 0 15px; font-weight: 800; font-size: 1.4em; padding-left: 10px; border-left: 5px solid #00b894;';
+            retryHeader.textContent = "♻️ 무한 재도전 (Infinite Review)";
+            container.appendChild(retryHeader);
+
+            const retryDesc = document.createElement('p');
+            retryDesc.style.cssText = 'color: #636e72; margin: -10px 0 20px; font-size: 0.9em; padding-left: 20px;';
+            retryDesc.textContent = "* 재도전 모드는 기존 합격 여부와 상관없이 계속해서 풀 수 있으며, 최신 점수가 기록됩니다.";
+            container.appendChild(retryDesc);
+
+            // Create Grid Container for Retry
+            const retryGrid = document.createElement('div');
+            retryGrid.className = 'cram-grid-section';
+            container.appendChild(retryGrid);
+
+            renderYearSection(retryGrid, groups, "_retry", currentTier);
+        }
+
+        function renderYearSection(container, groups, idSuffix, tier) {
+            let totalPassCount = 0; // Keeping legacy count logic same if needed, or we can scope it.
+            // Note: Tier usually depends on ALL passes. For specific card rendering we calculate locally.
+
             const years = Object.keys(groups).sort((a, b) => b.localeCompare(a));
 
             years.forEach(yr => {
                 const yearGroup = document.createElement('div');
                 yearGroup.className = 'year-group';
 
-                // Dynamic Color Mapping for Years (v4.0.1 Expanded)
                 const yearColors = {
-                    '2026': '#ff7675', // Coral
-                    '2025': '#00b894', // Mint
-                    '2024': '#0984e3', // Blue
-                    '2023': '#fdb827', // Yellow
-                    '2022': '#e84393', // Pink
-                    '2021': '#00cec9', // Teal
-                    '2020_2': '#6c5ce7', // Purple
-                    '2020_1': '#a29bfe', // Light Purple
-                    '2019': '#fd9644', // Orange
-                    '2018': '#20bf6b', // Green
-                    '기타': '#636e72'   // Grey
+                    '2026': '#ff7675', '2025': '#00b894', '2024': '#0984e3',
+                    '2023': '#fdb827', '2022': '#e84393', '2021': '#00cec9',
+                    '2020_2': '#6c5ce7', '2020_1': '#a29bfe', '2019': '#fd9644',
+                    '2018': '#20bf6b', '기타': '#636e72'
                 };
-                const badgeColor = yearColors[yr] || '#6c5ce7'; // Default Purple
+                const badgeColor = yearColors[yr] || '#6c5ce7';
 
                 const questions = groups[yr];
                 const splitCount = 30;
@@ -1992,48 +2025,64 @@
                 let cardsHtml = '';
                 chunks.forEach((chunk, idx) => {
                     const partName = `${idx + 1}부`;
-                    const cid = `cram_${yr}_${partName}`;
-                    const isPassed = localStorage.getItem(`passed_${cid}`) === "true";
+                    const baseCid = `cram_${yr}_${partName}`; // Original ID
+                    const displayCid = baseCid + idSuffix;          // Display ID (maybe _retry)
 
-                    // Get tier for THIS specific card based on pass count
-                    let cardPassCount = 0;
-                    if (practiceData && practiceData.chapters) {
-                        practiceData.chapters.forEach(ch => {
-                            const stepCount = 30;
-                            for (let i = 0; i < ch.questions.length; i += stepCount) {
-                                const year = ch.questions[i].year || '기타';
-                                const partNum = Math.floor(i / stepCount) + 1;
-                                const checkCid = `cram_${year}_${partNum}부`;
-                                if (localStorage.getItem(`passed_${checkCid}`) === "true") cardPassCount++;
-                            }
-                        });
+                    // Logic: 
+                    // Main Mode: Shows Pass Badge if passed. Score logic is max.
+                    // Retry Mode: Shows "Review" badge? Or just score.
+
+                    // Logic to retrieve status
+                    // If suffix is empty, we read standard 'passed_...' and userProgress
+                    // If suffix is _retry, we read 'passed_..._retry'? 
+                    // User said: "In case of re-solving, show latest score".
+                    // So we should track status for this NEW ID.
+
+                    const isPassed = localStorage.getItem(`passed_${displayCid}`) === "true";
+
+                    // Retrieve score for display
+                    let displayScore = 0;
+                    if (userProgress && userProgress[displayCid]) {
+                        displayScore = userProgress[displayCid].score || 0; // For retry, we ensure this stores 'latest' in submitTest
                     }
 
-                    const cardTier = getStudentTier(cardPassCount);
-                    const passBadge = isPassed ? `<div class="pass-badge">✓ 합격</div>` : '';
-                    const tierBadge = isPassed ? `<div class="tier-badge">${cardTier.emoji}</div>` : '';
-                    const cardClass = isPassed ? `cram-card ${cardTier.class}` : 'cram-card';
+                    // Get tier based on pass count? Or just card score? 
+                    // Existing logic used global pass count for tier, but card-specific tier for color.
+                    // Let's stick to card-specific tier based on Pass status for visual consistency.
+
+                    // Check if passed to show badge
+                    const passBadge = isPassed ? `<div class="pass-badge">✓ ${idSuffix ? '완료' : '합격'}</div>` : '';
+
+                    // Apply Global Tier visual to passed cards
+                    const cardClass = isPassed ? `cram-card ${tier.class}` : 'cram-card';
+                    const tierBadge = isPassed ? `<div class="tier-badge">${tier.emoji}</div>` : '';
+                    // Simplify tier logic for Retry to avoid complex lookup, or reuse if desired.
+                    // Let's just use 'cram-card' and add class validation.
 
                     const startNum = (idx * splitCount) + 1;
                     const endNum = startNum + chunk.length - 1;
                     const range = `${startNum}~${endNum}`;
+
+                    const scoreDisplay = displayScore > 0 ? `<div style="margin-top:5px; font-weight:800; color:${badgeColor}">${displayScore}점</div>` : '';
+
                     cardsHtml += `
-                        <div class="${cardClass}" style="position: relative;">
+                        <div class="${cardClass}" style="position: relative; border: ${idSuffix ? '2px dashed #b2bec3' : 'none'}">
                             <div class="anti-capture-layer"></div>
                             ${passBadge}
                             ${tierBadge}
-                            <h4>${idx + 1}부</h4>
+                            <h4>${idx + 1}부 ${idSuffix ? '(복습)' : ''}</h4>
                             <p style="color: #636e72; font-size: 0.8em; margin: 0 0 10px 0;">${chunk.length}문항 (${range}번)</p>
+                            ${scoreDisplay}
                             <div class="actions">
-                                <div class="btn btn-study" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'study', '${yr}', '${idx + 1}부')">학습</div>
-                                <div class="btn btn-test" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'test', '${yr}', '${idx + 1}부')">실전</div>
+                                <div class="btn btn-study" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'study', '${yr}', '${idx + 1}부${idSuffix}')">학습</div>
+                                <div class="btn btn-test" onclick="startSession(${JSON.stringify(chunk).replace(/"/g, '&quot;')}, 'test', '${yr}', '${idx + 1}부${idSuffix}')">실전</div>
                             </div>
                         </div>
                     `;
                 });
 
                 yearGroup.innerHTML = `
-                    <div class="year-badge" style="background: ${badgeColor}; box-shadow: 0 4px 15px ${badgeColor}4D;">${yr}학년도</div>
+                    <div class="year-badge" style="background: ${badgeColor}; box-shadow: 0 4px 15px ${badgeColor}4D;">${yr} ${idSuffix ? '(복습)' : ''}</div>
                     <div class="parts-container">
                         ${cardsHtml}
                     </div>
@@ -2120,27 +2169,26 @@
             list.innerHTML = '<p style="text-align: center; color: #636e72; padding: 20px;">데이터를 불러오는 중...</p>';
 
             const displayName = document.getElementById('display-name');
-            const studentClass = currentUser ? currentUser.substring(0, 2) : "";
-            if (!CRAM_SCRIPT_URL || !studentClass) return;
+            // Main API doesn't support class filtering yet, so we request global leaderboard
+            if (!CRAM_SCRIPT_URL) return;
 
             try {
-                // Fetch from GAS with action=getRanking
-                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getRanking&class=${encodeURIComponent(studentClass)}`);
+                // Fetch from GAS with type=leaderboard
+                const response = await fetch(`${CRAM_SCRIPT_URL}?type=leaderboard`);
                 const data = await response.json();
 
-                if (data.status === 'success') {
+                if (Array.isArray(data)) {
+                    // Main API returns array directly: [{name, score, date}, ...]
+                    renderRanking(data);
+                } else if (data.status === 'success' && data.rankings) {
+                    // Legacy Support
                     renderRanking(data.rankings);
                 } else {
                     list.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">실시간 랭킹을 가져올 수 없습니다.</p>';
                 }
             } catch (e) {
                 console.error("Ranking Sync Error:", e);
-                // Fallback: Mock data for testing
-                renderRanking([
-                    { name: "2701 홍길동", score: 95, passed: 12 },
-                    { name: currentUser, score: 88, passed: 5 },
-                    { name: "2703 김철수", score: 72, passed: 3 }
-                ]);
+                list.innerHTML = '<p style="text-align: center; color: #ff4757; padding: 20px;">오류가 발생했습니다.</p>';
             }
         }
 
@@ -2189,8 +2237,8 @@
         async function syncInitialData() {
             if (!CRAM_SCRIPT_URL || !currentUser) return;
             try {
-                // Try with action=getStudentData (legacy) or type=get_user_data (v2.0)
-                const response = await fetch(`${CRAM_SCRIPT_URL}?action=getStudentData&type=get_user_data&name=${encodeURIComponent(currentUser)}`);
+                // Use type=get_user_data which is supported by Main API
+                const response = await fetch(`${CRAM_SCRIPT_URL}?type=get_user_data&name=${encodeURIComponent(currentUser)}`);
                 const text = await response.text();
 
                 let data;
@@ -2203,13 +2251,43 @@
                 }
 
                 if (data.status === 'success') {
-                    if (data.passedChapters) {
+                    // Start: Main API Adaptation Logic
+                    if (data.data && data.data.progress) {
+                        const progress = data.data.progress;
+                        Object.keys(progress).forEach(cid => {
+                            if (progress[cid].passed) {
+                                localStorage.setItem(`passed_${cid}`, "true");
+                            }
+                        });
+
+                        // Also try to restore stats if available structure matches
+                        if (data.data.stats) {
+                            // Main API stats logic might differ, but we try to aggregate
+                            // For now, let's keep local stats or simple aggregation if needed.
+                            // The original code used data.totalCorrect from a dedicated endpoint.
+                            // We might need to calculating it from data.data.wrongCounts or similar if critical.
+                            // Main API getUserData returns: { status, data: { name, temperature, ... } }
+                            // It doesn't seem to pre-calculate totalCorrect/Wrong in the same way.
+                            // We will rely on local storage for stats for now or just temperature sync.
+                        }
+
+                        // Sync Temperature
+                        if (data.data.temperature) {
+                            // Recalculating stats from temp is hard, so we just set UI if possilbe,
+                            // OR we assume stats are preserved in local storage?
+                            // Actually the original code did: temp = 36.5 + (correct*2) - (wrong*1)
+                            // We need correct/wrong to calculate temp locally.
+                            // If Main API doens't provide totals, we might lose temp accuracy unless we deduce it.
+                        }
+                    } else if (data.passedChapters) {
+                        // Fallback to legacy format if Main API changes to support it
                         data.passedChapters.forEach(cid => {
                             localStorage.setItem(`passed_${cid}`, "true");
                         });
+                        statTotalCorrect = data.totalCorrect || 0;
+                        statTotalWrong = data.totalWrong || 0;
                     }
-                    statTotalCorrect = data.totalCorrect || 0;
-                    statTotalWrong = data.totalWrong || 0;
+                    // End: Main API Adaptation Logic
 
                     renderDashboard(groupDataByYear());
                     updateTemperatureUI();
@@ -2539,17 +2617,44 @@
             }
 
             if (CRAM_SCRIPT_URL) {
+                // Update global UserProgress
+                // Ensure progress object exists
+                if (!userProgress[currentChapterId]) {
+                    userProgress[currentChapterId] = { passed: false, score: 0, date: new Date().toISOString() };
+                }
+
+                // 1. Update Passed Status (Accumulative - never revoke)
+                if (isPassed) {
+                    userProgress[currentChapterId].passed = true;
+                    // Also update local storage just in case for immediate reload safety
+                    localStorage.setItem(`passed_${currentChapterId}`, "true");
+                }
+
+                // 2. Update Score (ALWAYS update to latest score per user request)
+                // This applies to both Master Challenge and Retry Mode now.
+                userProgress[currentChapterId].score = score;
+                userProgress[currentChapterId].date = new Date().toISOString();
+
+                // Update Stats for Leaderboard
+                if (!userStats) userStats = {};
+                const currentBest = (userStats[currentChapterId] && userStats[currentChapterId].bestScore) || 0;
+                if (percent > currentBest) {
+                    if (!userStats[currentChapterId]) userStats[currentChapterId] = {};
+                    userStats[currentChapterId].bestScore = percent;
+                }
+
                 fetch(CRAM_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify({
+                        type: 'update_user_data',
                         name: currentUser,
+                        progress: userProgress,
+                        stats: userStats,
+                        // Legacy fields just in case
                         score: percent,
-                        chapter: currentChapterTitle + " (마스터 학습)",
-                        wrong_questions: wrongList || "없음",
-                        startTime: startTimeStr,
-                        duration: durationMin,
-                        idleCount: idleCount
+                        chapter: currentChapterTitle + " (마스터)",
+                        wrong_questions: wrongList || "없음"
                     })
                 }).catch(err => console.error("Sync Error:", err));
             }

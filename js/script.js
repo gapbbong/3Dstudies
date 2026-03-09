@@ -305,7 +305,7 @@ function initDashboard() {
 
         // Unlocking Logic
         let isLocked = false;
-        if (chapter.id !== 'part1') { // Part 1 is always open
+        if (chapter.id !== 'part0' && chapter.id !== 'part1') { // Part 0 and Part 1 are always open by default
             const prevPartNum = parseInt(chapter.id.replace('part', '')) - 1;
             const prevPartId = 'part' + prevPartNum;
 
@@ -1306,6 +1306,19 @@ function login() {
                     currentUser = json.data.name;
                     appData.userData = json.data;
                     console.log('Loaded userData:', JSON.stringify(appData.userData)); // [DEBUG] Check loaded data
+
+                    // [User Request] 특정 사용자(2701홍길동) 필터링: part0 따라쓰기 2회 완료 및 패스 처리
+                    if (currentUser === '2701홍길동') {
+                        if (!appData.userData.typingAttempts) appData.userData.typingAttempts = {};
+                        if (!appData.userData.progress) appData.userData.progress = {};
+
+                        // 'part0'와 'part1'을 따라쓰기 2회 완료 및 정답률 100%로 패스 처리된 것으로 간주
+                        appData.userData.typingAttempts['part0'] = 2;
+                        appData.userData.progress['part0'] = { passed: true, score: 100 };
+
+                        appData.userData.typingAttempts['part1'] = 2;
+                        appData.userData.progress['part1'] = { passed: true, score: 100 };
+                    }
 
                     // Ensure defaults
                     if (!appData.userData.temperature) appData.userData.temperature = 10;

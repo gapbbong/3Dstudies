@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/supabase-api/:path*',
-        destination: 'http://10.128.49.91:8000/:path*',
+        source: "/supabase-api/:path*",
+        destination: "http://10.128.49.91:8000/:path*",
       },
     ];
   },

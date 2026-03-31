@@ -1,6 +1,6 @@
-﻿-- 1. Dukigo+ ?뚮옯???뚯씠釉??명똿 (?ㅻⅨ ?깃낵??異⑸룎 諛⑹?瑜??꾪빐 ?묐몢??dukigo_ ?ъ슜)
+﻿-- 1. Dukigo+ 플랫폼 테이블 세팅 (다른 앱과의 충돌 방지를 위해 접두사 dukigo_ 사용)
 
--- ?꾩뿭 ?ㅼ젙 ?뚯씠釉?(Realtime 援щ룆??
+-- 전역 설정 테이블 (Realtime 구독용)
 CREATE TABLE public.dukigo_global_configs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     school_id TEXT NOT NULL DEFAULT 'DEFAULT_SCHOOL',
@@ -9,7 +9,7 @@ CREATE TABLE public.dukigo_global_configs (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ?ъ슜???꾨줈??(?숈깮, ?숇?紐? 援먯궗 ?뺣낫 諛??꾩쟻 ?⑤룄 愿由?
+-- 사용자 프로필 (학생, 학부모, 교사 정보 및 누적 온도 관리)
 CREATE TABLE public.dukigo_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     role TEXT NOT NULL CHECK (role IN ('STUDENT', 'PARENT', 'TEACHER', 'ADMIN')),
@@ -19,7 +19,7 @@ CREATE TABLE public.dukigo_profiles (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ?숇?紐??숈깮 留ㅽ븨 (愿???쒖뒪?쒖슜)
+-- 학부모-학생 매핑 (관제 시스템용)
 CREATE TABLE public.dukigo_user_relations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     parent_id UUID REFERENCES public.dukigo_profiles(id) ON DELETE CASCADE,
@@ -28,7 +28,7 @@ CREATE TABLE public.dukigo_user_relations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ?꾩쟻 ?숈뒿/蹂댁븞 濡쒓렇 湲곕줉
+-- 누적 학습/보안 로그 기록
 CREATE TABLE public.dukigo_study_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.dukigo_profiles(id) ON DELETE CASCADE,
@@ -37,7 +37,7 @@ CREATE TABLE public.dukigo_study_logs (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 湲곕뒫???먮낯 湲곗텧臾몄젣 蹂닿? ?뚯씠釉?(?곗씠??諛?대꽔湲??⑸룄)
+-- 기능사 원본 기출문제 보관 테이블 (데이터 밀어넣기 용도)
 CREATE TABLE public.dukigo_exam_questions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     subject_id TEXT NOT NULL DEFAULT 'ELECTRICITY',
@@ -48,15 +48,17 @@ CREATE TABLE public.dukigo_exam_questions (
     options JSONB,
     correct_answer TEXT,
     explanation TEXT,
-    tracing_text TEXT, -- ?섏쨷???몃젅?댁떛 ?붿쭊?⑹쑝濡?異붿텧???띿꽦
+    tracing_text TEXT, -- 나중에 트레이싱 엔진용으로 추출할 속성
     metadata JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- ?섍툒 ?뚯씠?꾨씪???뚯씠釉?CREATE TABLE public.dukigo_refund_requests (
+-- 환급 파이프라인 테이블
+CREATE TABLE public.dukigo_refund_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.dukigo_profiles(id) ON DELETE CASCADE,
-    payment_key TEXT UNIQUE NOT NULL, -- Toss Payments ?앸퀎??    amount NUMERIC NOT NULL,
+    payment_key TEXT UNIQUE NOT NULL, -- Toss Payments 식별자
+    amount NUMERIC NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('PAID', 'UPLOADED', 'MANUAL_REVIEW', 'APPROVED', 'REFUNDED')),
     evidence_url TEXT,
     reviewed_by UUID REFERENCES public.dukigo_profiles(id),
@@ -64,10 +66,11 @@ CREATE TABLE public.dukigo_exam_questions (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- 2. Realtime 由ы뵆由ъ??댁뀡(蹂듭젣) ?쒖꽦??ALTER PUBLICATION supabase_realtime ADD TABLE public.dukigo_global_configs;
+-- 2. Realtime 리플리케이션(복제) 활성화
+ALTER PUBLICATION supabase_realtime ADD TABLE public.dukigo_global_configs;
 ALTER PUBLICATION supabase_realtime ADD TABLE public.dukigo_study_logs;
 
--- 3. Row Level Security (RLS) ?곸슜
+-- 3. Row Level Security (RLS) 적용
 ALTER TABLE public.dukigo_global_configs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dukigo_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dukigo_user_relations ENABLE ROW LEVEL SECURITY;
@@ -75,25 +78,27 @@ ALTER TABLE public.dukigo_study_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dukigo_exam_questions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.dukigo_refund_requests ENABLE ROW LEVEL SECURITY;
 
--- 4. RLS ?뺤콉 (Policies) - ?쒖뿰???꾪빐 ?⑥닚?붾맂 湲곕낯 ?쎄린 ?덉슜, ?뺤옣??怨좊젮
--- Global Config: ?꾧뎄???쎌쓣 ???덉쓬, ?낅뜲?댄듃??愿由ъ옄留?CREATE POLICY "Allow public read of configs" ON public.dukigo_global_configs FOR SELECT USING (TRUE);
+-- 4. RLS 정책 (Policies) - 시연을 위해 단순화된 기본 읽기 허용, 확장을 고려
+-- Global Config: 누구나 읽을 수 있음, 업데이트는 관리자만
+CREATE POLICY "Allow public read of configs" ON public.dukigo_global_configs FOR SELECT USING (TRUE);
 
--- Profiles: ?꾧뎄???먯떊???뺣낫瑜? TEACHER ?댁긽? 媛숈? ?숆탳 ?쎄린 ?덉슜(?곕え?⑹쑝濡??꾨? ?덉슜 ??議곌굔 異붽?)
+-- Profiles: 누구나 자신의 정보를, TEACHER 이상은 같은 학교 읽기 허용(데모용으론 전부 허용 후 조건 추가)
 CREATE POLICY "Allow individual read Profiles" ON public.dukigo_profiles FOR SELECT USING (TRUE);
 
--- Questions: ?쇰툝由??묎렐 ?덉슜 (?숈뒿???댁빞 ?섎?濡?
+-- Questions: 퍼블릭 접근 허용 (학습을 해야 하므로)
 CREATE POLICY "Allow public read of questions" ON public.dukigo_exam_questions FOR SELECT USING (TRUE);
-CREATE POLICY "Allow insert of questions" ON public.dukigo_exam_questions FOR INSERT WITH CHECK (TRUE); -- 留덉씠洹몃젅?댁뀡???꾪빐 ?곗꽑 ?댁젣
+CREATE POLICY "Allow insert of questions" ON public.dukigo_exam_questions FOR INSERT WITH CHECK (TRUE); -- 마이그레이션을 위해 우선 해제
 
--- Logs: ?꾧뎄??蹂몄씤??濡쒓렇 ?묒꽦
+-- Logs: 누구나 본인의 로그 작성
 CREATE POLICY "Allow single user create log" ON public.dukigo_study_logs FOR INSERT WITH CHECK (TRUE); 
-CREATE POLICY "Allow users read own log" ON public.dukigo_study_logs FOR SELECT USING (TRUE); -- ?ㅼ젣 ?댁쁺?먯꽑 auth.uid() = user_id ?쒖빟
+CREATE POLICY "Allow users read own log" ON public.dukigo_study_logs FOR SELECT USING (TRUE); -- 실제 운영에선 auth.uid() = user_id 제약
 
--- Refund: 寃곗젣 ?곗씠??CREATE POLICY "Allow access refund list" ON public.dukigo_refund_requests FOR ALL USING (TRUE);
+-- Refund: 결제 데이터
+CREATE POLICY "Allow access refund list" ON public.dukigo_refund_requests FOR ALL USING (TRUE);
 
--- 5. RPC ?⑥닔(Remote Procedure Call) - ?쒕쾭 ?ъ씠???곗궛 蹂댁옣
+-- 5. RPC 함수(Remote Procedure Call) - 서버 사이드 연산 보장
 
--- A. ?꾪뙆誘??⑤룄 ?낅뜲?댄듃 (?먯옄??
+-- A. 도파민 온도 업데이트 (원자성)
 CREATE OR REPLACE FUNCTION dukigo_check_and_update_temp(
     p_user_id UUID,
     p_temp_weight NUMERIC,
@@ -105,16 +110,16 @@ AS $$
 DECLARE
     current_val NUMERIC;
 BEGIN
-    -- ?꾩옱 ?⑤룄 ?뺤씤 諛??꾩쟻 ?곗궛
+    -- 현재 온도 확인 및 누적 연산
     SELECT current_temp INTO current_val FROM public.dukigo_profiles WHERE id = p_user_id FOR UPDATE;
     
     IF current_val IS NULL THEN
-        -- ?좎?媛 ?놁쑝硫?臾댁떆?섍굅??0 諛섑솚
+        -- 유저가 없으면 무시하거나 0 반환
         RETURN 0;
     END IF;
 
-    -- ?뺣떟 ???곸듅, ?ㅻ떟 ???섎씫(留덉씠?덉뒪 媛以묒튂 ?낅젰 諛쏆븯??寃쎌슦 ?뷀븿)
-    -- ?⑤룄媛 0 誘몃쭔?쇰줈 ?⑥뼱吏吏 ?딄쾶, 100???섏? ?딄쾶 ?쒖뼱(Fever max)
+    -- 정답 시 상승, 오답 시 하락(마이너스 가중치 입력 받았을 경우 더함)
+    -- 온도가 0 미만으로 떨어지지 않게, 100을 넘지 않게 제어(Fever max)
     current_val := current_val + p_temp_weight;
     
     IF current_val < 0 THEN
@@ -122,12 +127,12 @@ BEGIN
     END IF;
     
     IF current_val > 100 THEN
-        current_val := 100; -- 100 ?댁긽? 洹몃깷 100?쇰줈 怨좎젙 (Max Fever)
+        current_val := 100; -- 100 이상은 그냥 100으로 고정 (Max Fever)
     END IF;
 
     UPDATE public.dukigo_profiles SET current_temp = current_val WHERE id = p_user_id;
 
-    -- Study Log ?쎌엯
+    -- Study Log 삽입
     INSERT INTO public.dukigo_study_logs (user_id, action_type, metadata)
     VALUES (p_user_id, 'TEMP_UPDATE', jsonb_build_object('weight_applied', p_temp_weight, 'is_correct', p_is_correct, 'new_temp', current_val));
 
@@ -135,7 +140,7 @@ BEGIN
 END;
 $$;
 
--- B. ?섑듃鍮꾪듃 ?숆린????以묐났 ?쒖뼱 諛??앹〈 ?좉퀬)
+-- B. 하트비트 동기화(탭 중복 제어 및 생존 신고)
 CREATE OR REPLACE FUNCTION dukigo_heartbeat_sync(
     p_user_id UUID,
     p_tab_id TEXT
@@ -144,13 +149,14 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-    -- 硫뷀??곗씠?곗뿉 媛??理쒓렐 ?묒냽 ???낅뜲?댄듃 濡쒓퉭
+    -- 메타데이터에 가장 최근 접속 탭 업데이트 로깅
     INSERT INTO public.dukigo_study_logs (user_id, action_type, metadata)
     VALUES (p_user_id, 'HEARTBEAT_SYNC', jsonb_build_object('tab_id', p_tab_id));
 END;
 $$;
 
--- 珥덇린 ?곕え???꾩뿭 ?ㅼ젙 ?몄꽌??INSERT INTO public.dukigo_global_configs (school_id, subject_id, config_json)
+-- 초기 데모용 전역 설정 인서트
+INSERT INTO public.dukigo_global_configs (school_id, subject_id, config_json)
 VALUES (
     'DEFAULT_SCHOOL', 
     'DEFAULT_SUBJECT', 
@@ -173,6 +179,8 @@ VALUES (
         }
     }'::jsonb
 );
+
+
 -- [FINAL] Integrated Exam Data (28 Files)
 TRUNCATE TABLE public.dukigo_exam_questions;
 INSERT INTO public.dukigo_exam_questions (subject_id, exam_year, exam_round, question_no, question_text, options, correct_answer, explanation) VALUES ('ELECTRICITY', 2015, 1, 1, '유효 전력의 식으로 옳은 것은? (단, $E$: 전압, $I$: 전류, $\theta$: 위상각)', '["$EI \\cos \\theta$","$EI \\sin \\theta$","$EI \\tan \\theta$","$EI$"]'::jsonb, '1', '유효전력(Active Power) $P$는 다음과 같이 정의됩니다:

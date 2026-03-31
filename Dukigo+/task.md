@@ -1,0 +1,6 @@
+- [x] 1단계: `canvas-confetti` 단기 이펙트 팩 설치 (완료)
+- [x] 2단계: 복사/붙여넣기(Paste) 금지 핸들러 작성 및 `textarea` 적용 (완료)
+- [x] 3단계: 임시 UUID 기반 Supabase RPC 호출 로직(`dukigo_check_and_update_temp`) 연동 (완료)
+- [x] 4단계: `streak_count` 3회 누적 시 폭죽(Confetti) 트리거 (완료)
+- [x] 5단계: 누적 온도(90 이상)에 따른 스피드업/레드 피버 라우팅 테마 연동 (`SmartLayout`) (완료)
+- [x] 6단계: 구형 단말기용 `useAdaptiveStyle` 성능 분절(Degradation) 훅 적용 (완료)

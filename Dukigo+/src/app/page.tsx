@@ -309,7 +309,7 @@ export default function Home() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNext, handlePrev, isPassed, studyMode, currentQuestion]);
+  }, [handleNext, handlePrev, isPassed, studyMode, currentQuestion, lastSpaceTime, inputMode]);
 
   if (isLoading) return (
     <SmartLayout userId={userId || undefined}>
@@ -334,7 +334,29 @@ export default function Home() {
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-black tracking-tighter">DUKIGO+</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-black tracking-tighter">DUKIGO+</h1>
+            {/* [Smart-IME Indicator] 최상단 배치 및 애니메이션 추가 */}
+            <AnimatePresence mode="wait">
+              {studyMode === 'TRACING' && (
+                <motion.div
+                  key={inputMode}
+                  initial={{ scale: 0.8, opacity: 0, x: -10 }}
+                  animate={{ scale: 1, opacity: 1, x: 0 }}
+                  exit={{ scale: 0.8, opacity: 0, x: 10 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-3 py-1 rounded-lg text-[10px] font-black shadow-sm border transition-all duration-300 ${
+                    inputMode === 'KO' 
+                      ? "bg-orange-500 text-white border-orange-400 rotate-0" 
+                      : "bg-blue-500 text-white border-blue-400 -rotate-1"
+                  }`}
+                >
+                  {inputMode === 'KO' ? "한글 모드 [KO]" : "영문 모드 [EN]"}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           <div className={`px-4 py-1.5 rounded-full text-sm font-medium border shadow-sm transition-colors duration-[600ms] flex items-center gap-2 ${
             temp >= 90 ? 'bg-red-500 text-white border-red-400 animate-pulse' : 'bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700'
           }`}>
@@ -403,14 +425,7 @@ export default function Home() {
             </div>
 
             <div className="relative group">
-              {/* 입력 모드 알림 배지 */}
-              <div className={`absolute top-4 left-4 z-10 px-2 py-0.5 rounded text-[10px] font-black transition-all duration-300 shadow-sm border ${
-                inputMode === 'KO' 
-                  ? "bg-orange-500 text-white border-orange-400 rotate-0" 
-                  : "bg-blue-500 text-white border-blue-400 -rotate-2"
-              }`}>
-                {inputMode === 'KO' ? "한글 모드 [KO]" : "영문 모드 [EN]"}
-              </div>
+              {/* 이전 위치 배지 제거 (최상단으로 이동됨) */}
 
               <textarea
                 ref={inputRef}

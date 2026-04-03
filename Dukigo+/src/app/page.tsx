@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { SmartLayout } from "@/components/SmartLayout";
+import { MathText } from "@/components/MathText";
 import { calculateLevenshtein } from "@/utils/tracing";
 import { useConfigStore } from "@/hooks/useConfig";
 import { motion, AnimatePresence } from "framer-motion";
@@ -32,6 +33,8 @@ const cleanForDisplay = (text: string) => {
     .replace(/\\degree/g, "°")
     .replace(/\^2/g, "²")
     .replace(/\^3/g, "³")
+    .replace(/\\rightarrow/g, "→")
+    .replace(/\\Rightarrow/g, "⇒")
     .replace(/\\([a-zA-Z]+)/g, "$1") // \cos -> cos 처럼 백슬래시만 제거
     .replace(/\{|\}/g, "") // 나머지 { } 제거
     .replace(/\[|\]/g, "") // [V], [A] 등 단위용 대괄호 보속
@@ -39,32 +42,57 @@ const cleanForDisplay = (text: string) => {
     .trim();
 };
 
-// 한/영 키보드 레이아웃 상호 변환 맵 (QWERTY <-> 한글 자소)
-const KO_TO_EN: {[key: string]: string} = {
-  'ㄱ': 'r', 'ㄴ': 's', 'ㄷ': 'e', 'ㄹ': 'f', 'ㅁ': 'a', 'ㅂ': 'q', 'ㅅ': 't', 'ㅇ': 'd', 'ㅈ': 'w', 'ㅊ': 'c', 'ㅋ': 'z', 'ㅌ': 'x', 'ㅍ': 'v', 'ㅎ': 'g',
-  'ㅏ': 'k', 'ㅑ': 'i', 'ㅓ': 'j', 'ㅕ': 'u', 'ㅗ': 'h', 'ㅛ': 'y', 'ㅜ': 'n', 'ㅠ': 'b', 'ㅡ': 'm', 'ㅣ': 'l', 'ㅐ': 'o', 'ㅔ': 'p', 'ㅒ': 'O', 'ㅖ': 'P',
-  'ㄲ': 'R', 'ㄸ': 'E', 'ㅃ': 'Q', 'ㅆ': 'T', 'ㅉ': 'W'
+// 하드웨어 레벨 물리 키 매핑 (QWERTY 기준)
+const CODE_MAP: {[key: string]: {KO: string, KO_SHIFT?: string, EN: string, EN_SHIFT: string}} = {
+  'KeyQ': { KO: 'ㅂ', KO_SHIFT: 'ㅃ', EN: 'q', EN_SHIFT: 'Q' },
+  'KeyW': { KO: 'ㅈ', KO_SHIFT: 'ㅉ', EN: 'w', EN_SHIFT: 'W' },
+  'KeyE': { KO: 'ㄷ', KO_SHIFT: 'ㄸ', EN: 'e', EN_SHIFT: 'E' },
+  'KeyR': { KO: 'ㄱ', KO_SHIFT: 'ㄲ', EN: 'r', EN_SHIFT: 'R' },
+  'KeyT': { KO: 'ㅅ', KO_SHIFT: 'ㅆ', EN: 't', EN_SHIFT: 'T' },
+  'KeyY': { KO: 'ㅛ', EN: 'y', EN_SHIFT: 'Y' },
+  'KeyU': { KO: 'ㅕ', EN: 'u', EN_SHIFT: 'U' },
+  'KeyI': { KO: 'ㅑ', EN: 'i', EN_SHIFT: 'I' },
+  'KeyO': { KO: 'ㅐ', KO_SHIFT: 'ㅒ', EN: 'o', EN_SHIFT: 'O' },
+  'KeyP': { KO: 'ㅔ', KO_SHIFT: 'ㅖ', EN: 'p', EN_SHIFT: 'P' },
+  'KeyA': { KO: 'ㅁ', EN: 'a', EN_SHIFT: 'A' },
+  'KeyS': { KO: 'ㄴ', EN: 's', EN_SHIFT: 'S' },
+  'KeyD': { KO: 'ㅇ', EN: 'd', EN_SHIFT: 'D' },
+  'KeyF': { KO: 'ㄹ', EN: 'f', EN_SHIFT: 'F' },
+  'KeyG': { KO: 'ㅎ', EN: 'g', EN_SHIFT: 'G' },
+  'KeyH': { KO: 'ㅗ', EN: 'h', EN_SHIFT: 'H' },
+  'KeyJ': { KO: 'ㅓ', EN: 'j', EN_SHIFT: 'J' },
+  'KeyK': { KO: 'ㅏ', EN: 'k', EN_SHIFT: 'K' },
+  'KeyL': { KO: 'ㅣ', EN: 'l', EN_SHIFT: 'L' },
+  'KeyZ': { KO: 'ㅋ', EN: 'z', EN_SHIFT: 'Z' },
+  'KeyX': { KO: 'ㅌ', EN: 'x', EN_SHIFT: 'X' },
+  'KeyC': { KO: 'ㅊ', EN: 'c', EN_SHIFT: 'C' },
+  'KeyV': { KO: 'ㅍ', EN: 'v', EN_SHIFT: 'V' },
+  'KeyB': { KO: 'ㅠ', EN: 'b', EN_SHIFT: 'B' },
+  'KeyN': { KO: 'ㅜ', EN: 'n', EN_SHIFT: 'N' },
+  'KeyM': { KO: 'ㅡ', EN: 'm', EN_SHIFT: 'M' }
 };
-const EN_TO_KO: {[key: string]: string} = Object.fromEntries(Object.entries(KO_TO_EN).map(([k, v]) => [v, k]));
 
-const toggleLayoutChar = (char: string) => {
-  // 영문이면 한글로, 한글이면 영문으로 타점 위치 변경
-  if (KO_TO_EN[char]) return KO_TO_EN[char];
-  if (EN_TO_KO[char]) return EN_TO_KO[char];
-  return char;
-};
+// 레거시 호환 및 비교 로직용 맵 데이터 자동 생성
+const KO_TO_EN: {[key: string]: string} = {};
+const EN_TO_KO: {[key: string]: string} = {};
+Object.values(CODE_MAP).forEach(v => {
+  KO_TO_EN[v.KO] = v.EN;
+  if (v.KO_SHIFT) KO_TO_EN[v.KO_SHIFT] = v.EN_SHIFT;
+  EN_TO_KO[v.EN] = v.KO;
+  if (v.KO_SHIFT) EN_TO_KO[v.EN_SHIFT] = v.KO_SHIFT;
+});
 
 const normalizeLayout = (text: string) => {
-  return text.split('').map(char => KO_TO_EN[char] || char.toLowerCase()).join('');
-};
-
-const toggleFullLayout = (text: string) => {
-  return text.split('').map(toggleLayoutChar).join('');
+  if (!text) return "";
+  // 1. 한글 유니코드 분해 (가 -> ㄱ, ㅏ)하여 Jamo 단위로 비교 가능하게 함
+  const decomposed = text.normalize('NFD');
+  // 2. 각 자소를 영문 타점으로 변환하거나 소문자로 통일
+  return decomposed.split('').map(char => KO_TO_EN[char] || char.toLowerCase()).join('');
 };
 
 const cleanForTracing = (text: string) => {
   const display = cleanForDisplay(text);
-  // 표시용에서 특수 기호 제거 후, 레이아웃을 정렬하여 한/영 상관없이 비교
+  // 특수 기호 제거 -> NFD 분해 -> 영문 타점 변환 (한/영 레이아웃 통합 비교)
   return normalizeLayout(
     display.replace(/[θΩμΔπωαβγφ×·√∠°²³]/g, "").replace(/\s+/g, " ")
   ).trim();
@@ -89,6 +117,9 @@ export default function Home() {
   
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const currentQuestion = questions[currentIndex];
+  // IME 조합 상태 추적용 Ref
+  const isComposing = useRef(false);
+
   // 트레이싱용 타겟 텍스트 (해설이 있으면 해설을, 없으면 질문 텍스트를 사용하되 비교를 위해 정제)
   const targetText = studyMode === 'TRACING' 
     ? (currentQuestion?.explanation || currentQuestion?.question_text || "") 
@@ -212,7 +243,7 @@ export default function Home() {
     }
   }, [currentIndex]);
 
-  const handleOptionSelect = (index: number) => {
+  const handleOptionSelect = useCallback((index: number) => {
     if (isPassed || studyMode !== 'QUIZ') return;
     
     setSelectedOption(index);
@@ -224,7 +255,7 @@ export default function Home() {
       setStreak(0);
       setTemp(Math.max(0, temp - 5.0)); // 오답 시 온도 하락
     }
-  };
+  }, [isPassed, studyMode, currentQuestion, temp, streak, setStreak, setTemp]);
 
   const handleSuccessEffects = () => {
     setIsPassed(true);
@@ -263,39 +294,11 @@ export default function Home() {
     if (acc >= threshold) {
       handleSuccessEffects();
     }
-  }, [inputText, cleanTarget, threshold, isPassed, studyMode]);
+  }, [inputText, cleanTarget, threshold, isPassed, studyMode, targetText]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === ' ' && studyMode === 'TRACING') {
-        const now = Date.now();
-        // 0.3초 이내에 스페이스가 두 번 눌리면 '입력 모드 고정' 전환!
-        if (now - lastSpaceTime < 300) {
-          e.preventDefault(); // 스페이스 제거
-          setInputMode(prev => prev === 'KO' ? 'EN' : 'KO'); // 모드 전환
-          setLastSpaceTime(0);
-          return;
-        }
-        setLastSpaceTime(now);
-      }
-      
-      if (e.key === "Enter" && !e.shiftKey && studyMode === 'TRACING') {
-        // 기존 엔터 로직
-      }
-
-      if (((e.ctrlKey || e.metaKey) && (e.code === "KeyV" || e.key === "v" || e.key === "V")) || 
-          (e.shiftKey && e.code === "Insert")) {
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
-
-      if (studyMode === 'QUIZ' && !isPassed) {
-        if (["1", "2", "3", "4"].includes(e.key)) {
-          handleOptionSelect(parseInt(e.key) - 1);
-        }
-      }
-
+      // 전역 내비게이션 및 퀴즈 단축키만 유지 (텍스트 입력 관련은 textarea 내부에서 처리)
       if (isPassed && e.key === "Enter") {
         e.preventDefault();
         handleNext();
@@ -306,10 +309,16 @@ export default function Home() {
         e.preventDefault();
         handlePrev();
       }
+
+      if (studyMode === 'QUIZ' && !isPassed) {
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          handleOptionSelect(parseInt(e.key) - 1);
+        }
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNext, handlePrev, isPassed, studyMode, currentQuestion, lastSpaceTime, inputMode]);
+  }, [handleNext, handlePrev, isPassed, studyMode, handleOptionSelect]);
 
   if (isLoading) return (
     <SmartLayout userId={userId || undefined}>
@@ -393,9 +402,9 @@ export default function Home() {
                 Question
               </span>
             </div>
-            <p className="text-xl font-bold leading-tight tracking-tight text-zinc-800 dark:text-zinc-100">
-              {cleanForDisplay(currentQuestion?.question_text) || "질문 데이터를 불러오는 중..."}
-            </p>
+            <div className="text-xl font-bold leading-tight tracking-tight text-zinc-800 dark:text-zinc-100">
+              <MathText text={currentQuestion?.question_text || "질문 데이터를 불러오는 중..."} />
+            </div>
           </div>
         )}
 
@@ -419,32 +428,97 @@ export default function Home() {
                    💡 Tip: 특수 기호(θ, Ω 등)는 입력을 건드리지 않고 건너뛰어도 됩니다!
                  </div>
                </div>
-               <p className="text-xl font-bold text-zinc-800 dark:text-zinc-100 leading-relaxed italic">
-                 {cleanForDisplay(targetText)}
-               </p>
+               <div className="text-xl font-bold text-zinc-800 dark:text-zinc-100 leading-relaxed italic">
+                 <MathText text={targetText} />
+               </div>
             </div>
 
             <div className="relative group">
-              {/* 이전 위치 배지 제거 (최상단으로 이동됨) */}
-
               <textarea
                 ref={inputRef}
                 autoFocus
                 value={inputText}
-                onChange={(e) => {
-                  let newVal = e.target.value;
-                  // 새로 추가된 한 글자가 있다면 현재 모드에 맞게 강제 레이아웃 변환
-                  if (newVal.length > inputText.length) {
-                    const lastChar = newVal.slice(-1);
-                    if (inputMode === 'KO' && EN_TO_KO[lastChar]) {
-                      newVal = newVal.slice(0, -1) + EN_TO_KO[lastChar];
-                    } else if (inputMode === 'EN' && KO_TO_EN[lastChar]) {
-                      newVal = newVal.slice(0, -1) + KO_TO_EN[lastChar];
+                spellCheck={false}
+                autoCapitalize="off"
+                // [IME 최적화] 입력 모드에 따른 브라우저 힌트 제공
+                lang={inputMode === 'KO' ? 'ko' : 'en'}
+                inputMode={inputMode === 'KO' ? 'search' : 'text'} 
+                onCompositionStart={(e) => {
+                  isComposing.current = true;
+                  // 영문 모드인데 조합이 시작되려 하면 즉시 강제 종료 (잔상 방지)
+                  if (inputMode === 'EN') {
+                    const target = e.currentTarget;
+                    target.blur();
+                    setTimeout(() => target.focus(), 10);
+                  }
+                }}
+                onCompositionEnd={() => {
+                  isComposing.current = false;
+                }}
+                onBeforeInput={(e) => {
+                  const inputType = (e.nativeEvent as any).inputType;
+                  // 영문 모드일 때 모든 형태의 조합 및 자동 삽입 가로채기
+                  if (inputMode === 'EN' && (inputType === "insertText" || inputType.includes("Composition"))) {
+                    e.preventDefault();
+                  }
+                }}
+                onKeyDown={(e) => {
+                  const target = e.currentTarget;
+                  const key = e.key;
+                  const code = e.code;
+                  const shift = e.shiftKey;
+                  
+                  // 1. 더블 스페이스 감지 (모드 전환)
+                  if (key === ' ' && studyMode === 'TRACING') {
+                    const now = Date.now();
+                    if (now - lastSpaceTime < 300) {
+                      e.preventDefault();
+                      
+                      // 전환 전 조합 중인 텍스트가 있다면 초기화 시도
+                      const newMode = inputMode === 'KO' ? 'EN' : 'KO';
+                      setInputMode(newMode);
+                      setLastSpaceTime(0);
+                      
+                      // [핵심] 모드 전환 시 포커스를 뺏었다가 다시 주어 브라우저 IME 완전히 리셋
+                      target.blur();
+                      // Chrome/Whale 호환성을 위해 약간 더 넉넉한 지연 시간 부여
+                      setTimeout(() => {
+                        if (inputRef.current) {
+                          inputRef.current.focus();
+                        }
+                      }, 40);
+                      return;
+                    }
+                    setLastSpaceTime(now);
+                  }
+
+                  // 2. 물리 키 기반 가제 변환 (영문 모드 전용)
+                  if (inputMode === 'EN') {
+                    const mapping = CODE_MAP[code];
+                    if (mapping && !e.ctrlKey && !e.altKey && !e.metaKey) {
+                      e.preventDefault();
+                      const charToInsert = shift ? mapping.EN_SHIFT : mapping.EN;
+
+                      const start = target.selectionStart || 0;
+                      const end = target.selectionEnd || 0;
+                      
+                      setInputText(prev => prev.substring(0, start) + charToInsert + prev.substring(end));
+                      
+                      const nextPos = start + charToInsert.length;
+                      requestAnimationFrame(() => {
+                        if (inputRef.current) {
+                          inputRef.current.setSelectionRange(nextPos, nextPos);
+                        }
+                      });
                     }
                   }
+                }}
+                onChange={(e) => {
+                  const newVal = e.target.value;
+                  // KO 모드에서는 브라우저의 기본 IME 입력을 그대로 수용
+                  // EN 모드에서도 가로채지 못한 예외 입력이 있을 경우를 위해 상태 업데이트 유지
                   setInputText(newVal);
                 }}
-                onBeforeInput={handleBeforeInput}
                 onPaste={handlePreventPaste}
                 onContextMenu={(e) => e.preventDefault()}
                 placeholder="위 해설 문장을 정교하게 트레이싱 하세요..."
@@ -480,7 +554,7 @@ export default function Home() {
                     {idx + 1}
                   </div>
                   <span className={`text-lg font-medium ${selectedOption === idx ? "text-inherit" : "text-zinc-600 dark:text-zinc-300"}`}>
-                    {cleanForDisplay(option)}
+                    <MathText text={option} />
                   </span>
                 </button>
               )) : (

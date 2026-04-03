@@ -1,0 +1,548 @@
+[
+  {
+    "id": "2015_01_1",
+    "year": 2015,
+    "round": "01",
+    "question_num": 1,
+    "question": "유효 전력의 식",
+    "options": [],
+    "answer": 1,
+    "explanation": "단상 교류 전력 $P$의 공식은 다음과 같습니다. $$P = EI \\cos \\theta \\text{ [W]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_2",
+    "year": 2015,
+    "round": "01",
+    "question_num": 2,
+    "question": "자성체의 성질",
+    "options": [],
+    "answer": 3,
+    "explanation": "* **강자성체 ($\\mu_s \\gg 1$):** 자기장 방향으로 강하게 자화되며, 자기장을 제거해도 자성을 유지함. * **상자성체 ($\\mu_s > 1$):** 자기장 방향으로 미약하게 자화됨. * **반자성체 ($\\mu_s < 1$):** 가해준 자기장과 **반대 방향으로 자화(반발)**되는 자성체.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_3",
+    "year": 2015,
+    "round": "01",
+    "question_num": 3,
+    "question": "도체의 전기 전도도 순서",
+    "options": [],
+    "answer": 1,
+    "explanation": "도전율(도전도)은 전류가 잘 흐르는 정도를 나타내며, 위 수치에 따라 **은 > 구리 > 금 > 알루미늄** 순입니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_4",
+    "year": 2015,
+    "round": "01",
+    "question_num": 4,
+    "question": "$\\Delta-\\Delta$ 결선 평형 회로 계산 <img src=\"/images/exams/2015/01/q4_1.webp\" alt=\"그림 1\" class=\"exam-img\">\n<img src=\"/images/exams/2015/01/q4_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "options": [],
+    "answer": 3,
+    "explanation": "1. **$\\Delta$결선의 특징:** 선간전압($V_l$)과 상전압($V_p$)이 동일합니다. $$V_l = V_p = 200 \\text{ [V]}$$ 2. **임피던스 절대값 계산:** $$Z = \\sqrt{6^2 + 8^2} = \\sqrt{100} = 10 \\text{ [\\Omega]}$$ 3. **선전류($I_l$) 계산:** $\\Delta$결선에서 선전류는 상전류($I_p$)의 $\\sqrt{3}$배입니다. $$I_l = \\sqrt{3} I_p = \\sqrt{3} \\times \\frac{V_p}{Z} \\text{ [A]}$$ $$I_l = \\sqrt{3} \\times \\frac{200}{10} = 20\\sqrt{3} \\text{ [A]}$$",
+    "level": "하",
+    "images": [
+      {
+        "path": "/images/exams/2015/01/q4_1.webp",
+        "target": "질문"
+      },
+      {
+        "path": "/images/exams/2015/01/q4_1.webp",
+        "target": "질문"
+      }
+    ]
+  },
+  {
+    "id": "2015_01_5",
+    "year": 2015,
+    "round": "01",
+    "question_num": 5,
+    "question": "평등 자장 속 도선이 받는 힘(전자력) 계산",
+    "options": [],
+    "answer": 2,
+    "explanation": "전자력 $F$의 공식은 다음과 같습니다. $$F = BIl \\sin \\theta = 3 \\times 4 \\times 0.1 \\times \\sin 90^\\circ = 1.2 \\text{ [N]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_6",
+    "year": 2015,
+    "round": "01",
+    "question_num": 6,
+    "question": "도체의 발생 열량(주울열) 계산",
+    "options": [],
+    "answer": 2,
+    "explanation": "발생 열량 $H$ 공식에 주어진 값($I=1\\text{ [A]}, R=10\\text{ [\\Omega]}, t=600\\text{ [s]}$)을 대입합니다. $$H = 0.24 \\times I^2 Rt = 0.24 \\times 1^2 \\times 10 \\times 600 = 1,440 \\text{ [cal]} = 1.44 \\text{ [kcal]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_7",
+    "year": 2015,
+    "round": "01",
+    "question_num": 7,
+    "question": "합성 정전 용량 계산\n<img src=\"/images/exams/2015/01/q7_1.webp\" alt=\"그림 1\" class=\"exam-img\">\n<img src=\"/images/exams/2015/01/q7_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "options": [],
+    "answer": 4,
+    "explanation": "$2\\mu\\text{F}$과 $4\\mu\\text{F}$이 병렬이므로 $2 + 4 = 6\\mu\\text{F}$입니다. 2. **직렬 연결:** $3\\mu\\text{F}$과 $6\\mu\\text{F}$이 직렬이므로 합성 용량 $C_0$는 다음과 같습니다. $$C_0 = \\frac{3 \\times 6}{3 + 6} = \\frac{18}{9} = 2 \\text{ [}\\mu\\text{F]}$$",
+    "level": "하",
+    "images": [
+      {
+        "path": "/images/exams/2015/01/q7_1.webp",
+        "target": "질문"
+      },
+      {
+        "path": "/images/exams/2015/01/q7_1.webp",
+        "target": "질문"
+      }
+    ]
+  },
+  {
+    "id": "2015_01_8",
+    "year": 2015,
+    "round": "01",
+    "question_num": 8,
+    "question": "정현파의 주파수 계산",
+    "options": [],
+    "answer": 2,
+    "explanation": "각주파수 $\\omega = 2 \\pi f = 314$에서 주파수 $f$를 구합니다. $$f = \\frac{314}{2 \\pi} \\approx \\frac{314}{6.28} = 50 \\text{ [Hz]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_9",
+    "year": 2015,
+    "round": "01",
+    "question_num": 9,
+    "question": "콘덴서의 전하와 전류 위상",
+    "options": [],
+    "answer": 2,
+    "explanation": "정전 용량 회로에서는 전류가 전하량(또는 전압)보다 위상이 $90^\\circ$ 앞섭니다. $\\sin \\omega t$보다 $90^\\circ$ 앞선 파형은 $\\cos \\omega t$이므로 식은 다음과 같습니다. $$i = \\frac{dq}{dt} = \\sqrt{2} \\omega Q \\cos \\omega t$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_10",
+    "year": 2015,
+    "round": "01",
+    "question_num": 10,
+    "question": "콘덴서 병렬 시 축적 전하량 계산",
+    "options": [],
+    "answer": 4,
+    "explanation": "병렬이므로 $C_0 = 4 + 6 = 10 \\text{ [F]}$입니다. 2. **전하량 계산:** $Q = C_0 V = 10 \\times 10 = 100 \\text{ [C]}$입니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_11",
+    "year": 2015,
+    "round": "01",
+    "question_num": 11,
+    "question": "키르히호프의 제1법칙",
+    "options": [],
+    "answer": 3,
+    "explanation": "유입 전류의 총합과 유출 전류의 총합은 같다는 법칙이 키르히호프의 제1법칙(전류 법칙)입니다. $$\\Sigma I_{in} = \\Sigma I_{out} \\implies \\Sigma (I_{in} - I_{out}) = 0$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_12",
+    "year": 2015,
+    "round": "01",
+    "question_num": 12,
+    "question": "코일의 결합 계수 계산",
+    "options": [],
+    "answer": 3,
+    "explanation": "자기 인덕턴스와 상호 인덕턴스의 관계식 $M = k \\sqrt{L_1 L_2}$를 이용합니다. $$k = \\frac{M}{\\sqrt{L_1 L_2}} = \\frac{150}{\\sqrt{160 \\times 250}} = \\frac{150}{\\sqrt{40000}} = \\frac{150}{200} = 0.75$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_13",
+    "year": 2015,
+    "round": "01",
+    "question_num": 13,
+    "question": "전기장의 세기 단위",
+    "options": [],
+    "answer": 4,
+    "explanation": "전기장 내에 $+1\\text{[C]}$의 단위 정전하를 놓았을 때 작용하는 힘의 세기를 의미하며 단위는 $[V/m]$입니다. $$E = \\frac{Q}{4\\pi\\epsilon_0 r^2} \\text{ [V/m]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_14",
+    "year": 2015,
+    "round": "01",
+    "question_num": 14,
+    "question": "전지의 직렬 연결과 내부 저항",
+    "options": [],
+    "answer": 2,
+    "explanation": "동일한 내부 저항 $r$을 가진 전지 $n$개가 직렬로 접속되어 있으므로 전체 내부 저항은 $nr$입니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_15",
+    "year": 2015,
+    "round": "01",
+    "question_num": 15,
+    "question": "비정현파의 실효값",
+    "options": [],
+    "answer": 4,
+    "explanation": "비정현파의 실효값은 각 고조파 실효값 제곱의 합에 대한 제곱근으로 구합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_16",
+    "year": 2015,
+    "round": "01",
+    "question_num": 16,
+    "question": "환상 솔레노이드의 자기장 세기",
+    "options": [],
+    "answer": 1,
+    "explanation": "환상 솔레노이드 내부 자계(평등 자계)의 세기는 다음과 같습니다. $$H = \\frac{NI}{l} = \\frac{NI}{2\\pi r} \\text{ [A/m]}$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_17",
+    "year": 2015,
+    "round": "01",
+    "question_num": 17,
+    "question": "[보충] R-L-C 병렬 공진 주파수 유도\n<img src=\"/images/exams/2015/01/q17_1.webp\" alt=\"그림 1\" class=\"exam-img\">\n<img src=\"/images/exams/2015/01/q17_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "options": [],
+    "answer": 0,
+    "explanation": "",
+    "level": "하",
+    "images": [
+      {
+        "path": "/images/exams/2015/01/q17_1.webp",
+        "target": "질문"
+      },
+      {
+        "path": "/images/exams/2015/01/q17_1.webp",
+        "target": "질문"
+      }
+    ]
+  },
+  {
+    "id": "2015_01_18",
+    "year": 2015,
+    "round": "01",
+    "question_num": 18,
+    "question": "노튼 등가 회로의 컨덕턴스 계산 <img src=\"/images/exams/2015/01/q18_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "options": [],
+    "answer": 1,
+    "explanation": "1. **등가 저항($R_0$) 구하기:** 1-2단자에서 전원측을 바라봤을 때 $0.8\\text{ [\\Omega]}$은 직렬, $2\\text{ [\\Omega]}$와 $3\\text{ [\\Omega]}$은 병렬입니다. $$R_0 = 0.8 + \\frac{2 \\times 3}{2 + 3} = 0.8 + 1.2 = 2 \\text{ [\\Omega]}$$ 2. **컨덕턴스($G$) 구하기:** 저항의 역수입니다. $$G = \\frac{1}{R_0} = \\frac{1}{2} = 0.5 \\text{ [\\mho]}$$\n<img src=\"/images/exams/2015/01/q18_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "level": "하",
+    "images": [
+      {
+        "path": "/images/exams/2015/01/q18_1.webp",
+        "target": "해설"
+      },
+      {
+        "path": "/images/exams/2015/01/q18_1.webp",
+        "target": "질문"
+      }
+    ]
+  },
+  {
+    "id": "2015_01_19",
+    "year": 2015,
+    "round": "01",
+    "question_num": 19,
+    "question": "히스테리시스손의 비례 관계",
+    "options": [],
+    "answer": 1,
+    "explanation": "히스테리시스손($P_h$)은 철손의 일부로 자성체 자화 시 발생합니다. $$P_h \\propto f \\cdot B_m^{1.6}$$ 따라서 **주파수($f$)의 1승**에 비례하고, **최대 자속 밀도($B_m$)의 1.6승**에 비례합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_20",
+    "year": 2015,
+    "round": "01",
+    "question_num": 20,
+    "question": "도체의 저항 변화 계산",
+    "options": [],
+    "answer": 3,
+    "explanation": "저항 공식 $R = \\rho \\frac{l}{A}$를 이용합니다. * 길이($l$) 2배 증가 $\\rightarrow 2l$ * 단면적($A$) $\\frac{1}{3}$배 감소 $\\rightarrow \\frac{1}{3}A$ $$R' = \\rho \\frac{2l}{\\frac{1}{3}A} = 6 \\times \\left(\\rho \\frac{l}{A}\\right) = 6R$$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_21",
+    "year": 2015,
+    "round": "01",
+    "question_num": 21,
+    "question": "변류기(CT) 2차측 개방 시 현상",
+    "options": [],
+    "answer": 4,
+    "explanation": "변류기 2차측을 개방하면 1차측 부하 전류가 모두 여자 전류가 되어 **2차측에 고전압이 유도**됩니다. 이는 절연 파괴나 소손의 위험이 있으므로 교체 시에는 반드시 2차측을 먼저 **단락**시켜야 합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_27",
+    "year": 2015,
+    "round": "01",
+    "question_num": 27,
+    "question": "변압기의 승압 결선 방식",
+    "options": [],
+    "answer": 2,
+    "explanation": "$Y-\\Delta$와 $\\Delta-Y$ 결선은 $Y$결선과 $\\Delta$결선의 장점을 모두 갖춘 방식입니다. * **용도:** 주로 **$Y-\\Delta$는 강압용**, **$\\Delta-Y$는 승압용**으로 사용됩니다. * **특징:** $Y$결선 중성점을 접지할 수 있고, $\\Delta$결선에 의해 제3고조파 장해가 작아 기전력 파형이 사인파가 됩니다. * 1·2차 전압 및 전류 간에는 $\\frac{\\pi}{6}\\text{ [rad]}$($30^\\circ$)만큼의 위상차가 발생합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_28",
+    "year": 2015,
+    "round": "01",
+    "question_num": 28,
+    "question": "가전제품용 전동기의 종류",
+    "options": [],
+    "answer": 1,
+    "explanation": "* **분상 기동형:** 전기 냉장고, 세탁기, 소형 공작 기계, 펌프 등 * **콘덴서 기동형:** $200\\text{ [W]}$ 이상의 가정용 펌프, 송풍기, 소형 공작 기계 * **영구 콘덴서형:** 큰 기동 토크를 요하지 않는 선풍기, 세탁기 * **셰이딩 코일형:** 전축용 전동기, 소형 선풍기 등 수십 와트($\\text{W}$) 이하의 소형 전동기",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_29",
+    "year": 2015,
+    "round": "01",
+    "question_num": 29,
+    "question": "유도 전동기의 회전 속도 계산",
+    "options": [],
+    "answer": 3,
+    "explanation": "전동기의 회전 속도 $N$은 다음 공식으로 구합니다. $$N = (1 - s)N_s \\text{ [rpm]} $$ $$N = (1 - 0.04) \\times 1,200 = 1,152 \\text{ [rpm]} $$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_30",
+    "year": 2015,
+    "round": "01",
+    "question_num": 30,
+    "question": "수차 발전기의 전부하 효율 계산",
+    "options": [],
+    "answer": 3,
+    "explanation": "효율($\\eta$)은 출력과 손실을 이용해 계산합니다. $$\\eta = \\frac{\\text{출력}}{\\text{출력} + \\text{손실}} \\times 100 \\text{ [\\%]} $$ * 발전기 출력 $60\\text{ [MVA]}$는 피상 전력이므로 유효 출력 $P$는 다음과 같습니다. $$P = 60 \\times 0.8 = 48 \\text{ [MW]} $$ * 손실 $1,600\\text{ [kW]} = 1.6\\text{ [MW]}$이므로, $$\\eta = \\frac{48 - 1.6}{48} \\times 100 = 97 \\text{ [\\%]} $$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_31",
+    "year": 2015,
+    "round": "01",
+    "question_num": 31,
+    "question": "부흐홀츠 계전기의 용도",
+    "options": [],
+    "answer": 1,
+    "explanation": "부흐홀츠 계전기는 **변압기** 주탱크와 콘서베이터 사이에 설치되는 기계적 보호 장치입니다. 내부 고장 시 발생하는 유증기를 검출하여 경보 및 차단을 수행합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_32",
+    "year": 2015,
+    "round": "01",
+    "question_num": 32,
+    "question": "변압기 탭(Tap)의 역할",
+    "options": [],
+    "answer": 2,
+    "explanation": "배전 선로의 전압을 조정하기 위한 방법입니다. 1차측 권선에 약 $5\\text{ [\\%]}$ 간격의 탭을 내어 2차측 부하 변동에 따른 전압 변동 시 1차측 탭을 조절하여 **2차측 전압을 조정**합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_40",
+    "year": 2015,
+    "round": "01",
+    "question_num": 40,
+    "question": "직류 직권 전동기의 특징",
+    "options": [],
+    "answer": 2,
+    "explanation": "직권 전동기는 토크($\\tau$)가 부하 전류($I$)의 제곱에 비례하고 속도($N$)의 제곱에 반비례하는 특성을 가집니다. $$\\tau \\propto I^2 \\propto \\frac{1}{N^2}$$ 따라서 기동 시 속도를 떨어뜨리면 **매우 큰 기동 토크**를 얻을 수 있어 전차용 등에 사용됩니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_41",
+    "year": 2015,
+    "round": "01",
+    "question_num": 41,
+    "question": "저압 애자 사용 공사의 전선 간격",
+    "options": [],
+    "answer": 3,
+    "explanation": "* **저압:** $6[\\text{cm}]$ 이상 * **고압:** $8[\\text{cm}]$ 이상",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_42",
+    "year": 2015,
+    "round": "01",
+    "question_num": 42,
+    "question": "금속 몰드의 지지점 간 거리",
+    "options": [],
+    "answer": 2,
+    "explanation": "금속 몰드 공사 시 몰드의 지지점 간 거리는 $1.5[\\text{m}]$ 이하가 되도록 시설해야 합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_43",
+    "year": 2015,
+    "round": "01",
+    "question_num": 43,
+    "question": "합성 수지관의 삽입 깊이",
+    "options": [],
+    "answer": 4,
+    "explanation": "* **접착제를 사용하지 않는 경우:** 관 바깥지름의 **$1.2$배** 이상 * **접착제를 사용하는 경우:** 관 바깥지름의 $0.8$배 이상",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_44",
+    "year": 2015,
+    "round": "01",
+    "question_num": 44,
+    "question": "옥내 배선 접속함 내의 접속법",
+    "options": [],
+    "answer": 2,
+    "explanation": "접속함이나 박스 안에서 가는 전선을 접속할 때는 **쥐꼬리 접속**을 하며, 와이어 커넥터 등을 사용하면 절연 테이프가 필요 없습니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_45",
+    "year": 2015,
+    "round": "01",
+    "question_num": 45,
+    "question": "화약류 분말 장소의 옥내 배선 공사",
+    "options": [],
+    "answer": 1,
+    "explanation": "폭연성 분진 또는 화약류 분말이 존재하는 곳은 **금속관 공사**나 케이블 공사(개장, MI 등)에 의하여 시설해야 합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_46",
+    "year": 2015,
+    "round": "01",
+    "question_num": 46,
+    "question": "위험물 장소의 옥내 배선 공사가 아닌 것",
+    "options": [],
+    "answer": 4,
+    "explanation": "",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_47",
+    "year": 2015,
+    "round": "01",
+    "question_num": 47,
+    "question": "저압 가공 전선의 철도 횡단 높이",
+    "options": [],
+    "answer": 4,
+    "explanation": "| 구분 | 높이 [m] | | :--- | :--- | | **도로** | $6\\text{ [m]}$ 이상 | | **철도** | **$6.5\\text{ [m]}$ 이상** | | **횡단 보도교** | $3\\text{ [m]}$ 이상 | | **기타** | $5\\text{ [m]}$ 이상 |",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_48",
+    "year": 2015,
+    "round": "01",
+    "question_num": 48,
+    "question": "지지물 발판 볼트의 시설 제한",
+    "options": [],
+    "answer": 4,
+    "explanation": "일반적으로 가공 전선로 지지물의 발판 볼트는 취급자 외의 사람이 오르는 것을 방지하기 위해 **지표상 $1.8\\text{ [m]}$**부터 부착합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_49",
+    "year": 2015,
+    "round": "01",
+    "question_num": 49,
+    "question": "합성 수지 몰드 공사 방법",
+    "options": [],
+    "answer": 3,
+    "explanation": "* 사용 전압은 $400\\text{ [V]}$ 이하일 것 * 전선은 절연 전선(OW 제외)을 사용하고 몰드 내 접속점이 없어야 함 * **홈의 폭 및 깊이는 $3.5\\text{ [cm]}$ 이하**여야 함(사람 접촉 우려 없는 경우 $5\\text{ [cm]}$ 이하)",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_50",
+    "year": 2015,
+    "round": "01",
+    "question_num": 50,
+    "question": "강판제 분전반 함의 두께",
+    "options": [],
+    "answer": 2,
+    "explanation": "분전반 함이 강판제인 경우 **두께 $1.2\\text{ [mm]}$ 이상**이어야 합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_51",
+    "year": 2015,
+    "round": "01",
+    "question_num": 51,
+    "question": "금속관 절단 공구",
+    "options": [],
+    "answer": 3,
+    "explanation": "금속관을 절단할 때는 **파이프 커터**나 쇠톱을 사용합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_52",
+    "year": 2015,
+    "round": "01",
+    "question_num": 52,
+    "question": "실링·직접 부착등의 그림 기호 [그림 참고]",
+    "options": [],
+    "answer": 3,
+    "explanation": "실링(Ceiling) 직접 부착등의 기호는 **CL**입니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_53",
+    "year": 2015,
+    "round": "01",
+    "question_num": 53,
+    "question": "지중 전선로 시설 방식",
+    "options": [],
+    "answer": 3,
+    "explanation": "지중 전선로의 시설 방식에는 직접 매설식, 관로식, 암거식이 있습니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_54",
+    "year": 2015,
+    "round": "01",
+    "question_num": 54,
+    "question": "배광에 따른 조명 기구 분류",
+    "options": [],
+    "answer": 1,
+    "explanation": "직접 조명 기구는 하향 광속이 $90\\%$ 이상이 되도록 설계되어 특정한 장소만을 비추기에 적합합니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_55",
+    "year": 2015,
+    "round": "01",
+    "question_num": 55,
+    "question": "S형 슬리브 접속 시 유의 사항",
+    "options": [],
+    "answer": 1,
+    "explanation": "슬리브 접속은 단선과 연선 접속 모두 가능하므로 연선만 가능하다는 설명은 틀린 것입니다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_57",
+    "year": 2015,
+    "round": "01",
+    "question_num": 57,
+    "question": "인입용 비닐 절연 전선의 약호",
+    "options": [],
+    "answer": 3,
+    "explanation": "* **OW:** 옥외용 비닐 절연 전선 * **DV:** 인입용 비닐 절연 전선 * **EV:** 폴리에틸렌 절연 비닐 외장 케이블 * **NV:** 클로로프렌 절연 비닐 외장 케이블",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_59",
+    "year": 2015,
+    "round": "01",
+    "question_num": 59,
+    "question": "수전 설비의 차단 용량 계산",
+    "options": [],
+    "answer": 3,
+    "explanation": "* 공식: $P_s = \\sqrt{3}VI \\text{ [VA]}$ * 계산: $P_s = \\sqrt{3} \\times 24 \\times 300 \\text{ [kVA]}$ * 결과: $12,470 \\text{ [kVA]} = 12.47 \\text{ [MVA]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_01_60",
+    "year": 2015,
+    "round": "01",
+    "question_num": 60,
+    "question": "단로기(DS)의 주요 용도",
+    "options": [],
+    "answer": 2,
+    "explanation": "단로기(Disconnecting Switch)는 부하 전류 개폐 능력이 없으며, 보수 점검 시 전로를 완전히 개방·분리하거나 접속을 변경할 때 사용합니다.",
+    "level": "하"
+  }
+]

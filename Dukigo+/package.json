@@ -11,8 +11,10 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.100.1",
     "@types/canvas-confetti": "^1.9.0",
+    "@types/katex": "^0.16.8",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.38.0",
+    "katex": "^0.16.44",
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",

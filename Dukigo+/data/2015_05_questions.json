@@ -1,0 +1,787 @@
+[
+  {
+    "id": "2015_05_1",
+    "year": 2015,
+    "round": "05",
+    "question_num": 1,
+    "question": "자체 인덕턴스가 $40\\text{ [mH]}$인 코일에 $10\\text{ [A]}$의 전류가 흐를 때 저장되는 에너지는 몇 $\\text{[J]}$인가?",
+    "options": [
+      "8"
+    ],
+    "answer": 1,
+    "explanation": "코일에 축적되는 에너지 $W = \\frac{1}{2}LI^2 = \\frac{1}{2} \\times 40 \\times 10^{-3} \\times 10^2 = 2\\text{ [J]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_2",
+    "year": 2015,
+    "round": "05",
+    "question_num": 2,
+    "question": "다음 중 큰 값일수록 좋은 것은?",
+    "options": [
+      "접촉 저항"
+    ],
+    "answer": 2,
+    "explanation": "절연 저항은 누설 전류를 막기 위해 클수록 좋다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_3",
+    "year": 2015,
+    "round": "05",
+    "question_num": 3,
+    "question": "$L_1, L_2$ 두 코일이 접속되어 있을 때 누설 자속이 없는 이상적인 코일 간의 상호 인덕턴스는?",
+    "options": [
+      "$M = \\sqrt{\\frac{L_1}{L_2}}$"
+    ],
+    "answer": 3,
+    "explanation": "상호 인덕턴스 $M = k\\sqrt{L_1 L_2}$에서 누설이 없는 경우 결합 계수 $k=1$이므로 $M = \\sqrt{L_1 L_2}$이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_4",
+    "year": 2015,
+    "round": "05",
+    "question_num": 4,
+    "question": "$3\\text{ [kW]}$ 전열기를 정격 상태에서 20분간 사용하였을 때 열량은 몇 $\\text{[kcal]}$ 인가?",
+    "options": [
+      "860"
+    ],
+    "answer": 4,
+    "explanation": "$1\\text{ [kWh]} = 860\\text{ [kcal]}$ 이므로, 전체 열량 $H = 860 \\times 3 \\times \\frac{20}{60} = 860\\text{ [kcal]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_5",
+    "year": 2015,
+    "round": "05",
+    "question_num": 5,
+    "question": "대칭 3상 $\\Delta$ 결선에서 선전류와 상전류와의 위상 관계는?",
+    "options": [
+      "상전류가 $\\frac{\\pi}{6}\\text{ [rad]}$ 뒤진다."
+    ],
+    "answer": 3,
+    "explanation": "$\\Delta$ 결선에서 선전류 $\\dot{I}_l = \\sqrt{3} I_p \\angle -\\frac{\\pi}{6}\\text{ [A]}$이다. 즉, 선전류가 상전류보다 $\\frac{\\pi}{6}$ 뒤지므로, 상전류는 선전류보다 $\\frac{\\pi}{6}\\text{ [rad]}$ 앞선다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_6",
+    "year": 2015,
+    "round": "05",
+    "question_num": 6,
+    "question": "$10\\text{ [}\\Omega\\text{]}$의 저항과 $R\\text{ [}\\Omega\\text{]}$의 저항이 병렬로 접속되고 $10\\text{ [}\\Omega\\text{]}$의 저항에 흐르는 전류가 $5\\text{ [A]}$, $R\\text{ [}\\Omega\\text{]}$의 저항에 흐르는 전류가 $2\\text{ [A]}$라면 저항 $R\\text{ [}\\Omega\\text{]}$은?",
+    "options": [
+      "30"
+    ],
+    "answer": 3,
+    "explanation": "병렬 회로에서 전압은 일정하다. $V = 5 \\times 10 = 50\\text{ [V]}$. 따라서 $R = \\frac{V}{I_2} = \\frac{50}{2} = 25\\text{ [}\\Omega\\text{]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_7",
+    "year": 2015,
+    "round": "05",
+    "question_num": 7,
+    "question": "저항 $8\\text{ [}\\Omega\\text{]}$과 코일이 직렬로 접속된 회로에 $200\\text{ [V]}$의 교류 전압을 가하면 $20\\text{ [A]}$의 전류가 흐른다. 코일의 리액턴스는 몇 $\\text{[}\\Omega\\text{]}$인가? [그림 참고]",
+    "options": [
+      "8"
+    ],
+    "answer": 3,
+    "explanation": "임피던스 $Z = \\frac{V}{I} = \\frac{200}{20} = 10\\text{ [}\\Omega\\text{]}$. $R-L$ 직렬 회로에서 $Z = \\sqrt{R^2 + X_L^2} = \\sqrt{8^2 + X_L^2} = 10\\text{ [}\\Omega\\text{]}$이므로, $X_L = \\sqrt{10^2 - 8^2} = 6\\text{ [}\\Omega\\text{]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_8",
+    "year": 2015,
+    "round": "05",
+    "question_num": 8,
+    "question": "가정용 전등 전압이 $200\\text{ [V]}$이다. 이 교류 전압의 최대값은 몇 $\\text{[V]}$인가?",
+    "options": [
+      "282.8"
+    ],
+    "answer": 4,
+    "explanation": "$200\\text{ [V]}$는 실효값이므로 최대값 $V_m = \\sqrt{2}V = \\sqrt{2} \\times 200 \\approx 282.8\\text{ [V]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_9",
+    "year": 2015,
+    "round": "05",
+    "question_num": 9,
+    "question": "다음 설명 중 틀린 것은?",
+    "options": [
+      "코일은 직렬로 연결할수록 인덕턴스가 커진다."
+    ],
+    "answer": 2,
+    "explanation": "콘덴서의 정전 용량은 병렬일 때 합이므로 커지고, 직렬로 연결하면 합성 정전 용량이 작아진다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_10",
+    "year": 2015,
+    "round": "05",
+    "question_num": 10,
+    "question": "쿨롱의 법칙에서 2개의 점전하 사이에 작동하는 정전력의 크기는?",
+    "options": [
+      "두 전하의 곱에 비례하고 거리의 제곱에 반비례한다."
+    ],
+    "answer": 4,
+    "explanation": "쿨롱의 법칙 $F = \\frac{1}{4\\pi\\epsilon_0} \\cdot \\frac{Q_1 Q_2}{r^2}$에 의해 힘은 전하의 곱에 비례하고 거리의 제곱에 반비례한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_11",
+    "year": 2015,
+    "round": "05",
+    "question_num": 11,
+    "question": "$m_1 = 4 \\times 10^{-5}\\text{ [Wb]}, m_2 = 6 \\times 10^{-3}\\text{ [Wb]}, r = 10\\text{ [cm]}$ 이면 두 자극 사이에 작용하는 힘은 약 몇 $\\text{[N]}$인가?",
+    "options": [
+      "152"
+    ],
+    "answer": 1,
+    "explanation": "$F = 6.33 \\times 10^4 \\times \\frac{m_1 \\cdot m_2}{r^2} = 6.33 \\times 10^4 \\times \\frac{4 \\times 10^{-5} \\times 6 \\times 10^{-3}}{0.1^2} = 1.52\\text{ [N]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_12",
+    "year": 2015,
+    "round": "05",
+    "question_num": 12,
+    "question": "$\\dot{I} = 8 + j6\\text{ [A]}$ 로 표시되는 전류의 크기 $\\text{[A]}$는 얼마인가?",
+    "options": [
+      "12",
+      "(이미지상 12.3으로 기재되어 있으나 계산값 및 정답 번호 확인 시"
+    ],
+    "answer": 2,
+    "explanation": "복소 전류의 절대값 $I = \\sqrt{8^2 + 6^2} = 10\\text{ [A]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_13",
+    "year": 2015,
+    "round": "05",
+    "question_num": 13,
+    "question": "$R=6\\text{ [}\\Omega\\text{]}, X_c=8\\text{ [}\\Omega\\text{]}$ 일 때 임피던스 $\\dot{Z} = 6 - j8\\text{ [}\\Omega\\text{]}$으로 표시되는 것은 일반적으로 어떤 회로인가? [그림 참고]",
+    "options": [
+      "RL 병렬 회로"
+    ],
+    "answer": 1,
+    "explanation": "임피던스가 실수와 허수의 합이면 직렬이며, 허수부가 $(-)$이므로 $C$ 성분이 포함된 RC 직렬 회로이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_14",
+    "year": 2015,
+    "round": "05",
+    "question_num": 14,
+    "question": "$R-L-C$ 병렬 공진 회로에서 공진 주파수 $f$는? [그림 참고]",
+    "options": [
+      "$\\frac{1}{2\\pi\\sqrt{LC}}$"
+    ],
+    "answer": 4,
+    "explanation": "공진 조건 $X_L = X_C$에서 $\\omega L = \\frac{1}{\\omega C}$이므로 $f = \\frac{1}{2\\pi\\sqrt{LC}}\\text{ [Hz]}$이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_15",
+    "year": 2015,
+    "round": "05",
+    "question_num": 15,
+    "question": "비유전율이 큰 산화티탄 등을 유전체로 사용한 것으로 극성이 없으며 가격에 비해 성능이 우수하여 널리 사용되고 있는 콘덴서의 종류는?",
+    "options": [
+      "마이카 콘덴서"
+    ],
+    "answer": 2,
+    "explanation": "산화티탄 등을 유전체로 사용하는 것은 세라믹 콘덴서이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_16",
+    "year": 2015,
+    "round": "05",
+    "question_num": 16,
+    "question": "전기 분해를 하면 석출되는 물질의 양은 통과한 전기량에 관계가 있다. 이것을 나타낸 법칙은?",
+    "options": [
+      "패러데이의 법칙"
+    ],
+    "answer": 4,
+    "explanation": "패러데이의 법칙에 의해 $W = kQ = kIt$이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_17",
+    "year": 2015,
+    "round": "05",
+    "question_num": 17,
+    "question": "Y결선의 전원에서 각 상전압이 $100\\text{ [V]}$일 때 선간 전압은 약 몇 $\\text{[V]}$인가?",
+    "options": [
+      "195"
+    ],
+    "answer": 3,
+    "explanation": "Y결선에서 선간 전압 $V_l = \\sqrt{3} V_p = \\sqrt{3} \\times 100 \\approx 173\\text{ [V]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_18",
+    "year": 2015,
+    "round": "05",
+    "question_num": 18,
+    "question": "“전류의 방향과 자장의 방향은 각각 나사의 진행 방향과 회전 방향에 일치한다.”와 관계가 있는 법칙은?",
+    "options": [
+      "키르히호프의 법칙"
+    ],
+    "answer": 2,
+    "explanation": "앙페르의 오른 나사 법칙은 전류와 자장의 방향 관계를 정의한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_19",
+    "year": 2015,
+    "round": "05",
+    "question_num": 19,
+    "question": "삼각파 전압의 최대값이 $V_m\\text{ [V]}$일 때 실효값은?",
+    "options": [
+      "$\\frac{V_m}{\\sqrt{3}}$"
+    ],
+    "answer": 4,
+    "explanation": "삼각파(톱니파)의 실효값 $V = \\frac{V_m}{\\sqrt{3}}\\text{ [V]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_20",
+    "year": 2015,
+    "round": "05",
+    "question_num": 20,
+    "question": "$i(t) = I_m \\sin \\omega t\\text{ [A]}$인 사인파 교류에서 $\\omega t$가 몇 도일 때 순시값과 실효값이 같게 되는가?",
+    "options": [
+      "$90^\\circ$"
+    ],
+    "answer": 2,
+    "explanation": "순시값 $I_m \\sin \\omega t$가 실효값 $I = \\frac{I_m}{\\sqrt{2}}$와 같으려면 $\\sin \\omega t = \\frac{1}{\\sqrt{2}}$이어야 하므로 $\\omega t = 45^\\circ$이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_21",
+    "year": 2015,
+    "round": "05",
+    "question_num": 21,
+    "question": "$100\\text{ [V]}, 10\\text{ [A]}$, 전기자 저항 $1\\text{ [}\\Omega\\text{]}$, 회전수 $1,800\\text{ [rpm]}$인 전동기의 역기전력은 몇 $\\text{[V]}$인가?",
+    "options": [
+      "186"
+    ],
+    "answer": 1,
+    "explanation": "역기전력 $E = V - I_a R_a = 100 - (10 \\times 1) = 90\\text{ [V]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_22",
+    "year": 2015,
+    "round": "05",
+    "question_num": 22,
+    "question": "입력으로 펄스 신호를 가해 주고 속도를 입력 펄스의 주파수에 의해 조절하는 전동기는?",
+    "options": [
+      "권선형 유도 전동기"
+    ],
+    "answer": 3,
+    "explanation": "스테핑 모터는 입력 신호(펄스)에 따라 회전 속도와 위치를 제어한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_23",
+    "year": 2015,
+    "round": "05",
+    "question_num": 23,
+    "question": "농형 유도 전동기의 기동법이 아닌 것은?",
+    "options": [
+      "기동 보상기에 의한 기동법"
+    ],
+    "answer": 1,
+    "explanation": "2차 저항기법은 권선형 유도 전동기의 기동법이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_24",
+    "year": 2015,
+    "round": "05",
+    "question_num": 24,
+    "question": "동기 전동기의 장점이 아닌 것은?",
+    "options": [
+      "동기 속도를 얻을 수 있다."
+    ],
+    "answer": 1,
+    "explanation": "직류 여자가 필요한 것은 장점이 아니라 별도의 전원이 필요한 단점으로 볼 수 있다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_25",
+    "year": 2015,
+    "round": "05",
+    "question_num": 25,
+    "question": "정격 속도로 운전하는 무부하 분권 발전기의 계자 저항이 $60\\text{ [}\\Omega\\text{]}$, 계자 전류가 $1\\text{ [A]}$, 전기자 저항이 $0.5\\text{ [}\\Omega\\text{]}$이라 하면 유도 기전력은 약 몇 $\\text{[V]}$인가?",
+    "options": [
+      "80.5"
+    ],
+    "answer": 3,
+    "explanation": "분권 발전기에서 단자 전압 $V = I_f R_f = 1 \\times 60 = 60\\text{ [V]}$. 무부하 시 $I_a = I_f = 1\\text{ [A]}$이므로 $E = V + I_a R_a = 60 + (1 \\times 0.5) = 60.5\\text{ [V]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_26",
+    "year": 2015,
+    "round": "05",
+    "question_num": 26,
+    "question": "고압 전동기 철심의 강판 홈(slot)의 모양은?",
+    "options": [
+      "밀폐형"
+    ],
+    "answer": 2,
+    "explanation": "고압 전동기는 권선 작업의 용이성 등을 위해 개방형 홈을 주로 사용한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_27",
+    "year": 2015,
+    "round": "05",
+    "question_num": 27,
+    "question": "직류 발전기의 전기자 반작용의 영향에 대한 설명으로 틀린 것은?",
+    "options": [
+      "회전 방향과 반대 방향으로 자기적 중성축이 이동된다."
+    ],
+    "answer": 4,
+    "explanation": "발전기의 경우 중성축은 회전 방향으로 이동한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_28",
+    "year": 2015,
+    "round": "05",
+    "question_num": 28,
+    "question": "다음 제동 방법 중 급정지하는 데 가장 좋은 제동 방법은?",
+    "options": [
+      "단상 제동"
+    ],
+    "answer": 3,
+    "explanation": "역상 제동(플러깅)은 역회전 토크를 이용하여 급정지하는 방식이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_29",
+    "year": 2015,
+    "round": "05",
+    "question_num": 29,
+    "question": "변압기의 2차측을 개방하였을 경우 1차측에 흐르는 전류는 무엇에 의하여 결정되는가?",
+    "options": [
+      "여자 어드미턴스"
+    ],
+    "answer": 4,
+    "explanation": "무부하(2차측 개방) 시 흐르는 전류는 여자 전류이며, 이는 여자 어드미턴스에 의해 결정된다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_30",
+    "year": 2015,
+    "round": "05",
+    "question_num": 30,
+    "question": "직류 분권 전동기에서 운전 중 계자 권선의 저항을 증가하면 회전 속도의 값은?",
+    "options": [
+      "관계없다."
+    ],
+    "answer": 2,
+    "explanation": "계자 저항이 증가하면 계자 전류가 감소하여 자속이 줄어들고, 속도는 자속에 반비례하므로 증가한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_31",
+    "year": 2015,
+    "round": "05",
+    "question_num": 31,
+    "question": "다음 그림은 직류 발전기의 분류 중 어느 것에 해당되는가? <img src=\"/images/exams/2015/05/q31_1.webp\" alt=\"그림 1\" class=\"exam-img\">",
+    "options": [
+      "복권 발전기"
+    ],
+    "answer": 4,
+    "explanation": "그림에는 직렬 계자와 병렬 계자가 모두 표시되어 있으므로 복권 발전기이다.",
+    "level": "하",
+    "images": [
+      {
+        "path": "/images/exams/2015/05/q31_1.webp",
+        "target": "질문"
+      }
+    ]
+  },
+  {
+    "id": "2015_05_32",
+    "year": 2015,
+    "round": "05",
+    "question_num": 32,
+    "question": "변압기에 대한 설명 중 틀린 것은?",
+    "options": [
+      "변압기의 정격 용량은 피상 전력으로 표시한다."
+    ],
+    "answer": 3,
+    "explanation": "변압기의 정격 출력은 2차측 단자를 기준으로 한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_33",
+    "year": 2015,
+    "round": "05",
+    "question_num": 33,
+    "question": "유도 전동기가 많이 사용되는 이유가 아닌 것은?",
+    "options": [
+      "구조가 간단하고 튼튼함"
+    ],
+    "answer": 2,
+    "explanation": "유도 전동기는 구조가 간단하여 취급이 쉽다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_34",
+    "year": 2015,
+    "round": "05",
+    "question_num": 34,
+    "question": "변압기의 V결선의 특징으로 틀린 것은?",
+    "options": [
+      "V결선 시 출력은 $\\Delta$결선 시 출력과 그 크기가 같다."
+    ],
+    "answer": 4,
+    "explanation": "V결선 출력은 $\\Delta$결선의 $\\frac{1}{\\sqrt{3}}(\\approx 57.7\\%)$ 수준이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_35",
+    "year": 2015,
+    "round": "05",
+    "question_num": 35,
+    "question": "3상 유도 전동기의 2차 저항을 2배로 하면 그 값이 2배로 되는 것은?",
+    "options": [
+      "역률"
+    ],
+    "answer": 1,
+    "explanation": "비례 추이에 의해 2차 저항과 슬립은 비례한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_36",
+    "year": 2015,
+    "round": "05",
+    "question_num": 36,
+    "question": "반도체 사이리스터에 의한 전동기의 속도 제어 중 주파수 제어는?",
+    "options": [
+      "브리지 정류 제어"
+    ],
+    "answer": 2,
+    "explanation": "인버터는 직류를 가변 주파수의 교류로 변환하여 속도를 제어한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_37",
+    "year": 2015,
+    "round": "05",
+    "question_num": 37,
+    "question": "슬립 $s = 5\\%$, 저항 $r_2 = 0.1\\text{ [}\\Omega\\text{]}$인 유도 전동기의 등가 저항 $R\\text{ [}\\Omega\\text{]}$은 얼마인가?",
+    "options": [
+      "2.0"
+    ],
+    "answer": 3,
+    "explanation": "등가 저항 $R = \\frac{r_2}{s} - r_2 = \\frac{0.1}{0.05} - 0.1 = 1.9\\text{ [}\\Omega\\text{]}$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_38",
+    "year": 2015,
+    "round": "05",
+    "question_num": 38,
+    "question": "동기 발전기의 병렬 운전 중 주파수가 틀리면 어떤 현상이 나타나는가?",
+    "options": [
+      "출력이 요동치고 권선이 가열된다."
+    ],
+    "answer": 4,
+    "explanation": "주파수가 다르면 유효 순환 전류가 흐르며, 동기화력에 의해 출력이 요동치고 권선이 가열된다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_39",
+    "year": 2015,
+    "round": "05",
+    "question_num": 39,
+    "question": "부흐홀츠 계전기의 설치 위치는?",
+    "options": [
+      "변압기 본체와 콘서베이터 사이"
+    ],
+    "answer": 4,
+    "explanation": "부흐홀츠 계전기는 변압기 본체와 콘서베이터를 연결하는 관 사이에 설치한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_40",
+    "year": 2015,
+    "round": "05",
+    "question_num": 40,
+    "question": "변압기의 용도가 아닌 것은?",
+    "options": [
+      "교류 전류의 변환"
+    ],
+    "answer": 2,
+    "explanation": "변압기는 전압, 전류, 임피던스를 변환하지만 주파수는 변환하지 못한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_41",
+    "year": 2015,
+    "round": "05",
+    "question_num": 41,
+    "question": "가로 $20\\text{ [m]}$, 세로 $18\\text{ [m]}$, 천장의 높이 $3.85\\text{ [m]}$, 작업면의 높이 $0.85\\text{ [m]}$인 연회장의 실지수는 약 얼마인가?",
+    "options": [
+      "4.16"
+    ],
+    "answer": 3,
+    "explanation": "작업면에서의 높이 $H = 3.85 - 0.85 = 3\\text{ [m]}$. 실지수 $RI = \\frac{XY}{H(X+Y)} = \\frac{20 \\times 18}{3 \\times (20 + 18)} \\approx 3.16$",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_42",
+    "year": 2015,
+    "round": "05",
+    "question_num": 42,
+    "question": "주상 변압기 1차측 보호 장치로 사용하는 것은?",
+    "options": [
+      "리클로저"
+    ],
+    "answer": 1,
+    "explanation": "1차측은 COS, 2차측은 캐치 홀더를 사용하여 보호한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_43",
+    "year": 2015,
+    "round": "05",
+    "question_num": 43,
+    "question": "화약류 저장 장소의 전용 개폐기에서 인입구까지는 어떤 공사를 하여야 하는가?",
+    "options": [
+      "금속관을 사용한 옥측 전선로"
+    ],
+    "answer": 3,
+    "explanation": "화약고의 인입구 배선에는 케이블을 사용하고 지중에 시설해야 한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_44",
+    "year": 2015,
+    "round": "05",
+    "question_num": 44,
+    "question": "굵은 전선이나 케이블을 절단할 때 사용되는 공구는?",
+    "options": [
+      "플라이어"
+    ],
+    "answer": 1,
+    "explanation": "단면적 $25\\text{ [mm}^2\\text{]}$ 이상의 전선이나 굵은 볼트를 자를 때 클리퍼를 쓴다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_45",
+    "year": 2015,
+    "round": "05",
+    "question_num": 45,
+    "question": "물탱크의 물의 양에 따라 동작하는 자동 스위치는?",
+    "options": [
+      "3로 스위치"
+    ],
+    "answer": 1,
+    "explanation": "수위에 따라 뜨개(float)가 움직여 작동하는 것은 부동(Float) 스위치이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_46",
+    "year": 2015,
+    "round": "05",
+    "question_num": 46,
+    "question": "ACSR 약호의 품명은?",
+    "options": [
+      "강심 알루미늄 연선"
+    ],
+    "answer": 4,
+    "explanation": "ACSR은 Aluminum Conductor Steel Reinforced의 약자로 강심 알루미늄 연선이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_47",
+    "year": 2015,
+    "round": "05",
+    "question_num": 47,
+    "question": "후강 전선관의 관 호칭은 ( ) 크기로 정하여 ( )로 표시하는데, 알맞은 내용은?",
+    "options": [
+      "바깥 지름, 짝수"
+    ],
+    "answer": 2,
+    "explanation": "후강 전선관의 호칭은 내경(안지름)을 기준으로 짝수로 표시한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_48",
+    "year": 2015,
+    "round": "05",
+    "question_num": 48,
+    "question": "배전반 및 분전반의 설치 장소로 적합하지 않은 곳은?",
+    "options": [
+      "전기 회로를 쉽게 조작할 수 있는 장소"
+    ],
+    "answer": 2,
+    "explanation": "점검과 조작이 용이해야 하므로 밀폐된 곳은 피해야 한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_49",
+    "year": 2015,
+    "round": "05",
+    "question_num": 49,
+    "question": "가연성 분진이 존재하는 곳의 저압 옥내 배선 공사 방법으로 짝지어진 것은?",
+    "options": [
+      "케이블 공사, 금속관 공사, 합성 수지관 공사"
+    ],
+    "answer": 4,
+    "explanation": "먼지가 많은 가연성 분진 장소는 금속관, 합성 수지관, 케이블 공사가 가능하다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_50",
+    "year": 2015,
+    "round": "05",
+    "question_num": 50,
+    "question": "합성 수지관 배선에서 경질 비닐 전선관의 굵기에 해당되지 않는 것은?",
+    "options": [
+      "22"
+    ],
+    "answer": 3,
+    "explanation": "합성 수지관의 굵기(호칭)는 14, 16, 22, 28... 등이 있으며 18은 해당되지 않는다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_51",
+    "year": 2015,
+    "round": "05",
+    "question_num": 51,
+    "question": "도체 단면적 $2.5\\text{ [mm}^2\\text{]}$ 전선 3본을 넣는 경우의 2종 가요 전선관 최소 굵기$\\text{[mm]}$는?",
+    "options": [
+      "24"
+    ],
+    "answer": 2,
+    "explanation": "규격표(Table)에 따르면 $2.5\\text{ [mm}^2\\text{]}$ 전선 3본일 때 최소 굵기는 15이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_52",
+    "year": 2015,
+    "round": "05",
+    "question_num": 52,
+    "question": "지락이 생겼을 때 전로를 자동적으로 차단하는 장치는?",
+    "options": [
+      "배선용 차단기"
+    ],
+    "answer": 1,
+    "explanation": "누전에 의한 감전 등을 방지하기 위해 지락(누전) 시 차단하는 것은 누전 차단기이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_53",
+    "year": 2015,
+    "round": "05",
+    "question_num": 53,
+    "question": "직접 매설식에서 차량 등 중량물의 압력을 받을 우려가 있는 장소의 매설 깊이는 몇 $\\text{[m]}$ 이상인가?",
+    "options": [
+      "1.6"
+    ],
+    "answer": 2,
+    "explanation": "중량물의 하중을 받을 우려가 있는 장소는 $1.0\\text{ [m]}$ 이상, 없는 장소는 $0.6\\text{ [m]}$ 이상이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_54",
+    "year": 2015,
+    "round": "05",
+    "question_num": 54,
+    "question": "[한국전기설비규정(KEC)에 따른 삭제 문항]",
+    "options": [],
+    "answer": 0,
+    "explanation": "",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_55",
+    "year": 2015,
+    "round": "05",
+    "question_num": 55,
+    "question": "길이가 $10\\text{ [m]}$인 A종 철근 콘크리트 제주의 땅에 묻는 표준 깊이는 최저 약 몇 $\\text{[m]}$인가?",
+    "options": [
+      "2.4"
+    ],
+    "answer": 3,
+    "explanation": "전주 전체 길이의 $\\frac{1}{6}$ 이상 묻어야 하므로, $10 \\times \\frac{1}{6} \\approx 1.7\\text{ [m]}$이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_56",
+    "year": 2015,
+    "round": "05",
+    "question_num": 56,
+    "question": "점검 불가능한 장소에 2종 가요 전선관을 시설할 경우 곡률 반지름은 안지름의 몇 배 이상인가?",
+    "options": [
+      "6"
+    ],
+    "answer": 4,
+    "explanation": "제2종 가요관의 굴곡 반경은 관 안지름의 6배 이상으로 해야 한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_57",
+    "year": 2015,
+    "round": "05",
+    "question_num": 57,
+    "question": "일반적으로 정크션 박스 내에서 사용되는 전선 접속 방식은?",
+    "options": [
+      "와이어 커넥터"
+    ],
+    "answer": 4,
+    "explanation": "박스 내에서는 전선을 꼬아 와이어 커넥터를 씌우는 방식이 일반적이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_58",
+    "year": 2015,
+    "round": "05",
+    "question_num": 58,
+    "question": "저압 옥내 간선으로부터 분기하는 곳에 설치하여야 하는 것은?",
+    "options": [
+      "지락 차단기"
+    ],
+    "answer": 2,
+    "explanation": "간선에서 분기되는 점에는 선로를 보호하기 위한 과전류 차단기를 설치한다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_59",
+    "year": 2015,
+    "round": "05",
+    "question_num": 59,
+    "question": "하나의 콘센트에 둘 또는 세 가지의 기구(플러그)를 끼워 사용할 때 사용되는 것은?",
+    "options": [
+      "아이언 플러그"
+    ],
+    "answer": 3,
+    "explanation": "하나의 콘센트에 여러 기구를 접속할 때 쓰는 것은 멀티 탭이다.",
+    "level": "하"
+  },
+  {
+    "id": "2015_05_60",
+    "year": 2015,
+    "round": "05",
+    "question_num": 60,
+    "question": "저·고압 가공 전선이 철도를 횡단하는 경우 궤조면상 높이는 몇 $\\text{[m]}$ 이상이어야 하는가?",
+    "options": [
+      "6.5"
+    ],
+    "answer": 4,
+    "explanation": "규격표에 따르면 철도 횡단 시 높이는 $6.5\\text{ [m]}$ 이상이다.",
+    "level": "하"
+  }
+]

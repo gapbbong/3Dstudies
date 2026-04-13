@@ -1,4 +1,13 @@
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwxDuptCcSFGPULQFH-BNOtDodq610O2Df9rXlM1LJCO1LyWcYPXoJZfLqj2ndd7ukI/exec';
+const APP_VERSION = 'v4.2.2';
+
+// Update version tags on load
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.app-version').forEach(el => {
+        el.textContent = APP_VERSION;
+    });
+});
+
 let currentUser = null;
 let currentQuestions = [];
 let currentChapterId = null;

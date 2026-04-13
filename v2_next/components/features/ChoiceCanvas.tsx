@@ -74,15 +74,8 @@ export default function ChoiceCanvas({ text, index, isSelected, isDisabled, onCl
             ctx.textBaseline = 'middle';
 
             let xOffset = 45;
-            for (let charIdx = 0; charIdx < text.length; charIdx++) {
-                const char = text[charIdx];
-                const yOffset = 30 + (Math.random() - 0.5) * 1.2; // ±0.6px
-                const alpha = 0.97 + Math.random() * 0.03; // 0.97-1.0
-                ctx.globalAlpha = alpha;
-                ctx.fillText(char, xOffset, yOffset);
-                xOffset += ctx.measureText(char).width;
-            }
-            ctx.globalAlpha = 1.0;
+            const yOffset = 30;
+            ctx.fillText(text, xOffset, yOffset);
         };
 
         render();
@@ -91,56 +84,7 @@ export default function ChoiceCanvas({ text, index, isSelected, isDisabled, onCl
     }, [text, index, isSelected]);
 
     const addNoise = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-        // 1. Dense Random Dots
-        for (let i = 0; i < 800; i++) {
-            const size = Math.random() * 2 + 1; // 1-3px
-            const opacity = Math.random() * 0.06 + 0.04; // 0.04-0.10
-            ctx.fillStyle = `rgba(148, 163, 184, ${opacity})`;
-            ctx.fillRect(Math.random() * width, Math.random() * height, size, size);
-        }
-
-        // 2. Watermark
-        ctx.save();
-        ctx.font = "bold 12px Arial";
-        ctx.fillStyle = "rgba(148, 163, 184, 0.06)";
-        for (let y = -10; y < height + 20; y += 40) {
-            for (let x = -20; x < width + 40; x += 80) {
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate((Math.random() - 0.5) * 0.2);
-                ctx.fillText("3D", 0, 0);
-                ctx.restore();
-            }
-        }
-        ctx.restore();
-
-        // 3. Random Lines
-        ctx.strokeStyle = "rgba(148, 163, 184, 0.03)";
-        ctx.lineWidth = 0.5;
-        for (let i = 0; i < 5; i++) {
-            ctx.beginPath();
-            if (Math.random() > 0.5) {
-                const y = Math.random() * height;
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-            } else {
-                const x = Math.random() * width;
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-            }
-            ctx.stroke();
-        }
-
-        // 4. Micro Gradient Noise
-        for (let i = 0; i < 100; i++) {
-            const x = Math.random() * width;
-            const y = Math.random() * height;
-            const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
-            gradient.addColorStop(0, `rgba(148, 163, 184, ${Math.random() * 0.04})`);
-            gradient.addColorStop(1, 'rgba(148, 163, 184, 0)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(x - 15, y - 15, 30, 30);
-        }
+        // Noise removed for better readability
     };
 
     return (

@@ -147,7 +147,7 @@ function LoginContent() {
 
   return (
     <main className="min-h-screen bg-[#020617] text-slate-200 flex flex-col items-center justify-center p-6 relative overflow-hidden selection:bg-blue-500/30">
-      <div className="absolute top-4 left-4 text-[10px] text-slate-500 font-mono tracking-widest opacity-80 z-[100] pointer-events-none">
+      <div className="absolute top-4 left-4 text-[10px] text-blue-400 font-mono tracking-widest font-bold z-[100] pointer-events-none">
         VERSION v{version}
       </div>
 

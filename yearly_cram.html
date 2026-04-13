@@ -1682,33 +1682,11 @@
 
             ctx.scale(dpr, dpr);
 
-            // --- Anti-Lens Noise Generation Start ---
+            // --- Anti-Lens Noise Generation Removed for Visibility ---
             // 1. Fill background explicitly (White)
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, maxWidth, (lines.length * lineHeight + padding * 2));
-
-            // 2. Add Random Noise (Micro-dots) - Confuses OCR thresholding
-            const noiseCount = (maxWidth * lines.length * 10); // Density based on size
-            for (let i = 0; i < 3000; i++) {
-                const x = Math.random() * maxWidth;
-                const y = Math.random() * (lines.length * lineHeight + padding * 2);
-                const size = Math.random() * 1.5; // Tiny dots
-                ctx.fillStyle = `rgba(0, 0, 0, ${Math.random() * 0.08})`; // Very subtle grey
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-
-            // 3. Add Faint Interference Lines - Breaks character continuity for bots
-            for (let i = 0; i < 20; i++) {
-                ctx.beginPath();
-                ctx.moveTo(Math.random() * maxWidth, Math.random() * (lines.length * lineHeight + padding * 2));
-                ctx.lineTo(Math.random() * maxWidth, Math.random() * (lines.length * lineHeight + padding * 2));
-                ctx.strokeStyle = `rgba(0, 0, 0, ${Math.random() * 0.04})`; // Extremely faint
-                ctx.lineWidth = Math.random() * 2;
-                ctx.stroke();
-            }
-            // --- Anti-Lens Noise Generation End ---
+            // --- Noise Generation End ---
 
             ctx.font = `800 ${fontSize}px 'Pretendard'`;
             ctx.textBaseline = 'top';

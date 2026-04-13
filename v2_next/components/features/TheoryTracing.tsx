@@ -2,27 +2,31 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useSecurity } from '@/hooks/useSecurity';
 
 interface TheoryTracingProps {
     targetText: string;
     onComplete: () => void;
     isRecallMode?: boolean;
+    keywords?: string[];
 }
 
-const ALL_KEYWORDS = ['FDM', 'SLA', 'DLP', 'SLS', 'FFF', 'G-Code', 'STL', '적층', '레이어', '필라멘트', '베드', '노즐', '익스트루더', '서포트', '슬라이싱', '큐라', '메쉬', '모델링', '출력', '베드', '안전', '수평', '레벨링'];
+const DEFAULT_KEYWORDS = ['FDM', 'SLA', 'DLP', 'SLS', 'FFF', 'G-Code', 'STL', '적층', '레이어', '필라멘트', '베드', '노즐', '익스트루더', '서포트', '슬라이싱', '큐라', '메쉬', '모델링', '출력', '베드', '안전', '수평', '레벨링'];
 
-export default function TheoryTracing({ targetText, onComplete, isRecallMode = false }: TheoryTracingProps) {
+export default function TheoryTracing({ targetText, onComplete, isRecallMode = false, keywords = [] }: TheoryTracingProps) {
     const [userInput, setUserInput] = useState('');
     const [accuracy, setAccuracy] = useState(0);
+    const [isSuccess, setIsSuccess] = useState(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    const mergedKeywords = Array.from(new Set([...DEFAULT_KEYWORDS, ...keywords]));
+
     const isKeyword = useCallback((word: string) => {
         const clean = word.replace(/[.,!?()[\]]/g, '');
-        return ALL_KEYWORDS.includes(clean) || clean.length >= 4;
-    }, []);
+        return mergedKeywords.includes(clean) || (clean.length >= 4 && !clean.includes(' '));
+    }, [mergedKeywords]);
 
     const handleAutoReplace = (text: string, start: number) => {
         const transformed = text
@@ -61,7 +65,10 @@ export default function TheoryTracing({ targetText, onComplete, isRecallMode = f
 
     const handleSubmit = () => {
         if (accuracy >= 98) {
-            onComplete();
+            setIsSuccess(true);
+            setTimeout(() => {
+                onComplete();
+            }, 1500);
         } else {
             alert(`아직 ${accuracy}% 완성되었습니다. 98% 이상 채워주세요!`);
         }
@@ -324,6 +331,30 @@ export default function TheoryTracing({ targetText, onComplete, isRecallMode = f
                     </div>
                 </div>
             </div>
+            {/* Success Overlay */}
+            <AnimatePresence>
+                {isSuccess && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 bg-[#020617]/90 backdrop-blur-xl flex flex-col items-center justify-center text-center p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.5, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            className="bg-blue-600/10 p-12 rounded-[3rem] border border-blue-500/20"
+                        >
+                            <div className="text-7xl mb-6">🎯</div>
+                            <h2 className="text-4xl font-black text-white mb-2">훌륭합니다!</h2>
+                            <p className="text-blue-400 text-lg">내용을 완벽하게 {isRecallMode ? '암기' : '정독'}하셨습니다.</p>
+                            <div className="mt-10 flex items-center justify-center gap-2 text-slate-500 text-sm font-bold uppercase tracking-widest animate-pulse">
+                                잠시 후 다음 단계로 이동합니다...
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

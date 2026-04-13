@@ -8,7 +8,7 @@ import { useSecurity } from '@/hooks/useSecurity';
 import { useToast } from '@/components/ui/Toast';
 import { getProgress, getLegacyUser, UserProgress, getRankInfo } from '@/lib/progress';
 import LoadingPrinter from '@/components/ui/LoadingPrinter';
-import { BarChart3, MessageSquareText, Trophy } from 'lucide-react';
+import { BarChart3, MessageSquareText, Trophy, Thermometer } from 'lucide-react';
 
 interface Chapter {
     id: string;
@@ -29,7 +29,8 @@ export default function Dashboard() {
     const toast = useToast();
 
     useSecurity({
-        preventCopy: true
+        preventCopy: true,
+        preventMultiTab: true
     });
 
     useEffect(() => {
@@ -155,22 +156,89 @@ export default function Dashboard() {
                 {/* Stats Section */}
                 <section className="mb-16">
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-[2.5rem] shadow-2xl shadow-blue-900/20"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-10 bg-[#0f172a] p-12 rounded-[3.5rem] border border-white/5 shadow-3xl"
                     >
-                        <div>
-                            <h2 className="text-4xl font-black mb-4 leading-tight">준비되셨나요?<br />합격은 이미 당신의 것!</h2>
-                            <p className="text-blue-100 text-lg opacity-80">학습 온도를 높여 등급을 올려보세요.</p>
+                        {/* Background Glow */}
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-[100px] -mr-48 -mt-48" />
+                        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[100px] -ml-48 -mb-48" />
+
+                        <div className="relative z-10 text-center md:text-left">
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <h2 className="text-5xl font-black mb-6 leading-[1.1] tracking-tight text-white">
+                                    {user}님,<br />
+                                    <span className="text-blue-500">열정적인 학습</span>이<br />
+                                    성장을 이끕니다!
+                                </h2>
+                                <p className="text-slate-400 text-lg font-medium max-w-md">
+                                    현재 {rankInfo.title} 단계입니다. <br />
+                                    {rankInfo.description}
+                                </p>
+                            </motion.div>
                         </div>
-                        <div className="flex gap-4">
-                            <div className="bg-white/10 backdrop-blur-lg px-6 py-4 rounded-2xl border border-white/10 text-center">
-                                <div className="text-3xl font-black">{passedChaptersCount}</div>
-                                <div className="text-xs text-blue-200 mt-1 uppercase tracking-wider font-bold">합격 챕터</div>
+
+                        <div className="relative z-10 flex flex-col sm:flex-row items-center gap-12">
+                            {/* Temperature Gauge */}
+                            <div className="relative flex items-center justify-center">
+                                <svg className="w-48 h-48 transform -rotate-90">
+                                    <circle
+                                        cx="96"
+                                        cy="96"
+                                        r="88"
+                                        stroke="currentColor"
+                                        strokeWidth="12"
+                                        fill="transparent"
+                                        className="text-slate-800"
+                                    />
+                                    <motion.circle
+                                        cx="96"
+                                        cy="96"
+                                        r="88"
+                                        stroke="currentColor"
+                                        strokeWidth="12"
+                                        fill="transparent"
+                                        strokeDasharray="552.92"
+                                        initial={{ strokeDashoffset: 552.92 }}
+                                        animate={{ strokeDashoffset: 552.92 - (Math.min(100, (progress.stats.temperature / 1000) * 100) / 100) * 552.92 }}
+                                        transition={{ duration: 1.5, ease: "easeOut" }}
+                                        strokeLinecap="round"
+                                        className="text-blue-500"
+                                    />
+                                </svg>
+                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                    <Thermometer className="text-blue-400 mb-1" size={24} />
+                                    <div className="text-3xl font-black text-white">{progress.stats.temperature}°C</div>
+                                    <div className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter">Learning Temp</div>
+                                </div>
                             </div>
-                            <div className="bg-white/10 backdrop-blur-lg px-6 py-4 rounded-2xl border border-white/10 text-center">
-                                <div className="text-3xl font-black">{progress.stats.temperature}°C</div>
-                                <div className="text-xs text-blue-200 mt-1 uppercase tracking-wider font-bold">학습 온도</div>
+
+                            {/* Badge Info */}
+                            <div className="flex flex-col gap-4">
+                                <motion.div
+                                    whileHover={{ scale: 1.05 }}
+                                    className="bg-slate-900/50 backdrop-blur-xl px-8 py-6 rounded-3xl border border-white/5 flex items-center gap-6"
+                                >
+                                    <div className="text-5xl">{rankInfo.icon}</div>
+                                    <div>
+                                        <div className="text-xs text-slate-500 font-black uppercase tracking-widest mb-1">Current Tier</div>
+                                        <div className="text-2xl font-black text-white">{rankInfo.title.split(' ').slice(1).join(' ')}</div>
+                                    </div>
+                                </motion.div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-slate-900/50 backdrop-blur-xl px-6 py-4 rounded-3xl border border-white/5 text-center">
+                                        <div className="text-2xl font-black text-blue-400">{passedChaptersCount}</div>
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Chapters</div>
+                                    </div>
+                                    <div className="bg-slate-900/50 backdrop-blur-xl px-6 py-4 rounded-3xl border border-white/5 text-center">
+                                        <div className="text-2xl font-black text-indigo-400">{progress.stats.totalAttempts}</div>
+                                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Attempts</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -235,9 +303,33 @@ export default function Dashboard() {
                                             <h4 className="text-xl font-bold mb-2 leading-tight group-hover:text-blue-400 transition-colors">
                                                 {chapter.title}
                                             </h4>
-                                            <p className="text-sm text-slate-500 font-medium">
+                                            <p className="text-sm text-slate-500 font-medium mb-6">
                                                 {chapter.questionCount} 문제 수록
                                             </p>
+
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    disabled={locked}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        router.push(`/study/${chapter.id}`);
+                                                    }}
+                                                    className={`hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl border ${passed ? 'bg-blue-600/10 border-blue-500/30 text-blue-400' : 'bg-white/5 border-white/5 text-slate-400'}`}
+                                                >
+                                                    {passed ? 'Step 1: Review' : 'Step 1: Study'}
+                                                </button>
+                                                {(passed || chapter.type === 'advanced') && (
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            router.push(`/exam/${chapter.id}`);
+                                                        }}
+                                                        className="hover:scale-105 active:scale-95 transition-all text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400"
+                                                    >
+                                                        Step 2: Exam
+                                                    </button>
+                                                )}
+                                            </div>
 
                                             {locked && (
                                                 <div className="mt-4 text-[10px] text-slate-600 font-bold uppercase tracking-wider">

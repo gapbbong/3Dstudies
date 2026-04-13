@@ -23,7 +23,8 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
     const [score, setScore] = useState(0);
 
     useSecurity({
-        preventCopy: true
+        preventCopy: true,
+        preventMultiTab: true
     });
 
     useEffect(() => {
@@ -55,6 +56,15 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
     const handleTheoryComplete = () => {
         const nextCount = theoryAttempts + 1;
         setTheoryAttempts(nextCount);
+
+        // Save progress for theory completion
+        saveProgress(chapterId, {
+            passed: false, // Completing theory doesn't "pass" the chapter yet
+            score: 0,
+            total: chapter?.questions.length || 0,
+            theoryDelta: 1,
+            tempChange: 0.5 // Earning small temp boost for studying theory
+        });
 
         if (nextCount >= config.theoryAttempts) {
             setPhase('quiz');
@@ -159,6 +169,7 @@ export default function StudyPage({ params }: { params: Promise<{ chapterId: str
                                     targetText={chapter.theoryContent || ""}
                                     onComplete={handleTheoryComplete}
                                     isRecallMode={isRecallMode}
+                                    keywords={chapter.keywords}
                                 />
                             )}
                         </motion.div>

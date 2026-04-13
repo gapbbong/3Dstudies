@@ -1,0 +1,354 @@
+
+    <!DOCTYPE html>
+    <html lang='ko'>
+    <head>
+        <meta charset='utf-8'>
+        <style>
+            body { font-family: sans-serif; background: #f0f2f5; padding: 20px; }
+            .page-container { background: white; margin-bottom: 40px; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .header { font-size: 20px; font-weight: bold; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+            .img-wrapper { position: relative; display: inline-block; }
+            .page-img { max-width: 1000px; border: 1px solid #ccc; }
+            .crop-box { position: absolute; border: 2px solid #ff4444; background: rgba(255, 68, 68, 0.1); cursor: pointer; }
+            .crop-box:hover { border-color: #00ff00; background: rgba(0, 255, 0, 0.1); }
+            .crop-label { position: absolute; top: -20px; left: 0; background: #ff4444; color: white; padding: 2px 5px; font-size: 12px; }
+        </style>
+    </head>
+    <body>
+        <h1>2015 전설의 이미지 추출 갤러리</h1>
+        <p>각 페이지에서 감지된 그림 영역입니다. 클릭하여 연동할 회차/문제 번호를 설정할 수 있게 할 예정입니다.</p>
+    
+        <div class='page-container'>
+            <div class='header'>파트 1</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_1.png' class='page-img' id='img_1'>
+        
+            <div class='crop-box' style='left: 561.1912517449977px; top: 340.62354583527224px; width: 346.2075383899488px; height: 171.70777105630526px;'>
+                <div class='crop-label'>#1 (744x369)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 577.012563983248px; top: 674.2671009771988px; width: 310.37691949744067px; height: 162.40111679851094px;'>
+                <div class='crop-label'>#2 (667x349)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 2</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_2.png' class='page-img' id='img_2'>
+        
+            <div class='crop-box' style='left: 294.09027454630063px; top: 775.7096323871568px; width: 199.62773382968822px; height: 96.32387156817124px;'>
+                <div class='crop-label'>#1 (429x207)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 127.50116333178224px; top: 1324.3369008841323px; width: 120.05583992554678px; height: 53.97859469520708px;'>
+                <div class='crop-label'>#2 (258x116)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 3</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_3.png' class='page-img' id='img_3'>
+        
+            <div class='crop-box' style='left: 639.8324802233598px; top: 846.9055374592834px; width: 163.79711493718008px; height: 169.38110749185668px;'>
+                <div class='crop-label'>#1 (352x364)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 665.8911121451838px; top: 1026.0586319218241px; width: 102.83852954862728px; height: 51.18659841786878px;'>
+                <div class='crop-label'>#2 (221x110)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 665.8911121451838px; top: 1084.6905537459284px; width: 113.07584923220102px; height: 58.63192182410424px;'>
+                <div class='crop-label'>#3 (243x126)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 665.8911121451838px; top: 1151.2331316891577px; width: 102.83852954862728px; height: 50.72126570497906px;'>
+                <div class='crop-label'>#4 (221x109)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 665.8911121451838px; top: 1210.3303862261519px; width: 113.07584923220102px; height: 57.70125639832481px;'>
+                <div class='crop-label'>#5 (243x124)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 4</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_4.png' class='page-img' id='img_4'>
+        
+            <div class='crop-box' style='left: 252.6756630991159px; top: 489.0646812470917px; width: 98.65053513261982px; height: 51.6519311307585px;'>
+                <div class='crop-label'>#1 (212x111)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 238.25034899953468px; top: 544.439274080968px; width: 98.65053513261982px; height: 51.6519311307585px;'>
+                <div class='crop-label'>#2 (212x111)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 234.06235458352722px; top: 698.464402047464px; width: 181.01442531409958px; height: 81.43322475570034px;'>
+                <div class='crop-label'>#3 (389x175)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 127.50116333178224px; top: 1321.0795718939041px; width: 70.26523964634714px; height: 58.63192182410424px;'>
+                <div class='crop-label'>#4 (151x126)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 5</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_5.png' class='page-img' id='img_5'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 6</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_6.png' class='page-img' id='img_6'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 7</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_7.png' class='page-img' id='img_7'>
+        
+            <div class='crop-box' style='left: 820.8469055374593px; top: 1314.0995812005585px; width: 71.6612377850163px; height: 60.4932526756631px;'>
+                <div class='crop-label'>#1 (154x130)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 8</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_8.png' class='page-img' id='img_8'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 9</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_9.png' class='page-img' id='img_9'>
+        
+            <div class='crop-box' style='left: 125.63983248022336px; top: 465.7980456026059px; width: 339.69288040949283px; height: 136.80781758957656px;'>
+                <div class='crop-label'>#1 (730x294)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 10</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_10.png' class='page-img' id='img_10'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 11</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_11.png' class='page-img' id='img_11'>
+        
+            <div class='crop-box' style='left: 129.36249418334108px; top: 392.74080967892047px; width: 342.4848766868311px; height: 109.3531875290833px;'>
+                <div class='crop-label'>#1 (736x235)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 12</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_12.png' class='page-img' id='img_12'>
+        
+            <div class='crop-box' style='left: 120.9865053513262px; top: 1330.3862261516986px; width: 73.98790134946488px; height: 53.97859469520708px;'>
+                <div class='crop-label'>#1 (159x116)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 13</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_13.png' class='page-img' id='img_13'>
+        
+            <div class='crop-box' style='left: 594.2298743601675px; top: 928.8040949278735px; width: 128.43182875756168px; height: 46.99860400186133px;'>
+                <div class='crop-label'>#1 (276x101)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 594.6952070730573px; top: 1040.0186133085156px; width: 127.96649604467194px; height: 47.46393671475105px;'>
+                <div class='crop-label'>#2 (275x102)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 594.6952070730573px; top: 1095.8585388552815px; width: 127.96649604467194px; height: 46.99860400186133px;'>
+                <div class='crop-label'>#3 (275x101)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 14</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_14.png' class='page-img' id='img_14'>
+        
+            <div class='crop-box' style='left: 155.4211261051652px; top: 1147.51046998604px; width: 341.55421126105165px; height: 88.87854816193578px;'>
+                <div class='crop-label'>#1 (734x191)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 15</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_15.png' class='page-img' id='img_15'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 16</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_16.png' class='page-img' id='img_16'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 17</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_17.png' class='page-img' id='img_17'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 18</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_18.png' class='page-img' id='img_18'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 19</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_19.png' class='page-img' id='img_19'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 20</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_20.png' class='page-img' id='img_20'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 21</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_21.png' class='page-img' id='img_21'>
+        
+            <div class='crop-box' style='left: 661.7031177291764px; top: 348.0688692415077px; width: 143.7878082829223px; height: 118.65984178687762px;'>
+                <div class='crop-label'>#1 (309x255)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 628.1991624011168px; top: 1046.067938576082px; width: 210.33038622615172px; height: 88.41321544904608px;'>
+                <div class='crop-label'>#2 (452x190)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 22</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_22.png' class='page-img' id='img_22'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 23</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_23.png' class='page-img' id='img_23'>
+        
+            <div class='crop-box' style='left: 555.6072591903211px; top: 148.44113541181946px; width: 334.57422056770594px; height: 196.37040483946024px;'>
+                <div class='crop-label'>#1 (719x422)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 204.74639367147512px; top: 213.12238250349px; width: 171.24243834341556px; height: 104.69986040018614px;'>
+                <div class='crop-label'>#2 (368x225)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 24</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_24.png' class='page-img' id='img_24'>
+        
+            <div class='crop-box' style='left: 681.2470916705445px; top: 563.983248022336px; width: 161.4704513727315px; height: 118.1945090739879px;'>
+                <div class='crop-label'>#1 (347x254)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 684.9697533736622px; top: 928.8040949278735px; width: 191.71707771056307px; height: 128.89716147045138px;'>
+                <div class='crop-label'>#2 (412x277)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 120.05583992554678px; top: 1327.1288971614706px; width: 353.6528617961843px; height: 61.42391810144253px;'>
+                <div class='crop-label'>#3 (760x132)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 25</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_25.png' class='page-img' id='img_25'>
+        
+            <div class='crop-box' style='left: 214.98371335504888px; top: 200.09306654257796px; width: 172.6384364820847px; height: 228.01302931596092px;'>
+                <div class='crop-label'>#1 (371x490)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 201.0237319683574px; top: 583.0618892508144px; width: 169.84644020474641px; height: 120.9865053513262px;'>
+                <div class='crop-label'>#2 (365x260)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 26</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_26.png' class='page-img' id='img_26'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 27</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_27.png' class='page-img' id='img_27'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 28</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_28.png' class='page-img' id='img_28'>
+        
+            <div class='crop-box' style='left: 116.79851093531876px; top: 1324.802233597022px; width: 78.17589576547232px; height: 60.02791996277339px;'>
+                <div class='crop-label'>#1 (168x129)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 29</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_29.png' class='page-img' id='img_29'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 30</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_30.png' class='page-img' id='img_30'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 31</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_31.png' class='page-img' id='img_31'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 32</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_32.png' class='page-img' id='img_32'>
+        
+            <div class='crop-box' style='left: 111.67985109353188px; top: 1312.2382503489996px; width: 102.37319683573756px; height: 61.88925081433225px;'>
+                <div class='crop-label'>#1 (220x133)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 33</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_33.png' class='page-img' id='img_33'>
+        
+            <div class='crop-box' style='left: 234.06235458352722px; top: 692.8804094927874px; width: 142.39181014425316px; height: 141.46114471847372px;'>
+                <div class='crop-label'>#1 (306x304)</div>
+            </div>
+            
+            <div class='crop-box' style='left: 751.5123313168916px; top: 1309.911586784551px; width: 147.97580269892975px; height: 61.88925081433225px;'>
+                <div class='crop-label'>#2 (318x133)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 34</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_34.png' class='page-img' id='img_34'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 35</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_35.png' class='page-img' id='img_35'>
+        
+            <div class='crop-box' style='left: 556.5379246161006px; top: 1087.9478827361563px; width: 340.62354583527224px; height: 152.16379711493718px;'>
+                <div class='crop-label'>#1 (732x327)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 36</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_36.png' class='page-img' id='img_36'>
+        </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 37</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_37.png' class='page-img' id='img_37'>
+        
+            <div class='crop-box' style='left: 120.9865053513262px; top: 494.1833410888786px; width: 343.88087482550026px; height: 154.02512796649606px;'>
+                <div class='crop-label'>#1 (739x331)</div>
+            </div>
+            </div></div>
+        <div class='page-container'>
+            <div class='header'>파트 38</div>
+            <div class='img-wrapper'>
+                <img src='..\public\images\temp\part_38.png' class='page-img' id='img_38'>
+        </div></div></body></html>

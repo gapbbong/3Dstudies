@@ -8,6 +8,7 @@ interface SecurityOptions {
     onEsc?: () => void;
     preventCopy?: boolean;
     useCaptureProtect?: boolean;
+    preventMultiTab?: boolean;
 }
 
 export function useSecurity(options: SecurityOptions = {}) {
@@ -72,6 +73,30 @@ export function useSecurity(options: SecurityOptions = {}) {
             window.addEventListener('focus', handleFocus);
         }
 
+        // 5. Multi-tab Prevention (Heartbeat)
+        let heartbeatInterval: NodeJS.Timeout;
+        const tabId = Math.random().toString(36).substring(7);
+
+        if (options.preventMultiTab) {
+            const checkMultiTab = () => {
+                const now = Date.now();
+                const lastHeartbeat = Number(localStorage.getItem('3d_study_heartbeat') || 0);
+                const lastTabId = localStorage.getItem('3d_study_tab_id');
+
+                if (lastTabId && lastTabId !== tabId && (now - lastHeartbeat) < 3000) {
+                    // Another tab is active
+                    alert('중복 접속이 감지되었습니다. 원활한 학습과 보안을 위해 한 개의 탭만 이용해 주세요.');
+                    window.location.href = 'about:blank';
+                } else {
+                    localStorage.setItem('3d_study_heartbeat', now.toString());
+                    localStorage.setItem('3d_study_tab_id', tabId);
+                }
+            };
+
+            checkMultiTab();
+            heartbeatInterval = setInterval(checkMultiTab, 2000);
+        }
+
         return () => {
             window.removeEventListener('devtoolschange', handleDevToolsChange);
             window.removeEventListener('keydown', handleKeyDown);
@@ -81,6 +106,7 @@ export function useSecurity(options: SecurityOptions = {}) {
             window.removeEventListener('drop', handleContext as any);
             window.removeEventListener('blur', handleBlur);
             window.removeEventListener('focus', handleFocus);
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
         };
     }, [options]);
 }

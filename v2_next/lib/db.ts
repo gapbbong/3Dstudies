@@ -18,6 +18,7 @@ export interface Chapter {
     type: 'basic' | 'practice' | 'advanced';
     questions: Question[];
     theoryContent?: string;
+    keywords?: string[];
 }
 
 // Simulate Database Calls
@@ -46,7 +47,8 @@ export const db = {
                         title: chapter.title,
                         type: 'practice', // Default for now
                         questions: chapter.questions as unknown as Question[],
-                        theoryContent: chapter.theoryContent
+                        theoryContent: chapter.theoryContent,
+                        keywords: chapter.keywords || []
                     };
                 }
                 return null;

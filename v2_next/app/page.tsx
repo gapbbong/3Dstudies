@@ -7,6 +7,7 @@ import { Package, GraduationCap, Users, ArrowRight } from 'lucide-react';
 import packageInfo from '../package.json';
 import { useSecurity } from '@/hooks/useSecurity';
 import { useToast } from '@/components/ui/Toast';
+import { getProgress, getRankInfo } from '@/lib/progress';
 
 const QUOTES = [
   "성공은 매일 반복되는 작은 노력들의 합이다. - 로버트 콜리어",
@@ -316,43 +317,59 @@ export default function LoginPage() {
 }
 
 function LoginHistory() {
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<{ name: string; icon: string; temp: number }[]>([]);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('login_history');
     const legacyUser = localStorage.getItem('currentUser');
 
-    let combined: string[] = [];
-    if (saved) combined = JSON.parse(saved);
-    else if (legacyUser) combined = [legacyUser];
+    let names: string[] = [];
+    if (saved) names = JSON.parse(saved);
+    else if (legacyUser) names = [legacyUser];
 
-    requestAnimationFrame(() => {
-      setHistory(combined);
-      setMounted(true);
+    // Fetch stats for each name
+    const historyWithStats = names.slice(0, 3).map(name => {
+      const progress = getProgress(name);
+      const rank = getRankInfo(progress.stats.temperature);
+      return {
+        name,
+        icon: rank.icon,
+        temp: progress.stats.temperature
+      };
     });
+
+    setHistory(historyWithStats);
+    setMounted(true);
   }, []);
 
   if (!mounted || history.length === 0) return null;
 
   return (
-    <div className="bg-slate-900/40 px-5 py-2.5 rounded-2xl border border-slate-800/50 backdrop-blur-md flex items-center gap-4 text-[10px] mb-4">
-      <span className="text-slate-500 font-bold uppercase tracking-widest">최근 로그인:</span>
-      <div className="flex gap-2 text-slate-300 font-mono">
-        {history.slice(0, 3).map((h, i) => (
-          <span key={i} className="bg-white/5 px-2 py-0.5 rounded border border-white/5">{h}</span>
+    <div className="bg-slate-900/40 px-5 py-3 rounded-2xl border border-white/5 backdrop-blur-md flex flex-col items-center gap-3 text-[10px] mb-4 min-w-[300px]">
+      <span className="text-slate-500 font-black uppercase tracking-widest text-[9px]">최근 학습자 기록</span>
+      <div className="flex flex-wrap justify-center gap-2">
+        {history.map((h, i) => (
+          <div key={i} className="flex items-center gap-2 bg-white/5 pl-2 pr-3 py-1.5 rounded-xl border border-white/5 transition-all hover:border-blue-500/50 group cursor-default">
+            <span className="text-lg">{h.icon}</span>
+            <div className="flex flex-col">
+              <span className="text-slate-200 font-bold font-mono">{h.name}</span>
+              <span className="text-[8px] text-blue-400 font-black">{h.temp}°C</span>
+            </div>
+          </div>
         ))}
-        <button
-          onClick={() => {
-            localStorage.removeItem('currentUser');
-            localStorage.removeItem('login_history');
-            window.location.reload();
-          }}
-          className="ml-2 text-red-500/50 hover:text-red-500 transition-colors uppercase font-black text-[9px] tracking-tighter"
-        >
-          [Logout]
-        </button>
       </div>
+      <button
+        onClick={() => {
+          if (confirm('모든 로그인 기록과 로컬 학습 데이터를 삭제하시겠습니까?')) {
+            localStorage.clear();
+            window.location.reload();
+          }
+        }}
+        className="mt-2 text-red-500/30 hover:text-red-500 transition-colors uppercase font-black text-[9px] tracking-tighter"
+      >
+        [Clear All Data]
+      </button>
     </div>
   );
 }

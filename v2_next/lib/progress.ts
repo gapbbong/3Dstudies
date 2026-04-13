@@ -23,6 +23,7 @@ export interface UserStats {
 export interface UserProgressEntry extends ProgressData {
     lastStudy: string;
     reviewBatch?: ReviewItem[];
+    theoryAttempts?: number;
 }
 
 export interface UserProgress {
@@ -58,50 +59,51 @@ const DEFAULT_STATS: UserStats = {
     lastLogin: new Date().toISOString()
 };
 
-export const getProgress = (): UserProgress => {
-    if (typeof window === 'undefined') return { chapters: {}, stats: DEFAULT_STATS };
-    const saved = localStorage.getItem(PROGRESS_KEY);
+const getUserKey = (username: string) => `${PROGRESS_KEY}_${username}`;
 
-    let data: unknown = null;
-    if (saved) {
-        const decoded = decode(saved);
-        try {
-            data = decoded ? JSON.parse(decoded) : JSON.parse(saved);
-        } catch {
-            data = null;
-        }
+export const getProgress = (username?: string): UserProgress => {
+    if (typeof window === 'undefined') return { chapters: {}, stats: DEFAULT_STATS };
+    
+    const user = username || localStorage.getItem('currentUser');
+    if (!user) {
+        // Fallback to legacy if no user logged in yet (unlikely in study mode)
+        const globalSaved = localStorage.getItem(PROGRESS_KEY);
+        if (globalSaved) return parseProgress(globalSaved);
+        return { chapters: {}, stats: DEFAULT_STATS };
     }
 
-    // Migration logic if it's the old Record<string, UserProgressEntry> format
-    const isOldFormat = (d: unknown): d is Record<string, UserProgressEntry> => {
-        return !!d && typeof d === 'object' && !('chapters' in d) && !('stats' in d);
-    };
+    const userKey = getUserKey(user);
+    const saved = localStorage.getItem(userKey);
 
-    if (isOldFormat(data)) {
+    if (saved) return parseProgress(saved);
+
+    // If no user-specific data, try to migrate from global if it's the right user
+    const globalSaved = localStorage.getItem(PROGRESS_KEY);
+    if (globalSaved) {
+        const globalData = parseProgress(globalSaved);
+        // Basic check: if global data exists and it's 36.5 (default), maybe it's fresh
+        // But if it's higher, it belongs to someone. For safety, we only migrate if we're sure.
+        // For now, let's keep it simple: new user = new progress, unless we have clear legacy.
+        return globalData; 
+    }
+
+    return { chapters: {}, stats: DEFAULT_STATS };
+};
+
+const parseProgress = (saved: string): UserProgress => {
+    const decoded = decode(saved);
+    let data: any = null;
+    try {
+        data = decoded ? JSON.parse(decoded) : JSON.parse(saved);
+    } catch {
+        return { chapters: {}, stats: DEFAULT_STATS };
+    }
+
+    if (!!data && typeof data === 'object' && !('chapters' in data) && !('stats' in data)) {
         return { chapters: data, stats: DEFAULT_STATS };
     }
-
-    const castedData = data as UserProgress | null;
-
-    let finalData = castedData;
-
-    // Deep merge legacy appData if available
-    const legacyAppData = localStorage.getItem('appData');
-    if (legacyAppData && (!finalData || finalData.stats.temperature === 36.5)) {
-        try {
-            const parsedLegacy = JSON.parse(legacyAppData);
-            if (parsedLegacy.userData) {
-                const legacyTemp = parsedLegacy.userData.temperature || 36.5;
-                if (!finalData) finalData = { chapters: {}, stats: { ...DEFAULT_STATS, temperature: legacyTemp } };
-                else finalData.stats.temperature = legacyTemp;
-            }
-        } catch (e) {
-            console.error("Legacy migration failed:", e);
-        }
-    }
-
-    return finalData || { chapters: {}, stats: DEFAULT_STATS };
-};
+    return data || { chapters: {}, stats: DEFAULT_STATS };
+}
 
 export const getLegacyUser = () => {
     if (typeof window === 'undefined') return null;
@@ -114,10 +116,14 @@ export function saveProgress(chapterId: string, data: {
     total: number;
     wrongNumbers?: string[];
     tempChange?: number;
-}) {
+    theoryDelta?: number;
+}, username?: string) {
     if (typeof window === 'undefined') return;
 
-    const progress = getProgress();
+    const user = username || localStorage.getItem('currentUser');
+    if (!user) return;
+
+    const progress = getProgress(user);
     const existing = progress.chapters[chapterId] || {
         passed: false,
         score: 0,
@@ -131,12 +137,12 @@ export function saveProgress(chapterId: string, data: {
         ...existing,
         passed: data.passed || existing.passed,
         score: data.score,
-        total: data.total,
+        total: data.total || existing.total,
         lastStudy: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        theoryAttempts: (existing.theoryAttempts || 0) + (data.theoryDelta || 0)
     };
 
-    // If wrong answers provided, schedule them for review
     if (data.wrongNumbers && data.wrongNumbers.length > 0) {
         const now = Date.now();
         const batch: ReviewItem[] = data.wrongNumbers.map(num => ({
@@ -150,12 +156,11 @@ export function saveProgress(chapterId: string, data: {
         batch.forEach(item => {
             const idx = mergedBatch.findIndex(b => b.questionNumber === item.questionNumber);
             if (idx === -1) mergedBatch.push(item);
-            else mergedBatch[idx] = item; // Reset to level 0 if wrong again
+            else mergedBatch[idx] = item;
         });
         newProgress.reviewBatch = mergedBatch;
     }
 
-    // Update global stats
     progress.chapters[chapterId] = newProgress;
     if (data.tempChange) {
         progress.stats.temperature = Math.round((progress.stats.temperature + data.tempChange) * 10) / 10;
@@ -163,8 +168,10 @@ export function saveProgress(chapterId: string, data: {
     progress.stats.totalAttempts += 1;
     progress.stats.lastLogin = new Date().toISOString();
 
-    localStorage.setItem(PROGRESS_KEY, encode(JSON.stringify(progress)));
+    localStorage.setItem(getUserKey(user), encode(JSON.stringify(progress)));
 
+    // Also update global for backward compatibility with vanilla app
+    localStorage.setItem(PROGRESS_KEY, encode(JSON.stringify(progress)));
     syncWithLegacy(chapterId, newProgress, progress.stats.temperature);
 }
 
@@ -188,26 +195,13 @@ export function getReviewItems(): { chapterId: string, questionNumber: string }[
 }
 
 export function getRankInfo(temp: number) {
-    if (temp >= 5000) return { title: 'Lv.20 옴니버스 (다중우주)', icon: '♾️', color: '#000000' };
-    if (temp >= 4500) return { title: 'Lv.19 유니버스 (우주)', icon: '🌌', color: '#2c3e50' };
-    if (temp >= 4000) return { title: 'Lv.18 초거대 퀘이사', icon: '✨', color: '#8e44ad' };
-    if (temp >= 3600) return { title: 'Lv.17 은하단 (Galaxy Cluster)', icon: '🎆', color: '#9b59b6' };
-    if (temp >= 3200) return { title: 'Lv.16 우리 은하 (Milky Way)', icon: '🌀', color: '#3498db' };
-    if (temp >= 2800) return { title: 'Lv.15 초신성 (Supernova)', icon: '💥', color: '#e74c3c' };
-    if (temp >= 2400) return { title: 'Lv.14 블랙홀', icon: '🕳️', color: '#2d3436' };
-    if (temp >= 2100) return { title: 'Lv.13 적색 거성', icon: '🔴', color: '#c0392b' };
-    if (temp >= 1800) return { title: 'Lv.12 태양 (The Sun)', icon: '☀️', color: '#f39c12' };
-    if (temp >= 1500) return { title: 'Lv.11 목성 (가스 행성)', icon: '🪐', color: '#d35400' };
-    if (temp >= 1200) return { title: 'Lv.10 푸른 지구', icon: '🌍', color: '#2ecc71' };
-    if (temp >= 1050) return { title: 'Lv.9 샛별 (금성)', icon: '🌕', color: '#f1c40f' };
-    if (temp >= 900) return { title: 'Lv.8 붉은 행성 (화성)', icon: '🪐', color: '#e67e22' };
-    if (temp >= 750) return { title: 'Lv.7 달 (Satellite)', icon: '🌙', color: '#95a5a6' };
-    if (temp >= 600) return { title: 'Lv.6 혜성 (Comet)', icon: '☄️', color: '#7f8c8d' };
-    if (temp >= 450) return { title: 'Lv.5 운석 (Meteor)', icon: '🪨', color: '#636e72' };
-    if (temp >= 300) return { title: 'Lv.4 별똥별', icon: '🌠', color: '#b2bec3' };
-    if (temp >= 150) return { title: 'Lv.3 우주 먼지', icon: '🌫️', color: '#dfe6e9' };
-    if (temp >= 50) return { title: 'Lv.2 원자 (Atom)', icon: '⚛️', color: '#74b9ff' };
-    return { title: 'Lv.1 무 (Nothing)', icon: '⚫', color: '#b2bec3' };
+    if (temp >= 1000) return { title: 'Lv.7 숲 (Master)', icon: '🌲', color: '#27ae60', description: '완성된 숲의 명예로운 마스터입니다!' };
+    if (temp >= 700) return { title: 'Lv.6 웅장한 나무', icon: '🌳', color: '#2ecc71', description: '깊은 뿌리와 넓은 가지를 가진 나무입니다.' };
+    if (temp >= 400) return { title: 'Lv.5 풍성한 열매', icon: '🍎', color: '#e67e22', description: '학습의 결실이 맺히기 시작했습니다.' };
+    if (temp >= 200) return { title: 'Lv.4 만개한 꽃', icon: '🌸', color: '#e84393', description: '지식이 화사하게 피어났습니다.' };
+    if (temp >= 100) return { title: 'Lv.3 푸른 잎새', icon: '🍃', color: '#16a085', description: '성장의 기운이 가득한 잎새입니다.' };
+    if (temp >= 50) return { title: 'Lv.2 파릇한 새싹', icon: '🌱', color: '#27ae60', description: '배움의 싹이 트기 시작했습니다.' };
+    return { title: 'Lv.1 잠든 씨앗', icon: '🌱', color: '#b2bec3', description: '곧 깨어날 소중한 지식의 씨앗입니다.' };
 }
 
 function syncWithLegacy(chapterId: string, newProgress: UserProgressEntry, temperature?: number) {

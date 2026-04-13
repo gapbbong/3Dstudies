@@ -173,7 +173,7 @@ function LoginContent() {
             <Package size={32} className="text-white" />
           </div>
           <h1 className="text-4xl font-black tracking-tight mb-3 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-sky-400 to-indigo-400">
-            3D Printer Study
+            3D Printer Study <span className="text-[12px] font-mono font-medium text-slate-500 opacity-60 ml-2">v4.2.2</span>
           </h1>
           <p className="text-slate-500/80 italic font-medium text-sm">&quot;자격증 합격의 지름길, 함께 모델링해봐요!&quot;</p>
         </div>

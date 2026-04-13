@@ -948,18 +948,10 @@ function renderQuestionCanvas(container, text) {
     // 🔒 OCR 방해 노이즈 추가
     addCanvasNoise(ctx, canvas.width, canvas.height);
 
-    // 텍스트 왜곡 렌더링 (각 글자마다 미세한 오프셋 - 강화)
+    // 텍스트 렌더링 (왜곡 없이 깨끗하게)
     lines.forEach((l, i) => {
-        let xOffset = 20;
-        for (let charIdx = 0; charIdx < l.length; charIdx++) {
-            const char = l[charIdx];
-            const yOffset = 35 + i * lineHeight + (Math.random() - 0.5) * 2.5; // ±1.25px (강화)
-            const alpha = 0.95 + Math.random() * 0.05; // 0.95-1.0 (더 큰 변화)
-            ctx.globalAlpha = alpha;
-            ctx.fillText(char, xOffset, yOffset);
-            xOffset += ctx.measureText(char).width + (Math.random() - 0.5) * 0.5; // 글자 간격도 랜덤
-        }
-        ctx.globalAlpha = 1.0; // Reset
+        const yOffset = 35 + i * lineHeight;
+        ctx.fillText(l, 20, yOffset);
     });
 
     // 🔒 롱프레스 이벤트 연결
@@ -973,81 +965,7 @@ function renderQuestionCanvas(container, text) {
 }
 
 function addCanvasNoise(ctx, width, height) {
-    // 1. Dense Random Dots (대폭 강화 - OCR 완전 차단)
-    for (let i = 0; i < 5000; i++) {
-        const size = Math.random() * 4 + 1; // 1-5px
-        const opacity = Math.random() * 0.10 + 0.10; // 0.10-0.20 (더 진하게)
-        ctx.fillStyle = `rgba(148, 163, 184, ${opacity})`;
-        ctx.fillRect(Math.random() * width, Math.random() * height, size, size);
-    }
-
-    // 2. Stronger Watermark (더 진하게)
-    ctx.save();
-    ctx.font = "bold 18px Arial";
-    ctx.fillStyle = "rgba(148, 163, 184, 0.15)"; // 더 진하게
-    for (let y = -20; y < height + 40; y += 45) { // 더 촘촘하게
-        for (let x = -40; x < width + 80; x += 90) {
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate((Math.random() - 0.5) * 0.4); // 회전 각도 증가
-            ctx.fillText("3D STUDY", 0, 0);
-            ctx.restore();
-        }
-    }
-    ctx.restore();
-
-    // 3. Random Lines (더 많이)
-    ctx.strokeStyle = "rgba(148, 163, 184, 0.06)"; // 더 진하게
-    ctx.lineWidth = 0.8;
-    for (let i = 0; i < 25; i++) { // 15 -> 25개
-        ctx.beginPath();
-        if (Math.random() > 0.5) {
-            const y = Math.random() * height;
-            ctx.moveTo(0, y);
-            ctx.lineTo(width, y);
-        } else {
-            const x = Math.random() * width;
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, height);
-        }
-        ctx.stroke();
-    }
-
-    // 4. Diagonal Pattern (더 촘촘하게)
-    ctx.strokeStyle = "rgba(148, 163, 184, 0.05)";
-    ctx.lineWidth = 1.2;
-    for (let i = -height; i < width + height; i += 20) { // 30 -> 20px
-        ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i + height, height);
-        ctx.stroke();
-    }
-
-    // 5. Micro Gradient Noise (더 많이)
-    for (let i = 0; i < 800; i++) { // 500 -> 800개
-        const x = Math.random() * width;
-        const y = Math.random() * height;
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 25);
-        gradient.addColorStop(0, `rgba(148, 163, 184, ${Math.random() * 0.08})`);
-        gradient.addColorStop(1, "rgba(148, 163, 184, 0)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(x - 25, y - 25, 50, 50);
-    }
-
-    // 6. 추가: 랜덤 곡선 패턴
-    ctx.strokeStyle = "rgba(148, 163, 184, 0.04)";
-    ctx.lineWidth = 1.5;
-    for (let i = 0; i < 10; i++) {
-        ctx.beginPath();
-        ctx.moveTo(Math.random() * width, Math.random() * height);
-        ctx.quadraticCurveTo(
-            Math.random() * width,
-            Math.random() * height,
-            Math.random() * width,
-            Math.random() * height
-        );
-        ctx.stroke();
-    }
+    // Noise removed for better readability
 }
 
 // 선택지를 캔버스로 렌더링하는 함수
@@ -1078,22 +996,18 @@ function renderChoiceCanvas(container, text, isSelected) {
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
 
-    let xOffset = padding;
-    for (let charIdx = 0; charIdx < text.length; charIdx++) {
-        const char = text[charIdx];
-        const yOffset = 25 + (Math.random() - 0.5) * 2.0; // ±1.0px (강화)
-        const alpha = 0.95 + Math.random() * 0.05; // 0.95-1.0 (더 큰 변화)
-        ctx.globalAlpha = alpha;
-        ctx.fillText(char, xOffset, yOffset);
-        xOffset += ctx.measureText(char).width + (Math.random() - 0.5) * 0.4; // 글자 간격도 랜덤
-    }
-    ctx.globalAlpha = 1.0;
+    // 텍스트 렌더링 (왜곡 없이 깨끗하게)
+    ctx.fillText(text, padding, 25);
 
     container.appendChild(canvas);
 }
 
 // 선택지용 노이즈 (문제보다 약하지만 강화)
 function addChoiceNoise(ctx, width, height) {
+    // Noise removed for better readability
+}
+
+/*
     // 1. 랜덤 점 (증가)
     for (let i = 0; i < 1500; i++) { // 800 -> 1500개
         const size = Math.random() * 3 + 1; // 1-4px
@@ -1145,6 +1059,7 @@ function addChoiceNoise(ctx, width, height) {
         ctx.fillRect(x - 18, y - 18, 36, 36);
     }
 }
+*/
 
 // 🔒 캡처/이탈 보호 (Focus/Blur)
 window.addEventListener('blur', () => {
